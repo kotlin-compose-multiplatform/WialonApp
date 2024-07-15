@@ -1,0 +1,7 @@
+package com.gs.wialonlocal.common
+
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+
+@Composable
+expect fun GoogleMaps(modifier: Modifier)

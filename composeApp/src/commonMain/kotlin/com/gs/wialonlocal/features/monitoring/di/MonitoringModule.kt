@@ -1,0 +1,24 @@
+package com.gs.wialonlocal.features.monitoring.di
+
+import com.gs.wialonlocal.core.settings.AuthSettings
+import com.gs.wialonlocal.features.monitoring.data.repository.MonitoringRepositoryImpl
+import com.gs.wialonlocal.features.monitoring.domain.repository.MonitoringRepository
+import com.gs.wialonlocal.features.monitoring.domain.usecase.MonitoringUseCase
+import com.gs.wialonlocal.features.monitoring.presentation.viewmodel.MonitoringViewModel
+import com.russhwolf.settings.Settings
+import org.koin.dsl.module
+
+val monitoringModule = module {
+    single {
+        AuthSettings(get())
+    }
+    single<MonitoringRepository> {
+        MonitoringRepositoryImpl(get())
+    }
+    single {
+        MonitoringUseCase(get())
+    }
+    factory {
+        MonitoringViewModel(get())
+    }
+}
