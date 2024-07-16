@@ -310,7 +310,7 @@ fun CarItem(
                         )
                         Spacer(Modifier.width(6.dp))
                         Text(
-                            text = "47 km/h",
+                            text = "47 km",
                             color = MaterialTheme.colorScheme.onSurface,
                             style = MaterialTheme.typography.bodySmall.copy(
                                 fontWeight = FontWeight.W500
