@@ -18,5 +18,6 @@ internal data class Strings(
     val navigationApps: String,
     val copyCoordinates: String,
     val executeReports: String,
-    val edit: String
+    val edit: String,
+    val configureTabView: String
 )

@@ -20,4 +20,5 @@ internal val EnStrings = Strings(
     copyCoordinates = "Copy Coordinates",
     executeReports = "Execute Reports",
     edit = "Edit",
+    configureTabView = "Configure tab view"
 )

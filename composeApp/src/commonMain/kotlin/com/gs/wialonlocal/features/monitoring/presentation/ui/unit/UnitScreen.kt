@@ -55,6 +55,7 @@ import com.gs.wialonlocal.components.ContextMenu
 import com.gs.wialonlocal.components.ImageLoader
 import com.gs.wialonlocal.features.main.presentation.ui.ToolBar
 import com.gs.wialonlocal.features.monitoring.domain.model.UnitModel
+import com.gs.wialonlocal.features.monitoring.presentation.ui.history.HistoryScreen
 import com.gs.wialonlocal.features.monitoring.presentation.ui.monitoringlist.Groups
 import com.gs.wialonlocal.features.monitoring.presentation.ui.monitoringlist.Units
 import com.gs.wialonlocal.features.monitoring.presentation.viewmodel.MonitoringViewModel
@@ -211,6 +212,7 @@ fun UnitDetails(modifier: Modifier = Modifier) {
                         if (index == 0) {
                             UnitInfo(Modifier.fillMaxSize())
                         } else {
+                            HistoryScreen(Modifier.fillMaxSize())
                         }
                     }
                 }
