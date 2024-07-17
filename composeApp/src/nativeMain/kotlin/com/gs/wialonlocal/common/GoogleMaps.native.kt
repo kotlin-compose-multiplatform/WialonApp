@@ -20,12 +20,12 @@ actual fun GoogleMaps(modifier: Modifier) {
             settings.setScrollGestures(true)
             settings.setZoomGestures(true)
             settings.setCompassButton(false)
-            this.setMapStyle(
-                GMSMapStyle.styleWithJSONString(
-                    mapStyle1(),
-                    error = null
-                )
-            )
+//            this.setMapStyle(
+//                GMSMapStyle.styleWithJSONString(
+//                    mapStyle1(),
+//                    error = null
+//                )
+//            )
         }
     }
 

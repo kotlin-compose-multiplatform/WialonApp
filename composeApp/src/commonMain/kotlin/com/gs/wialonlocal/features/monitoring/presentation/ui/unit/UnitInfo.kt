@@ -34,6 +34,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import cafe.adriel.lyricist.strings
+import cafe.adriel.voyager.navigator.LocalNavigator
+import cafe.adriel.voyager.navigator.currentOrThrow
+import com.gs.wialonlocal.features.monitoring.presentation.ui.settings.InfoTabSettings
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import wialonlocal.composeapp.generated.resources.Res
@@ -41,6 +44,7 @@ import wialonlocal.composeapp.generated.resources.settings_active
 
 @Composable
 fun UnitInfo(modifier: Modifier = Modifier) {
+    val navigator = LocalNavigator.currentOrThrow
     Column(
         modifier = modifier.fillMaxWidth().background(MaterialTheme.colorScheme.background)
             .verticalScroll(rememberScrollState())
@@ -70,7 +74,7 @@ fun UnitInfo(modifier: Modifier = Modifier) {
             text = strings.configureTabView,
             icon = painterResource(Res.drawable.settings_active),
             onClick = {
-
+                navigator.push(InfoTabSettings())
             }
         )
         Spacer(Modifier.height(18.dp))

@@ -54,6 +54,7 @@ import com.gs.wialonlocal.components.ContextButton
 import com.gs.wialonlocal.components.ContextMenu
 import com.gs.wialonlocal.components.ImageLoader
 import com.gs.wialonlocal.features.main.presentation.ui.ToolBar
+import com.gs.wialonlocal.features.map.presentation.ui.MapContainer
 import com.gs.wialonlocal.features.monitoring.domain.model.UnitModel
 import com.gs.wialonlocal.features.monitoring.presentation.ui.history.HistoryScreen
 import com.gs.wialonlocal.features.monitoring.presentation.ui.monitoringlist.Groups
@@ -218,7 +219,9 @@ fun UnitDetails(modifier: Modifier = Modifier) {
                 }
             }
         ) {
-            GoogleMaps(Modifier.fillMaxSize())
+            MapContainer(Modifier.fillMaxSize()) {
+                GoogleMaps(Modifier.fillMaxSize())
+            }
         }
     }
 }

@@ -17,17 +17,27 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import cafe.adriel.lyricist.strings
 import cafe.adriel.voyager.core.screen.Screen
+import cafe.adriel.voyager.navigator.LocalNavigator
+import cafe.adriel.voyager.navigator.currentOrThrow
+import com.gs.wialonlocal.components.ContextButton
+import com.gs.wialonlocal.components.ContextMenu
 import com.gs.wialonlocal.features.main.presentation.ui.SearchBar
 import com.gs.wialonlocal.features.main.presentation.ui.ToolBar
+import com.gs.wialonlocal.features.monitoring.presentation.ui.unit.SelectUnits
 import com.gs.wialonlocal.state.LocalTheme
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import wialonlocal.composeapp.generated.resources.Res
+import wialonlocal.composeapp.generated.resources.check_list
+import wialonlocal.composeapp.generated.resources.settings_2
 import wialonlocal.composeapp.generated.resources.settings_passive
 
 class MonitoringListScreen: Screen {
@@ -37,6 +47,14 @@ class MonitoringListScreen: Screen {
         val pagerState = rememberPagerState { 2 }
         val coroutine = rememberCoroutineScope()
         val theme = LocalTheme.current
+
+        val navigator = LocalNavigator.currentOrThrow
+
+        val openSettings = remember {
+            mutableStateOf(false)
+        }
+
+
         Column(modifier = Modifier.fillMaxSize()) {
             ToolBar {
                 Row(Modifier.fillMaxWidth().padding(16.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -49,9 +67,32 @@ class MonitoringListScreen: Screen {
                     )
                     IconButton(
                         onClick = {
-                            theme.value = true
+                            openSettings.value = true
                         }
                     ) {
+                        ContextMenu(
+                            open = openSettings.value,
+                            onDismiss = {
+                                openSettings.value = false
+                            },
+                            buttons = listOf(
+                                ContextButton(
+                                    text = strings.selectItems,
+                                    icon = painterResource(Res.drawable.check_list),
+                                    onClick = {
+                                        navigator.push(SelectUnits())
+                                    }
+                                ),
+                                ContextButton(
+                                    text = strings.configureTabView,
+                                    icon = painterResource(Res.drawable.settings_2),
+                                    onClick = {
+
+                                    }
+                                )
+                            )
+                        )
+
                         Icon(
                             painter = painterResource(Res.drawable.settings_passive),
                             contentDescription = "search settings",
