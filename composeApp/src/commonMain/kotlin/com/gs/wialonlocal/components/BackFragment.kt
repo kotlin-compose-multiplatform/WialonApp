@@ -25,7 +25,8 @@ fun BackFragment(
     modifier: Modifier = Modifier,
     title: String,
     onBackPresses: () -> Unit,
-    content: @Composable () -> Unit
+    toolbar: @Composable () -> Unit = {},
+    content: @Composable () -> Unit,
 ) {
     Column(
         modifier = modifier.fillMaxSize().background(
@@ -33,29 +34,32 @@ fun BackFragment(
         )
     ) {
         ToolBar(Modifier.fillMaxWidth()) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                IconButton(
-                    onClick = onBackPresses
+            Column(Modifier.fillMaxWidth()) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    Icon(
-                        Icons.AutoMirrored.Default.ArrowBack,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onPrimary
+                    IconButton(
+                        onClick = onBackPresses
+                    ) {
+                        Icon(
+                            Icons.AutoMirrored.Default.ArrowBack,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onPrimary
+                        )
+                    }
+
+                    Text(
+                        text = title,
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        style = MaterialTheme.typography.bodyLarge.copy(
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.W500
+                        )
                     )
                 }
-
-                Text(
-                    text = title,
-                    color = MaterialTheme.colorScheme.onPrimary,
-                    style = MaterialTheme.typography.bodyLarge.copy(
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.W500
-                    )
-                )
+                toolbar()
             }
         }
         content()

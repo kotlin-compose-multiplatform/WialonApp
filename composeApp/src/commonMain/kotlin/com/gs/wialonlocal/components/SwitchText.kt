@@ -1,6 +1,7 @@
 package com.gs.wialonlocal.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,9 +16,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowRight
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.ArrowRight
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalMinimumInteractiveComponentEnforcement
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
@@ -38,6 +41,7 @@ fun SwitchText(
     modifier: Modifier = Modifier,
     initial: Boolean = false,
     text: String,
+    subTitle: String? = null,
     arrow: Boolean = false,
     onChange: (Boolean) -> Unit = {}
 ) {
@@ -54,11 +58,20 @@ fun SwitchText(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(
-                text = text,
-                color = MaterialTheme.colorScheme.onBackground,
-                style = MaterialTheme.typography.bodyLarge
-            )
+            Column(verticalArrangement = Arrangement.spacedBy(6.dp), modifier = Modifier.weight(1f)) {
+                Text(
+                    text = text,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    style = MaterialTheme.typography.bodyLarge
+                )
+                subTitle?.let {
+                    Text(
+                        text = subTitle,
+                        color = MaterialTheme.colorScheme.inverseSurface,
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
+            }
 
 
             if(arrow) {
@@ -99,6 +112,7 @@ fun RadioText(
     modifier: Modifier = Modifier,
     initial: Boolean = false,
     text: String,
+    subTitle: String? = null,
     onChange: (Boolean) -> Unit = {}
 ) {
     val checked = rememberSaveable {
@@ -114,11 +128,20 @@ fun RadioText(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(
-                text = text,
-                color = MaterialTheme.colorScheme.onBackground,
-                style = MaterialTheme.typography.bodyLarge
-            )
+            Column(verticalArrangement = Arrangement.spacedBy(6.dp), modifier = Modifier.weight(1f)) {
+                Text(
+                    text = text,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    style = MaterialTheme.typography.bodyLarge
+                )
+                subTitle?.let {
+                    Text(
+                        text = subTitle,
+                        color = MaterialTheme.colorScheme.inverseSurface,
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
+            }
 
                 CompositionLocalProvider(LocalMinimumInteractiveComponentEnforcement provides false) {
                     RadioButton(
@@ -129,6 +152,60 @@ fun RadioText(
                         }
                     )
                 }
+
+
+        }
+
+        HorizontalDivider(
+            color = MaterialTheme.colorScheme.inverseSurface,
+            thickness = 0.5.dp
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CheckText(
+    modifier: Modifier = Modifier,
+    initial: Boolean = false,
+    text: String,
+    subTitle: String? = null,
+    onChange: (Boolean) -> Unit = {}
+) {
+    val checked = rememberSaveable {
+        mutableStateOf(initial)
+    }
+    Column(
+        modifier = modifier.background(
+            color = MaterialTheme.colorScheme.surface
+        ).clickable {
+            onChange(checked.value.not())
+            checked.value = checked.value.not()
+        }
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Column(verticalArrangement = Arrangement.spacedBy(6.dp), modifier = Modifier.weight(1f)) {
+                Text(
+                    text = text,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    style = MaterialTheme.typography.bodyLarge
+                )
+                subTitle?.let {
+                    Text(
+                        text = subTitle,
+                        color = MaterialTheme.colorScheme.inverseSurface,
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
+            }
+
+            if(checked.value) {
+                Icon(Icons.Default.Check, contentDescription = "check", tint = MaterialTheme.colorScheme.primary)
+            }
 
 
         }

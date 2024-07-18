@@ -5,6 +5,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import cafe.adriel.lyricist.strings
+import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabOptions
 import com.gs.wialonlocal.common.GoogleMaps
@@ -12,9 +13,7 @@ import com.gs.wialonlocal.common.GoogleMaps
 object MapTab: Tab {
     @Composable
     override fun Content() {
-        GoogleMaps(
-            modifier = Modifier.fillMaxSize()
-        )
+        Navigator(MapScreen())
     }
 
     override val options: TabOptions

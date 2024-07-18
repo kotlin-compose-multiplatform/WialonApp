@@ -31,6 +31,7 @@ import com.gs.wialonlocal.components.ContextButton
 import com.gs.wialonlocal.components.ContextMenu
 import com.gs.wialonlocal.features.main.presentation.ui.SearchBar
 import com.gs.wialonlocal.features.main.presentation.ui.ToolBar
+import com.gs.wialonlocal.features.monitoring.presentation.ui.settings.UnitViewSettings
 import com.gs.wialonlocal.features.monitoring.presentation.ui.unit.SelectUnits
 import com.gs.wialonlocal.state.LocalTheme
 import kotlinx.coroutines.launch
@@ -87,7 +88,7 @@ class MonitoringListScreen: Screen {
                                     text = strings.configureTabView,
                                     icon = painterResource(Res.drawable.settings_2),
                                     onClick = {
-
+                                        navigator.push(UnitViewSettings())
                                     }
                                 )
                             )
