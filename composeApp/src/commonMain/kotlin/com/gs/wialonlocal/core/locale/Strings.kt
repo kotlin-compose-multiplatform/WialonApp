@@ -69,6 +69,21 @@ internal data class Strings(
     val battery: String,
     val power: String,
     val workListEmpty: String,
-    val emptyDescription: String
+    val emptyDescription: String,
+
+    // reports
+    val template: String,
+    val unit: String,
+    val notSelected: String,
+    val interval: String,
+    val orientation: String,
+    val portrail: String,
+    val executeReport: String,
+    val today: String,
+    val yesterday: String,
+    val week: String,
+    val month: String,
+    val landscape: String,
+    val cancel: String
 
 )
