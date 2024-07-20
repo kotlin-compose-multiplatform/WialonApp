@@ -94,6 +94,9 @@ kotlin {
             implementation(libs.google.maps.android.compose)
             // Clustering
             implementation(libs.google.maps.android.compose.utils)
+
+            // PDF
+            implementation(libs.bouquet)
         }
     }
 }

@@ -83,5 +83,8 @@ internal val EnStrings = Strings(
     week = "Week",
     month = "Month",
     landscape = "Landscape",
-    cancel = "Cancel"
+    cancel = "Cancel",
+    showDescription = "Show description",
+    copyGeofences = "Copy geofences",
+    makeInvisible = "Make invisible"
 )

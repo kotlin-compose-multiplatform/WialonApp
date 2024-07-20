@@ -31,6 +31,7 @@ pods-google-mapsUtils = "4.2.2" # IDE says not used, but _it is_ used via a .get
 google-MapsAndroidComposeVersion = "3.1.0"
 google-PlayServicesAndroidLocation = "21.2.0"
 google-PlayServicesAndroidMaps = "18.2.0"
+bouquet = "1.1.2"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -83,7 +84,8 @@ google-maps-android-compose = { module = "com.google.maps.android:maps-compose",
 google-maps-android-compose-utils = { module = "com.google.maps.android:maps-compose-utils", version.ref = "google-MapsAndroidComposeVersion" }
 google-play-services-android-location = { module = "com.google.android.gms:play-services-location", version.ref = "google-PlayServicesAndroidLocation" }
 google-play-services-android-maps = { module = "com.google.android.gms:play-services-maps", version.ref = "google-PlayServicesAndroidMaps" }
-
+# PDF Viewer
+bouquet = { module = "io.github.grizzi91:bouquet", version.ref = "bouquet" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

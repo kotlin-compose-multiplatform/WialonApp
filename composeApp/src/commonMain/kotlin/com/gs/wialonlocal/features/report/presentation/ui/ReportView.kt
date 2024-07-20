@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
+import com.gs.wialonlocal.common.PdfViewer
 import com.gs.wialonlocal.features.main.presentation.ui.ToolBar
 
 class ReportView : Screen {
@@ -74,6 +75,11 @@ class ReportView : Screen {
                     }
                 }
             }
+
+            PdfViewer(
+                modifier = Modifier.fillMaxSize(),
+                url = ""
+            )
 
         }
     }

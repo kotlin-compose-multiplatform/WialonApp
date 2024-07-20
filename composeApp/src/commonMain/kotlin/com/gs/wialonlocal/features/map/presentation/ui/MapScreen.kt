@@ -11,6 +11,8 @@ import androidx.compose.ui.unit.dp
 import cafe.adriel.lyricist.strings
 import cafe.adriel.voyager.core.screen.Screen
 import com.gs.wialonlocal.common.GoogleMaps
+import com.gs.wialonlocal.common.LatLong
+import com.gs.wialonlocal.common.LatLongZoom
 import com.gs.wialonlocal.features.main.presentation.ui.SearchBar
 import com.gs.wialonlocal.features.main.presentation.ui.ToolBar
 
@@ -31,7 +33,18 @@ class MapScreen: Screen {
             }
             MapContainer {
                 GoogleMaps(
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier.fillMaxSize(),
+                    shouldZoomToLatLongZoom = LatLongZoom(LatLong(37.8, 58.7), 18f),
+                    onDidAllowCacheReset = {
+
+                    },
+                    onDidCenterCameraOnLatLong = {
+
+                    },
+                    onDidZoomToLatLongZoom = {
+
+                    },
+                    shouldAllowCacheReset = true
                 )
             }
         }

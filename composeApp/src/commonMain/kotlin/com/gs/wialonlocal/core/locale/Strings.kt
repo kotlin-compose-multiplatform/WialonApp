@@ -84,6 +84,11 @@ internal data class Strings(
     val week: String,
     val month: String,
     val landscape: String,
-    val cancel: String
+    val cancel: String,
+
+    // geofences
+    val showDescription: String,
+    val copyGeofences: String,
+    val makeInvisible: String
 
 )

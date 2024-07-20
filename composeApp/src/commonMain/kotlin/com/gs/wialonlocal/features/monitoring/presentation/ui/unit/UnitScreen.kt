@@ -50,6 +50,8 @@ import cafe.adriel.voyager.koin.koinNavigatorScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import com.gs.wialonlocal.common.GoogleMaps
+import com.gs.wialonlocal.common.LatLong
+import com.gs.wialonlocal.common.LatLongZoom
 import com.gs.wialonlocal.components.ContextButton
 import com.gs.wialonlocal.components.ContextMenu
 import com.gs.wialonlocal.components.ImageLoader
@@ -220,7 +222,20 @@ fun UnitDetails(modifier: Modifier = Modifier) {
             }
         ) {
             MapContainer(Modifier.fillMaxSize()) {
-                GoogleMaps(Modifier.fillMaxSize())
+                GoogleMaps(
+                    modifier = Modifier.fillMaxSize(),
+                    shouldZoomToLatLongZoom = LatLongZoom(LatLong(37.8, 58.7), 18f),
+                    onDidAllowCacheReset = {
+
+                    },
+                    onDidCenterCameraOnLatLong = {
+
+                    },
+                    onDidZoomToLatLongZoom = {
+
+                    },
+                    shouldAllowCacheReset = true
+                )
             }
         }
     }
