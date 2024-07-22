@@ -36,11 +36,13 @@ fun App() {
                 }
             ) {
                 val theme = LocalTheme.current
-                AppTheme(
-                    darkTheme = theme.value
-                ) {
-                    Navigator(MainScreen())
-                }
+
+                    AppTheme(
+                        darkTheme = theme.value
+                    ) {
+                        Navigator(MainScreen())
+                    }
+
             }
         }
     }

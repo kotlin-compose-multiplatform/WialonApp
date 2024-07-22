@@ -26,6 +26,7 @@ fun BackFragment(
     title: String,
     onBackPresses: () -> Unit,
     toolbar: @Composable () -> Unit = {},
+    badge: @Composable () -> Unit = {},
     content: @Composable () -> Unit,
 ) {
     Column(
@@ -58,6 +59,8 @@ fun BackFragment(
                             fontWeight = FontWeight.W500
                         )
                     )
+
+                    badge()
                 }
                 toolbar()
             }

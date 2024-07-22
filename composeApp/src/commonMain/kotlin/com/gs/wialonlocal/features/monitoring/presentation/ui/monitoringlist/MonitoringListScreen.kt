@@ -61,7 +61,7 @@ class MonitoringListScreen: Screen {
                 Row(Modifier.fillMaxWidth().padding(16.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     SearchBar(
                         modifier = Modifier.weight(1f),
-                        placeholder = "Search...",
+                        placeholder = strings.search,
                         onSearch = {query->
 
                         }
@@ -115,14 +115,14 @@ class MonitoringListScreen: Screen {
                             pagerState.scrollToPage(0)
                         }
                     }, text = {
-                        Text("UNITS", color = MaterialTheme.colorScheme.onPrimary, style = MaterialTheme.typography.bodyLarge)
+                        Text(strings.units, color = MaterialTheme.colorScheme.onPrimary, style = MaterialTheme.typography.bodyLarge)
                     })
                     Tab(pagerState.currentPage == 1, onClick = {
                         coroutine.launch {
                             pagerState.scrollToPage(1)
                         }
                     }, text = {
-                        Text("GROUPS", color = MaterialTheme.colorScheme.onPrimary, style = MaterialTheme.typography.bodyLarge)
+                        Text(strings.groups, color = MaterialTheme.colorScheme.onPrimary, style = MaterialTheme.typography.bodyLarge)
                     })
                 }
             }

@@ -206,6 +206,9 @@ fun ReportDateRange(
 @Composable
 fun ReportShortDate(modifier: Modifier = Modifier, open: Boolean, onDismiss: () -> Unit) {
     DropdownMenu(
+        modifier = modifier.background(
+            color = MaterialTheme.colorScheme.surface
+        ),
         expanded = open,
         onDismissRequest = onDismiss
     ) {

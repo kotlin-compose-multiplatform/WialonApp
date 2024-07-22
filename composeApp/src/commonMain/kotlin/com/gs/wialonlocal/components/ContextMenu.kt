@@ -1,10 +1,12 @@
 package com.gs.wialonlocal.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.Icon
+import androidx.compose.material.MenuDefaults
 import androidx.compose.material.Text
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.MaterialTheme
@@ -30,9 +32,11 @@ fun ContextMenu(
     onDismiss: () -> Unit
 ) {
     DropdownMenu(
-        modifier = modifier,
+        modifier = modifier.background(
+            color = MaterialTheme.colorScheme.surface
+        ),
         expanded = open,
-        onDismissRequest = onDismiss
+        onDismissRequest = onDismiss,
     ) {
         buttons.forEachIndexed { _, contextButton ->
             DropdownMenuItem(

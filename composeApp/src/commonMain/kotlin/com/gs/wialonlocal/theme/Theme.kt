@@ -6,7 +6,9 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.key
 import androidx.compose.ui.graphics.Color
+import com.gs.wialonlocal.state.LocalTheme
 
 private val lightScheme = lightColorScheme(
     primary = primaryLight,
@@ -99,18 +101,21 @@ val unspecified_scheme = ColorFamily(
 
 @Composable
 fun AppTheme(
-    darkTheme: Boolean,
+    darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable() () -> Unit
 ) {
-  val colorScheme = when {
-      darkTheme -> darkScheme
-      else -> lightScheme
-  }
+    val theme = LocalTheme.current
+    key(theme.value) {
+        val colorScheme = when {
+            theme.value -> darkScheme
+            else -> lightScheme
+        }
 
-  MaterialTheme(
-    colorScheme = colorScheme,
-    typography = PoppinsTypography(),
-    content = content
-  )
+        MaterialTheme(
+            colorScheme = colorScheme,
+            typography = PoppinsTypography(),
+            content = content
+        )
+    }
 }
 

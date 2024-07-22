@@ -33,7 +33,7 @@ class GeofenceDetails:Screen {
                 MaterialTheme.colorScheme.surface
             ).padding(16.dp)) {
                 Text(
-                    "Description",
+                    strings.description,
                     style = MaterialTheme.typography.bodyLarge.copy(
                         fontWeight = FontWeight.W500
                     ),
