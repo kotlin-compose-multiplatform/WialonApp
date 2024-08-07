@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import coil3.compose.AsyncImage
 import org.jetbrains.compose.resources.painterResource
 import wialonlocal.composeapp.generated.resources.Res
 import wialonlocal.composeapp.generated.resources.car
@@ -14,10 +15,11 @@ fun ImageLoader(
     url: String,
     contentScale: ContentScale = ContentScale.Inside
 ) {
-    Image(
-        painter = painterResource(Res.drawable.car),
+    AsyncImage(
+        model = url,
         modifier = modifier,
         contentDescription = null,
-        contentScale = contentScale
+        contentScale = contentScale,
+        placeholder = painterResource(Res.drawable.car)
     )
 }

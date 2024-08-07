@@ -32,6 +32,7 @@ google-MapsAndroidComposeVersion = "3.1.0"
 google-PlayServicesAndroidLocation = "21.2.0"
 google-PlayServicesAndroidMaps = "18.2.0"
 bouquet = "1.1.2"
+coil3 = "3.0.0-alpha06"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -86,6 +87,10 @@ google-play-services-android-location = { module = "com.google.android.gms:play-
 google-play-services-android-maps = { module = "com.google.android.gms:play-services-maps", version.ref = "google-PlayServicesAndroidMaps" }
 # PDF Viewer
 bouquet = { module = "io.github.grizzi91:bouquet", version.ref = "bouquet" }
+coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil3" }
+coil-compose-core = { module = "io.coil-kt.coil3:coil-compose-core", version.ref = "coil3" }
+coil-network-ktor = { module = "io.coil-kt.coil3:coil-network-ktor", version.ref = "coil3" }
+coil-mp = { module = "io.coil-kt.coil3:coil", version.ref = "coil3" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
