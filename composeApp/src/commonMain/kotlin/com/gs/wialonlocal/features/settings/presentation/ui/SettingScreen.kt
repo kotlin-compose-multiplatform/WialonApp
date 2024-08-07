@@ -42,12 +42,15 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import com.gs.wialonlocal.components.ImageLoader
 import com.gs.wialonlocal.components.SwitchText
+import com.gs.wialonlocal.features.auth.data.AuthSettings
+import com.gs.wialonlocal.features.auth.presentation.ui.ProfileScreen
 import com.gs.wialonlocal.features.main.presentation.ui.ToolBar
 import com.gs.wialonlocal.features.monitoring.presentation.ui.settings.InfoTabSettings
 import com.gs.wialonlocal.features.monitoring.presentation.ui.settings.MapSettings
 import com.gs.wialonlocal.features.monitoring.presentation.ui.settings.TitleSettings
 import com.gs.wialonlocal.features.monitoring.presentation.ui.settings.UnitViewSettings
 import com.gs.wialonlocal.state.LocalTheme
+import org.koin.compose.koinInject
 
 class SettingScreen: Screen {
     @Composable
@@ -57,6 +60,8 @@ class SettingScreen: Screen {
         val openTheme = remember {
             mutableStateOf(false)
         }
+
+        val authSettings: AuthSettings = koinInject()
 
         val openLock = remember {
             mutableStateOf(false)
@@ -99,7 +104,9 @@ class SettingScreen: Screen {
                         color = MaterialTheme.colorScheme.primary,
                         shape = RoundedCornerShape(4.dp)
                     )
-                    .clickable {  }
+                    .clickable {
+                        navigator.push(ProfileScreen())
+                    }
                     .padding(12.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -114,7 +121,7 @@ class SettingScreen: Screen {
                 Column {
                     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                         Text(
-                            text = "demo",
+                            text = authSettings.getName(),
                             style = MaterialTheme.typography.bodyLarge,
                             color = MaterialTheme.colorScheme.onPrimary
                         )

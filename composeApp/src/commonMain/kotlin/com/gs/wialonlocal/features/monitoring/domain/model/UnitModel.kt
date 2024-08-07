@@ -12,5 +12,5 @@ data class UnitModel(
     val estimateDistance: String,
     val isOnline: Boolean,
     val latitude: Double,
-    val longitude: Double
+    val longitude: Double,
 )

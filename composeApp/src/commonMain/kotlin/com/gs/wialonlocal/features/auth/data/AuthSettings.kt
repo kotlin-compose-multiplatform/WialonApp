@@ -15,6 +15,30 @@ class AuthSettings(
         const val USERNAME_KEY = "username"
         const val CREATED_AT_KEY = "created_at"
         const val ACCESS_TYPE_KEY = "access_type"
+        const val SESSION_ID_KEY = "session_id"
+        const val NO_TOKEN_MESSAGE = "no_token_message"
+        const val NO_SESSION_MESSAGE = "no_session_id"
+        const val GIS_SID = "gis_sid"
+    }
+
+    fun saveSession(id: String) {
+        settings.putString(SESSION_ID_KEY, id)
+    }
+
+    fun getSessionId(): String = settings.getString(SESSION_ID_KEY, "")
+
+    fun saveGisId(gisId: String) {
+        settings.putString(GIS_SID, gisId)
+    }
+
+    fun getGisSid(): String = settings.getString(GIS_SID, "")
+
+    fun isTokenExist(): Boolean {
+        return settings.getString(TOKEN_KEY, "").trim().isNotEmpty()
+    }
+
+    fun isSessionIdExist(): Boolean {
+        return settings.getString(SESSION_ID_KEY, "").trim().isNotEmpty()
     }
 
     fun saveToken(token: String) {
@@ -103,5 +127,18 @@ class AuthSettings(
         saveAccessType(user.accessType)
         saveCreatedAt(user.createdAt)
         saveRefreshToken(user.refreshToken)
+    }
+
+    fun logout() {
+        saveUserName("")
+        saveId("")
+        savePhone("")
+        saveName("")
+        saveToken("")
+        saveAccessType(-1)
+        saveCreatedAt("")
+        saveRefreshToken("")
+        saveSession("")
+        saveGisId("")
     }
 }

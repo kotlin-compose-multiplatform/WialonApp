@@ -9,4 +9,7 @@ class MonitoringUseCase(private val repository: MonitoringRepository) {
     suspend fun getEvents(): Flow<Resource<List<UnitModel>>> {
         return repository.getEvents()
     }
+    suspend fun getUpdates(oldEvents: List<UnitModel>): Flow<Resource<List<UnitModel>>> {
+        return repository.getUpdates(oldEvents)
+    }
 }
