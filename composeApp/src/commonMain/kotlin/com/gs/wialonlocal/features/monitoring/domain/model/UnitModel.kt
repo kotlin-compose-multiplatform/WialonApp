@@ -11,6 +11,6 @@ data class UnitModel(
     val estimateTime: String,
     val estimateDistance: String,
     val isOnline: Boolean,
-    val latitude: Double,
-    val longitude: Double,
+    var latitude: Double,
+    var longitude: Double,
 )

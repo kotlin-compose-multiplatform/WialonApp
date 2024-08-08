@@ -34,7 +34,6 @@ data class Prp(
     val mu_tbl_cols_sizes: String,
     val mu_tbl_sort: String,
     val mu_tracks: String,
-    val need_change_password: String,
     val radd: String,
     val show_log: String,
     val tz: String,

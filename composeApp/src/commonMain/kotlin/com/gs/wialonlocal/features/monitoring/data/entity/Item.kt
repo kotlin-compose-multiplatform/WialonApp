@@ -8,10 +8,10 @@ import kotlinx.serialization.Serializable
 data class Item(
     val cls: Int,
     val id: Int,
-    val lmsg: Lmsg?,
+    val lmsg: Lmsg? = null,
     val mu: Int,
     val nm: String,
-    val pos: PosX?,
+    val pos: PosX? = null,
     val uacl: Long,
     val ugi: Int,
     val uri: String

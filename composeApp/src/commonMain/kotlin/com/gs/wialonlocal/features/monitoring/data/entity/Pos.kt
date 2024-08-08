@@ -7,7 +7,7 @@ data class Pos(
     val c: Int,
     val s: Int,
     val sc: Int,
-    val x: Double,
-    val y: Double,
-    val z: Int
+    val x: Double? = null,
+    val y: Double? = null,
+    val z: Double? = null
 )

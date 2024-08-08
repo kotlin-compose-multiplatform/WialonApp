@@ -5,6 +5,7 @@ import com.gs.wialonlocal.core.network.Resource
 import com.gs.wialonlocal.features.auth.data.AuthSettings
 import com.gs.wialonlocal.features.monitoring.data.entity.GetUnits
 import com.gs.wialonlocal.features.monitoring.data.entity.updates.Data
+import com.gs.wialonlocal.features.monitoring.data.entity.updates.Position
 import com.gs.wialonlocal.features.monitoring.domain.model.UnitModel
 import com.gs.wialonlocal.features.monitoring.domain.repository.MonitoringRepository
 import io.ktor.client.HttpClient
@@ -36,17 +37,23 @@ class MonitoringRepositoryImpl(
     override suspend fun getEvents(): Flow<Resource<List<UnitModel>>> = flow {
         emit(Resource.Loading())
         try {
-            val result = httpClient.post("${Constant.BASE_URL}/wialon/ajax.html?svc=core/search_items") {
-                body = FormDataContent(Parameters.build {
-                    append("sid", authSettings.getSessionId())
-                    append("params", "{\"spec\":{\"itemsType\":\"avl_unit\",\"sortType\":\"sys_name\",\"propName\":\"sys_name\",\"propValueMask\":\"*\"}, \"force\":1, \"flags\":1041, \"from\":0, \"to\":0}")
-                })
-            }.body<GetUnits>()
+            val result =
+                httpClient.post("${Constant.BASE_URL}/wialon/ajax.html?svc=core/search_items") {
+                    body = FormDataContent(Parameters.build {
+                        append("sid", authSettings.getSessionId())
+                        append(
+                            "params",
+                            "{\"spec\":{\"itemsType\":\"avl_unit\",\"sortType\":\"sys_name\",\"propName\":\"sys_name\",\"propValueMask\":\"*\"}, \"force\":1, \"flags\":1041, \"from\":0, \"to\":0}"
+                        )
+                    })
+                }.body<GetUnits>()
             addUnitsToUpdate(result.items.map { it.id.toLong() })
 
             val locations = result.items.map { it.getLocation() }.joinToString(",")
 
-            val address = httpClient.get("${Constant.BASE_URL}/gis_geocode?coords=[${locations}]&flags=1255211008&uid=${authSettings.getId()}").body<List<String>>()
+            val address =
+                httpClient.get("${Constant.BASE_URL}/gis_geocode?coords=[${locations}]&flags=1255211008&uid=${authSettings.getId()}")
+                    .body<List<String>>()
 
             emit(Resource.Success(
                 data = result.items.mapIndexed { index, item ->
@@ -62,12 +69,13 @@ class MonitoringRepositoryImpl(
     suspend fun addUnitsToUpdate(ids: List<Long>) {
         try {
             val units = ids.joinToString(",") { "{\"id\":${it},\"detect\":{\"*\":0}}" }
-            val result = httpClient.post("https://gps.ytm.tm/wialon/ajax.html?svc=events/update_units") {
-                body = FormDataContent(Parameters.build {
-                    append("sid", authSettings.getSessionId())
-                    append("params", "{\"mode\":\"add\", \"units\":[${units}]}")
-                })
-            }.bodyAsText()
+            val result =
+                httpClient.post("https://gps.ytm.tm/wialon/ajax.html?svc=events/update_units") {
+                    body = FormDataContent(Parameters.build {
+                        append("sid", authSettings.getSessionId())
+                        append("params", "{\"mode\":\"add\", \"units\":[${units}]}")
+                    })
+                }.bodyAsText()
             println("Add units: $result")
 
         } catch (ex: Exception) {
@@ -76,49 +84,51 @@ class MonitoringRepositoryImpl(
     }
 
     @OptIn(InternalAPI::class)
-    override suspend fun getUpdates(oldEvents: List<UnitModel>): Flow<Resource<List<UnitModel>>> = flow {
-        emit(Resource.Loading())
-        try {
-            val jsonResponse = httpClient.post("${Constant.BASE_URL}/wialon/ajax.html?svc=events/check_updates") {
-                body = FormDataContent(Parameters.build {
-                    append("sid", authSettings.getSessionId())
-                    append("params", "{\"lang\":\"tk\",\"measure\":0,\"detalization\":35}")
-                })
-            }.body<JsonObject>()
-//            println("___________________________________________________________")
-//            println("UPDATE: "+jsonResponse.entries)
-//            println("___________________________________________________________")
-            if (jsonResponse.isEmpty()) {
-                println("Response is empty")
-                emit(Resource.Error("Response is empty"))
-            } else {
-//                println("UPDATE: ${jsonResponse.keys}")
-//                println("UPDATE: ${jsonResponse.values}")
-                jsonResponse.entries.forEach { entry ->
-                    val dynamicKey = entry.key
-//                    println("UPDATE: $dynamicKey")
-                    val dataArray = entry.value.jsonArray
-                    val data = dataArray[0].jsonObject
-//                    println("UPDATE: $data")
-                    val decode = json.decodeFromString<Data>(data.toString())
-                    println("UPDATE: $decode")
-//                    dataArray.forEach { dataElement ->
-//                        println("UPDATE data elemen: $dataElement")
-//                        val dataObject = dataElement.jsonObject
-//                        val data = Json.decodeFromJsonElement<Data>(dataObject)
-//
-//                        // Now you can work with the `data` object
-//                        println("Data for key $dynamicKey: $data")
-//                    }
+    override suspend fun getUpdates(oldEvents: List<UnitModel>): Flow<Resource<List<UnitModel>>> =
+        flow {
+            emit(Resource.Loading())
+            var updated = oldEvents
+            try {
+                val jsonResponse =
+                    httpClient.post("${Constant.BASE_URL}/wialon/ajax.html?svc=events/check_updates") {
+                        body = FormDataContent(Parameters.build {
+                            append("sid", authSettings.getSessionId())
+                            append("params", "{\"lang\":\"tk\",\"measure\":0,\"detalization\":35}")
+                        })
+                    }.body<JsonObject>()
+                if (jsonResponse.isEmpty()) {
+                    println("Response is empty")
+                    emit(Resource.Error("Response is empty"))
+                } else {
+                    jsonResponse.entries.forEach { entry ->
+                        val dynamicKey = entry.key
+                        val dataArray = entry.value.jsonArray
+                        val data = dataArray[0].jsonObject
+                        val decode = json.decodeFromString<Data>(data.toString())
+                        if (decode.trips != null) {
+                            val newPosition = decode.trips.to ?: Position(0, 0.0, 0.0)
+                            updated = updated.map {
+                                if(it.id == dynamicKey) {
+                                    it.copy(
+                                        latitude = newPosition.y,
+                                        longitude = newPosition.x
+                                    )
+                                } else {
+                                    it
+                                }
+                            }
+                        }
+                        println("UPDATE: $decode")
+                    }
+                    emit(Resource.Success(updated))
+                    // val address = httpClient.get("${Constant.BASE_URL}/gis_geocode?coords=[${locations}]&flags=1255211008&uid=${authSettings.getId()}").body<List<String>>()
+
                 }
-               // val address = httpClient.get("${Constant.BASE_URL}/gis_geocode?coords=[${locations}]&flags=1255211008&uid=${authSettings.getId()}").body<List<String>>()
 
+            } catch (ex: Exception) {
+                ex.printStackTrace()
+                emit(Resource.Error(ex.message))
             }
-
-        } catch (ex: Exception) {
-            ex.printStackTrace()
-            emit(Resource.Error(ex.message))
         }
-    }
 
 }

@@ -17,6 +17,6 @@ data class User(
     val mu: Int,
     val nm: String,
     val pfl: Int,
-    val prp: Prp,
+    val prp: Prp?,
     val uacl: Int
 )

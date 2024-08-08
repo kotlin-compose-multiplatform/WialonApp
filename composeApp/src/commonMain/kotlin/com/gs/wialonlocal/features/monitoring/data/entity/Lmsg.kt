@@ -6,9 +6,15 @@ import kotlinx.serialization.Serializable
 data class Lmsg(
     val f: Int,
     val lc: Int,
-    val p: P,
-    val pos: Pos,
+    val p: P? = null,
+    val pos: Pos? = null,
     val rt: Int,
     val t: Int,
     val tp: String
 )
+
+//fun Long.format(): String {
+//    val instant = Instant.fromEpochMilliseconds(timestamp)
+//    val localDateTime = instant.toLocalDateTime(TimeZone.currentSystemDefault())
+//    return localDateTime.toString()
+//}

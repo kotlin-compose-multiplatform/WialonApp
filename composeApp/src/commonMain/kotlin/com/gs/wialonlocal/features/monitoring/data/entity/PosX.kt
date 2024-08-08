@@ -9,8 +9,8 @@ data class PosX(
     val lc: Int,
     val s: Int,
     val sc: Int,
-    val t: Int,
-    val x: Double,
-    val y: Double,
-    val z: Int
+    val t: Int? = null,
+    val x: Double? = null,
+    val y: Double? = null,
+    val z: String? = null
 )
