@@ -78,6 +78,8 @@ kotlin {
             implementation(libs.coil.compose)
             implementation(libs.coil.mp)
             implementation(libs.coil.network.ktor)
+
+            implementation(libs.kotlinx)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
