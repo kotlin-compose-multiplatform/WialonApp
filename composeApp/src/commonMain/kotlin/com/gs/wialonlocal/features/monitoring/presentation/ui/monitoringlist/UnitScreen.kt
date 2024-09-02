@@ -132,11 +132,7 @@ internal fun UnitItem(
                 Spacer(Modifier.height(12.dp))
                 Box(
                     modifier = Modifier.defaultMinSize(minWidth = 80.dp).clip(shape).background(
-                        color = if (item.isOnline) MaterialTheme.colorScheme.secondary.copy(
-                            alpha = 0.2f
-                        ) else MaterialTheme.colorScheme.primaryContainer.copy(
-                            alpha = 0.1f
-                        ),
+                        color = item.calculateDifference().second,
                         shape = shape
                     ).padding(
                         horizontal = 24.dp,
@@ -144,7 +140,7 @@ internal fun UnitItem(
                     )
                 ) {
                     Text(
-                        text = item.lastOnlineTime,
+                        text = item.calculateDifference().first,
                         style = MaterialTheme.typography.bodySmall.copy(
                             fontWeight = FontWeight.W400
                         ),
@@ -157,7 +153,7 @@ internal fun UnitItem(
             Spacer(Modifier.width(8.dp))
             Column(Modifier.weight(1f)) {
                 Text(
-                    text = "${item.carNumber} ${item.number}",
+                    text = item.number,
                     color = MaterialTheme.colorScheme.onSurface,
                     style = MaterialTheme.typography.bodyMedium.copy(
                         fontWeight = FontWeight.W500
@@ -224,7 +220,7 @@ internal fun UnitItem(
                         )
                         Spacer(Modifier.width(6.dp))
                         Text(
-                            text = item.estimateTime,
+                            text = item.convertTime(),
                             color = MaterialTheme.colorScheme.onSurface,
                             style = MaterialTheme.typography.bodySmall.copy(
                                 fontWeight = FontWeight.W500

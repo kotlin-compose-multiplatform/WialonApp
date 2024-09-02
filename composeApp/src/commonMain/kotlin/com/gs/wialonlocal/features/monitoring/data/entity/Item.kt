@@ -33,7 +33,7 @@ data class Item(
             speed = pos?.s.toString().plus(" km/h"),
             number = nm,
             lastOnlineTime = lmsg?.t.toString(),
-            isOnline = false,
+            isOnline = true,
             address = address
         )
     }

@@ -29,7 +29,7 @@ data class Sensor(
     val m: Long? = null,
     val f: Int? = null,
     val type: Int? = null,
-    val value: Int? = null
+    val value: Double? = null
 )
 
 @Serializable
