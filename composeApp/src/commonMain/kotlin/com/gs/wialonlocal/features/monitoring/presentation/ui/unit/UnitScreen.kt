@@ -33,6 +33,7 @@ import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -45,10 +46,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cafe.adriel.lyricist.strings
+import cafe.adriel.voyager.core.annotation.InternalVoyagerApi
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.koinNavigatorScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
+import cafe.adriel.voyager.navigator.internal.BackHandler
 import com.gs.wialonlocal.common.GoogleMaps
 import com.gs.wialonlocal.common.LatLong
 import com.gs.wialonlocal.common.LatLongZoom
@@ -78,20 +81,32 @@ import wialonlocal.composeapp.generated.resources.send_command
 import wialonlocal.composeapp.generated.resources.share_location
 
 class UnitScreen(
-    private val id: String
+    private val id: String,
+    private val model: UnitModel
 ) : Screen {
     @Composable
     override fun Content() {
-        UnitDetails()
+        UnitDetails(id = id, unitModel = model)
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class, InternalVoyagerApi::class)
 @Composable
-fun UnitDetails(modifier: Modifier = Modifier) {
+fun UnitDetails(modifier: Modifier = Modifier, id: String, unitModel: UnitModel) {
     val navigator = LocalNavigator.currentOrThrow
     val viewModel: MonitoringViewModel = navigator.koinNavigatorScreenModel()
     val units = viewModel.units.collectAsState()
+    val fields = viewModel.fieldState.collectAsState()
+
+    BackHandler(true) {
+        viewModel.unloadEvents(id)
+        navigator.pop()
+    }
+
+    LaunchedEffect(id) {
+        viewModel.loadEvents(id, 1725130800, 1725389999)
+    }
+
     Column(modifier = modifier.fillMaxSize()) {
         val pagerState = rememberPagerState { 2 }
         val coroutine = rememberCoroutineScope()
@@ -104,6 +119,7 @@ fun UnitDetails(modifier: Modifier = Modifier) {
             ) {
                 TextButton(
                     onClick = {
+                        viewModel.unloadEvents(id)
                         navigator.pop()
                     }
                 ) {
@@ -114,7 +130,7 @@ fun UnitDetails(modifier: Modifier = Modifier) {
                     )
                     Spacer(Modifier.width(12.dp))
                     Text(
-                        text = "1293AGE  87",
+                        text = unitModel.carNumber,
                         style = MaterialTheme.typography.bodyLarge.copy(
                             fontSize = 20.sp,
                             fontWeight = FontWeight.W500
@@ -180,7 +196,7 @@ fun UnitDetails(modifier: Modifier = Modifier) {
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
-                        UnitItem(Modifier.weight(1f), item = units.value.data?.first()!!)
+                        UnitItem(Modifier.weight(1f), item = units.value.data!!.find { it.id == id }!!)
                         Column(
                             Modifier.height(100.dp),
                             verticalArrangement = Arrangement.SpaceBetween,
@@ -272,11 +288,7 @@ internal fun UnitItem(
                 Spacer(Modifier.height(12.dp))
                 Box(
                     modifier = Modifier.defaultMinSize(minWidth = 80.dp).clip(shape).background(
-                        color = if (item.isOnline) MaterialTheme.colorScheme.secondary.copy(
-                            alpha = 0.2f
-                        ) else MaterialTheme.colorScheme.primaryContainer.copy(
-                            alpha = 0.1f
-                        ),
+                        color = item.calculateDifference().second,
                         shape = shape
                     ).padding(
                         horizontal = 24.dp,
@@ -284,7 +296,7 @@ internal fun UnitItem(
                     )
                 ) {
                     androidx.compose.material.Text(
-                        text = item.lastOnlineTime,
+                        text = item.calculateDifference().first,
                         style = MaterialTheme.typography.bodySmall.copy(
                             fontWeight = FontWeight.W400
                         ),
@@ -297,7 +309,7 @@ internal fun UnitItem(
             Spacer(Modifier.width(8.dp))
             Column(Modifier.weight(1f)) {
                 androidx.compose.material.Text(
-                    text = "${item.carNumber} ${item.number}",
+                    text = item.carNumber,
                     color = MaterialTheme.colorScheme.onSurface,
                     style = MaterialTheme.typography.bodyMedium.copy(
                         fontWeight = FontWeight.W500
@@ -364,7 +376,7 @@ internal fun UnitItem(
                         )
                         Spacer(Modifier.width(6.dp))
                         androidx.compose.material.Text(
-                            text = item.estimateTime,
+                            text = item.convertTime(),
                             color = MaterialTheme.colorScheme.onSurface,
                             style = MaterialTheme.typography.bodySmall.copy(
                                 fontWeight = FontWeight.W500

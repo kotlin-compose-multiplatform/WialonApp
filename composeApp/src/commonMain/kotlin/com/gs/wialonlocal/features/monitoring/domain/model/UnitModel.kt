@@ -22,7 +22,11 @@ data class UnitModel(
         val currentDate = Clock.System.now()
 
         // Convert long date (milliseconds since epoch) to Instant
-        val pastDate = Instant.fromEpochSeconds(lastOnlineTime.toLong())
+        val pastDate = try {
+            Instant.fromEpochSeconds(lastOnlineTime.toLong())
+        } catch (ex: Exception) {
+            Clock.System.now()
+        }
         val duration = currentDate - pastDate
 
         // Optionally, convert this duration to a more readable format
@@ -48,7 +52,11 @@ data class UnitModel(
         val currentDate = Clock.System.now()
 
         // Convert long date (milliseconds since epoch) to Instant
-        val pastDate = Instant.fromEpochSeconds(estimateTime.toLong())
+        val pastDate = try {
+            Instant.fromEpochSeconds(estimateTime.toLong())
+        } catch (ex: Exception) {
+            Clock.System.now()
+        }
         val duration = currentDate - pastDate
 
         // Optionally, convert this duration to a more readable format

@@ -3,7 +3,11 @@ package com.gs.wialonlocal.features.monitoring.presentation.viewmodel
 import cafe.adriel.voyager.core.model.ScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
 import com.gs.wialonlocal.core.network.Resource
+import com.gs.wialonlocal.features.monitoring.data.entity.history.LoadEventRequest
 import com.gs.wialonlocal.features.monitoring.domain.usecase.MonitoringUseCase
+import com.gs.wialonlocal.features.monitoring.presentation.state.FieldState
+import com.gs.wialonlocal.features.monitoring.presentation.state.LoadEventState
+import com.gs.wialonlocal.features.monitoring.presentation.state.ReportSettingsState
 import com.gs.wialonlocal.features.monitoring.presentation.state.UnitState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,6 +21,123 @@ class MonitoringViewModel(
 ) : ScreenModel {
     private val _units = MutableStateFlow(UnitState())
     val units = _units.asStateFlow()
+
+    private val _reportSettings = MutableStateFlow(ReportSettingsState())
+    val reportSettings = _reportSettings.asStateFlow()
+
+    private val _loadEventState = MutableStateFlow(LoadEventState())
+    val loadEventState = _loadEventState.asStateFlow()
+
+    private val _fieldState = MutableStateFlow(FieldState())
+    val fieldState = _fieldState.asStateFlow()
+
+
+
+    fun getFields(itemId: String) {
+        screenModelScope.launch {
+            useCase.getEvent(itemId).onEach {
+                when(it) {
+                    is Resource.Error -> {
+                        _fieldState.value = _fieldState.value.copy(
+                            loading = false,
+                            error = it.message,
+                            data = it.data
+                        )
+                    }
+                    is Resource.Loading -> {
+                        _fieldState.value = _fieldState.value.copy(
+                            loading = true,
+                            error = it.message,
+                            data = it.data
+                        )
+                    }
+                    is Resource.Success -> {
+                        _fieldState.value = _fieldState.value.copy(
+                            loading = false,
+                            error = it.message,
+                            data = it.data
+                        )
+                        getReportSettings(itemId)
+                    }
+                }
+
+            }.launchIn(this)
+        }
+    }
+
+    fun loadEvents(itemId: String, timeFrom: Long, timeTo: Long) {
+        screenModelScope.launch {
+            useCase.loadEvents(
+                req = LoadEventRequest(
+                    itemId = itemId,
+                    timeFrom = timeFrom,
+                    timeTo = timeTo
+                )
+            ).onEach {
+                when(it) {
+                    is Resource.Error -> {
+                        _loadEventState.value = _loadEventState.value.copy(
+                            loading = false,
+                            error = it.message,
+                            data = it.data
+                        )
+                    }
+                    is Resource.Loading -> {
+                        _loadEventState.value = _loadEventState.value.copy(
+                            loading = true,
+                            error = it.message,
+                            data = it.data
+                        )
+                    }
+                    is Resource.Success -> {
+                        _loadEventState.value = _loadEventState.value.copy(
+                            loading = false,
+                            error = it.message,
+                            data = it.data
+                        )
+                        getFields(itemId)
+                    }
+                }
+            }.launchIn(this)
+        }
+    }
+
+    fun getReportSettings(itemId: String) {
+        screenModelScope.launch {
+            useCase.getReportSettings(itemId).onEach {
+                when(it) {
+                    is Resource.Error -> {
+                        _reportSettings.value = _reportSettings.value.copy(
+                            loading = false,
+                            error = it.message,
+                            settings = it.data
+                        )
+                    }
+                    is Resource.Loading -> {
+                        _reportSettings.value = _reportSettings.value.copy(
+                            loading = true,
+                            error = it.message,
+                            settings = it.data
+                        )
+                    }
+                    is Resource.Success -> {
+                        _reportSettings.value = _reportSettings.value.copy(
+                            loading = false,
+                            error = it.message,
+                            settings = it.data
+                        )
+                    }
+                }
+            }.launchIn(this)
+
+        }
+    }
+
+    fun unloadEvents(id: String) {
+        screenModelScope.launch {
+            useCase.unloadEvents(id).launchIn(this)
+        }
+    }
 
     fun startCheckUpdate() {
         screenModelScope.launch {

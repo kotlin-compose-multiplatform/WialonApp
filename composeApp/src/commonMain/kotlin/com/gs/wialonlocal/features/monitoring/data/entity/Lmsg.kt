@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class Lmsg(
     val f: Int,
-    val lc: Int,
+    val lc: Long,
     val p: P? = null,
     val pos: Pos? = null,
     val rt: Int,

@@ -84,7 +84,7 @@ fun Units() {
                 items(list) { item ->
                     UnitItem(
                         modifier = Modifier.clickable {
-                            navigator.push(UnitScreen(item.id))
+                            navigator.push(UnitScreen(item.id, item))
                         },
                         item = item
                     )

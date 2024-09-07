@@ -21,9 +21,11 @@ import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -34,9 +36,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import cafe.adriel.lyricist.strings
+import cafe.adriel.voyager.koin.koinNavigatorScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
+import com.gs.wialonlocal.features.monitoring.data.entity.history.findParam
+import com.gs.wialonlocal.features.monitoring.data.entity.history.findParamValue
 import com.gs.wialonlocal.features.monitoring.presentation.ui.settings.InfoTabSettings
+import com.gs.wialonlocal.features.monitoring.presentation.viewmodel.MonitoringViewModel
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import wialonlocal.composeapp.generated.resources.Res
@@ -45,38 +51,109 @@ import wialonlocal.composeapp.generated.resources.settings_active
 @Composable
 fun UnitInfo(modifier: Modifier = Modifier) {
     val navigator = LocalNavigator.currentOrThrow
+    val viewModel = navigator.koinNavigatorScreenModel<MonitoringViewModel>()
+    val fieldState = viewModel.fieldState.collectAsState()
     Column(
         modifier = modifier.fillMaxWidth().background(MaterialTheme.colorScheme.background)
             .verticalScroll(rememberScrollState())
     ) {
-        repeat(6) {
-            InfoAccordion(
-                title = "Custom fields",
-                items = listOf(
-                    InfoItem("test", "test"),
-                    InfoItem("Telefon", "+993 62 73 72 22"),
-                    InfoItem("test", "test"),
-                    InfoItem("test", "test"),
-                    InfoItem("test", "test"),
-                    InfoItem("test", "test"),
-                    InfoItem("test", "test"),
-                    InfoItem("test", "test"),
+        if (fieldState.value.loading) {
+            LinearProgressIndicator(Modifier.fillMaxWidth())
+        } else if (fieldState.value.data != null) {
+            fieldState.value.data?.let { list ->
+                list.d?.flds?.let { fields ->
+                    if (fields.values.isNotEmpty()) {
+                        InfoAccordion(
+                            title = "Custom fields",
+                            items = fields.values.mapIndexed { index, flds ->
+                                InfoItem(flds.n ?: "Name", flds.v ?: "")
+                            }
+                        )
+                    }
+
+                }
+
+                list.d?.sens?.let { sensors ->
+                    if (sensors.values.isNotEmpty()) {
+                        InfoAccordion(
+                            title = "Sensors",
+                            items = sensors.values.mapIndexed { index, sens ->
+                                println(sens)
+                                InfoItem(
+                                    sens.n ?: "Name",
+                                    findParamValue(
+                                        sens.p ?: "posinfo",
+                                        list.d.prms,
+                                        sens.m ?: "v"
+                                    ).joinToString(",")
+                                )
+                            }
+                        )
+                    }
+                }
+
+                list.d?.pflds?.let {profiles->
+                    if(profiles.values.isNotEmpty()) {
+                        InfoAccordion(
+                            title = "Profiles",
+                            items = profiles.values.mapIndexed { index, pflds ->
+                                InfoItem(pflds.n ?: "Name", pflds.v ?: "")
+                            }
+                        )
+                    }
+                }
+
+                InfoAccordion(
+                    title = "Counters",
+                    items = listOf(
+                        InfoItem(
+                            "Mileage",
+                            list?.d?.cnmKm?.toString()?.plus(" km")?:"0 km"
+                        ),
+                        InfoItem(
+                            "Engine hours",
+                            list?.d?.cneh?.toString()?.plus(" h")?:"0 h"
+                        ),
+                        InfoItem(
+                            "GPRS traffic counter",
+                            list?.d?.cnkb?.toString()?.plus(" KB")?:"0 KB"
+                        )
+                    )
                 )
+
+                list.d?.prms?.let {parameters->
+                    if(parameters.values.isNotEmpty()) {
+                        InfoAccordion(
+                            title = "Parameters",
+                            items = parameters.entries.mapIndexed { index, param ->
+                                val paramValue = findParam(param.key, list.d.prms)
+                                InfoItem(param.key, if(param.key != "posinfo") paramValue.first?.v?.toString()?:"" else paramValue.second?:"")
+                            }
+                        )
+                    }
+                }
+
+
+                Spacer(Modifier.height(12.dp))
+                list.d?.lmsg?.pos?.z?.toString()?.let { InfoItem("Altitude", it+"m") }
+                    ?.let { InfoItemUi(item = it) }
+                InfoItemUi(item = InfoItem("Satellites", "${list.d?.lmsg?.pos?.sc}"))
+                Spacer(Modifier.height(18.dp))
+
+            }
+
+
+
+            UnitSettingsButton(
+                modifier = Modifier.fillMaxWidth(),
+                text = strings.configureTabView,
+                icon = painterResource(Res.drawable.settings_active),
+                onClick = {
+                    navigator.push(InfoTabSettings())
+                }
             )
         }
 
-        Spacer(Modifier.height(12.dp))
-        InfoItemUi(item = InfoItem("test", "test"))
-        InfoItemUi(item = InfoItem("test", "test"))
-        Spacer(Modifier.height(18.dp))
-        UnitSettingsButton(
-            modifier = Modifier.fillMaxWidth(),
-            text = strings.configureTabView,
-            icon = painterResource(Res.drawable.settings_active),
-            onClick = {
-                navigator.push(InfoTabSettings())
-            }
-        )
         Spacer(Modifier.height(18.dp))
     }
 }

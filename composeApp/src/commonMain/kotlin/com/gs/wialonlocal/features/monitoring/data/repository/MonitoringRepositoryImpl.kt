@@ -4,6 +4,11 @@ import com.gs.wialonlocal.core.constant.Constant
 import com.gs.wialonlocal.core.network.Resource
 import com.gs.wialonlocal.features.auth.data.AuthSettings
 import com.gs.wialonlocal.features.monitoring.data.entity.GetUnits
+import com.gs.wialonlocal.features.monitoring.data.entity.history.CustomFields
+import com.gs.wialonlocal.features.monitoring.data.entity.history.GetReportSettings
+import com.gs.wialonlocal.features.monitoring.data.entity.history.LoadEventRequest
+import com.gs.wialonlocal.features.monitoring.data.entity.history.Trip
+import com.gs.wialonlocal.features.monitoring.data.entity.history.TripsResponse
 import com.gs.wialonlocal.features.monitoring.data.entity.updates.Data
 import com.gs.wialonlocal.features.monitoring.data.entity.updates.Position
 import com.gs.wialonlocal.features.monitoring.domain.model.UnitModel
@@ -130,5 +135,83 @@ class MonitoringRepositoryImpl(
                 emit(Resource.Error(ex.message))
             }
         }
+
+    @OptIn(InternalAPI::class)
+    override suspend fun getReportSettings(itemId: String): Flow<Resource<GetReportSettings>> = flow {
+        emit(Resource.Loading())
+        try {
+            val result = httpClient.post("${Constant.BASE_URL}/wialon/ajax.html?svc=unit/get_report_settings") {
+                body = FormDataContent(Parameters.build {
+                    append("sid", authSettings.getSessionId())
+                    append("params", "{\"itemId\":${itemId}}")
+                })
+            }.body<GetReportSettings>()
+            emit(Resource.Success(result))
+        } catch (ex: Exception) {
+            ex.printStackTrace()
+            emit(Resource.Error(ex.message))
+        }
+    }
+
+    @OptIn(InternalAPI::class)
+    override suspend fun loadEvents(req: LoadEventRequest): Flow<Resource<TripsResponse>> = flow {
+        emit(Resource.Loading())
+        try {
+            val result = httpClient.post("${Constant.BASE_URL}/wialon/ajax.html?svc=/events/load") {
+                body = FormDataContent(Parameters.build {
+                    append("sid", authSettings.getSessionId())
+                    append("params", "{\"itemId\":${req.itemId},\"ivalType\":1,\"timeFrom\":${req.timeFrom},\"timeTo\":${req.timeTo},\"measure\":0,\"lang\":\"en\",\"detectors\":[{\"type\":\"trips\",\"filter1\":0}],\"selector\":{\"type\":\"trips\",\"timeFrom\":${req.timeFrom},\"timeTo\":${req.timeTo},\"detalization\":47}}")
+                })
+            }.body<TripsResponse>()
+            emit(Resource.Success(result))
+        } catch (ex: Exception) {
+            ex.printStackTrace()
+            emit(Resource.Error(ex.message))
+        }
+    }
+
+    @OptIn(InternalAPI::class)
+    override suspend fun unloadEvents(id: String): Flow<Resource<Unit>> = flow {
+        emit(Resource.Loading())
+        try {
+            httpClient.post("${Constant.BASE_URL}/wialon/ajax.html?svc=core/batch") {
+                body = FormDataContent(Parameters.build {
+                    append("sid", authSettings.getSessionId())
+                    append("params", "[{\"svc\":\"core/update_data_flags\",\"params\":{\"spec\":[{\"type\":\"col\",\"max_items\":-1,\"data\":[${id}],\"mode\":2,\"flags\":4611686018427387903}]}}]")
+                })
+            }
+            httpClient.post("${Constant.BASE_URL}/wialon/ajax.html?svc=/events/unload") {
+                body = FormDataContent(Parameters.build {
+                    append("sid", authSettings.getSessionId())
+                    append("params", "{}")
+                })
+            }
+
+
+            emit(Resource.Success(Unit))
+        } catch (ex: Exception) {
+            ex.printStackTrace()
+            emit(Resource.Error(ex.message))
+        }
+    }
+
+
+    @OptIn(InternalAPI::class)
+    override suspend fun getEvent(id: String, mode: Int): Flow<Resource<CustomFields>> = flow {
+        emit(Resource.Loading())
+        try {
+            val result = httpClient.post("${Constant.BASE_URL}/wialon/ajax.html?svc=core/batch") {
+                body = FormDataContent(Parameters.build {
+                    append("sid", authSettings.getSessionId())
+                    append("params", "[{\"svc\":\"core/update_data_flags\",\"params\":{\"spec\":[{\"type\":\"col\",\"max_items\":-1,\"data\":[${id}],\"mode\":${mode},\"flags\":4611686018427387903}]}}]")
+                })
+            }.body<List<List<CustomFields>>>()
+
+            emit(Resource.Success(result[0][0]))
+        } catch (ex: Exception) {
+            ex.printStackTrace()
+            emit(Resource.Error(ex.message))
+        }
+    }
 
 }

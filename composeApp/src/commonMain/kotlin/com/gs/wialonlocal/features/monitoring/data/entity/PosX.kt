@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 data class PosX(
     val c: Int,
     val f: Int,
-    val lc: Int,
+    val lc: Long,
     val s: Int,
     val sc: Int,
     val t: Int? = null,
