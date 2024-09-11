@@ -28,7 +28,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,6 +40,16 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import kotlinx.datetime.Clock
+import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.atStartOfDayIn
+import kotlinx.datetime.atTime
+import kotlinx.datetime.minus
+import kotlinx.datetime.plus
+import kotlinx.datetime.toInstant
+import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.painterResource
 import wialonlocal.composeapp.generated.resources.Res
 import wialonlocal.composeapp.generated.resources.circle_car
@@ -48,13 +60,45 @@ import wialonlocal.composeapp.generated.resources.key
 import wialonlocal.composeapp.generated.resources.line_graph
 import wialonlocal.composeapp.generated.resources.max_speed
 
+
+fun getStartAndEndOfDayTimestamps(date: LocalDate): Pair<Long, Long> {
+    val timeZone = TimeZone.currentSystemDefault()
+
+    // Start of the day at 00:00:00
+    val startOfDay = date.atStartOfDayIn(timeZone)
+    val startTimestamp = startOfDay.epochSeconds
+
+    // End of the day at 23:59:59
+    val endOfDay = date.atTime(23, 59, 59).toInstant(timeZone)
+    val endTimestamp = endOfDay.epochSeconds
+
+    return Pair(startTimestamp, endTimestamp)
+}
+
 @Composable
 fun HistoryScreen(
     modifier: Modifier = Modifier,
+    onDateChanges: (Long, Long) -> Unit
 ) {
     val selectedDate = rememberSaveable {
-        mutableStateOf(0)
+        mutableStateOf(getStartAndEndOfDayTimestamps(Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date).first)
     }
+
+
+    fun generateDateList(): List<LocalDate> {
+        val currentDate = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
+        val startDate = currentDate.minus(1, DateTimeUnit.YEAR)
+
+        return generateSequence(startDate) { it.plus(1, DateTimeUnit.DAY) }
+            .takeWhile { it <= currentDate }
+            .toList()
+    }
+
+
+    val dates = remember {
+        mutableStateOf(generateDateList())
+    }
+
     Column(
         modifier = modifier.fillMaxWidth().verticalScroll(rememberScrollState()).background(
             color = MaterialTheme.colorScheme.background
@@ -68,14 +112,20 @@ fun HistoryScreen(
                 horizontal = 16.dp
             )
         ) {
-            items(20) {
+            items(dates.value.count()) { index->
+                val date = dates.value[index]
+                val dayOfWeek = date.dayOfWeek.name.lowercase().replaceFirstChar { it.uppercase() }
+                val month = date.month.name.lowercase().replaceFirstChar { it.uppercase() }
+                val dayOfMonth = date.dayOfMonth
                 HistoryDateButton(
-                    dayOfWeek = "Sat",
-                    day = "${it.plus(1)}",
-                    month = "Jul",
-                    selected = selectedDate.value == it,
+                    dayOfWeek = dayOfWeek,
+                    day = dayOfMonth.toString(),
+                    month = month,
+                    selected = selectedDate.value == getStartAndEndOfDayTimestamps(date).first,
                     onClick = {
-                        selectedDate.value = it
+                        val (startTimestamp, endTimestamp) = getStartAndEndOfDayTimestamps(date)
+                        onDateChanges(startTimestamp, endTimestamp)
+                        selectedDate.value = startTimestamp
                     }
                 )
             }

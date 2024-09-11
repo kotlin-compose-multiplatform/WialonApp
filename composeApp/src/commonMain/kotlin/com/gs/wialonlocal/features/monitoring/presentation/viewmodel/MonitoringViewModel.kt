@@ -133,9 +133,19 @@ class MonitoringViewModel(
         }
     }
 
-    fun unloadEvents(id: String) {
+    fun unloadEvents(id: String, onDone: ()->Unit = {}) {
         screenModelScope.launch {
-            useCase.unloadEvents(id).launchIn(this)
+            useCase.unloadEvents(id).onEach {
+                when(it) {
+                    is Resource.Error -> {
+                        onDone()
+                    }
+                    is Resource.Loading -> {}
+                    is Resource.Success -> {
+                        onDone()
+                    }
+                }
+            }.launchIn(this)
         }
     }
 

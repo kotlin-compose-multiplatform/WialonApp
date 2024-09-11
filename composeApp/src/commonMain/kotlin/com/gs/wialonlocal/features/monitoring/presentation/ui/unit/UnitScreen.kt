@@ -38,6 +38,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -62,10 +63,14 @@ import com.gs.wialonlocal.features.main.presentation.ui.ToolBar
 import com.gs.wialonlocal.features.map.presentation.ui.MapContainer
 import com.gs.wialonlocal.features.monitoring.domain.model.UnitModel
 import com.gs.wialonlocal.features.monitoring.presentation.ui.history.HistoryScreen
+import com.gs.wialonlocal.features.monitoring.presentation.ui.history.getStartAndEndOfDayTimestamps
 import com.gs.wialonlocal.features.monitoring.presentation.ui.monitoringlist.Groups
 import com.gs.wialonlocal.features.monitoring.presentation.ui.monitoringlist.Units
 import com.gs.wialonlocal.features.monitoring.presentation.viewmodel.MonitoringViewModel
 import kotlinx.coroutines.launch
+import kotlinx.datetime.Clock
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.painterResource
 import wialonlocal.composeapp.generated.resources.Res
 import wialonlocal.composeapp.generated.resources.clock
@@ -98,13 +103,31 @@ fun UnitDetails(modifier: Modifier = Modifier, id: String, unitModel: UnitModel)
     val units = viewModel.units.collectAsState()
     val fields = viewModel.fieldState.collectAsState()
 
+    val startDate = rememberSaveable {
+        mutableStateOf(
+            getStartAndEndOfDayTimestamps(
+                Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
+            ).first
+        )
+    }
+
+    val endDate = rememberSaveable {
+        mutableStateOf(
+            getStartAndEndOfDayTimestamps(
+                Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
+            ).second
+        )
+    }
+
     BackHandler(true) {
         viewModel.unloadEvents(id)
         navigator.pop()
     }
 
-    LaunchedEffect(id) {
-        viewModel.loadEvents(id, 1725130800, 1725389999)
+    LaunchedEffect(id, startDate.value, endDate.value) {
+        viewModel.unloadEvents(id) {
+            viewModel.loadEvents(id, startDate.value, endDate.value)
+        }
     }
 
     Column(modifier = modifier.fillMaxSize()) {
@@ -196,7 +219,10 @@ fun UnitDetails(modifier: Modifier = Modifier, id: String, unitModel: UnitModel)
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
-                        UnitItem(Modifier.weight(1f), item = units.value.data!!.find { it.id == id }!!)
+                        UnitItem(
+                            Modifier.weight(1f),
+                            item = units.value.data!!.find { it.id == id }!!
+                        )
                         Column(
                             Modifier.height(100.dp),
                             verticalArrangement = Arrangement.SpaceBetween,
@@ -231,7 +257,13 @@ fun UnitDetails(modifier: Modifier = Modifier, id: String, unitModel: UnitModel)
                         if (index == 0) {
                             UnitInfo(Modifier.fillMaxSize())
                         } else {
-                            HistoryScreen(Modifier.fillMaxSize())
+                            HistoryScreen(
+                                Modifier.fillMaxSize(),
+                                onDateChanges = { start, end ->
+                                    startDate.value = start
+                                    endDate.value = end
+                                }
+                            )
                         }
                     }
                 }
