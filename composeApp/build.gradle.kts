@@ -105,6 +105,10 @@ kotlin {
 
             // PDF
             implementation(libs.bouquet)
+
+            // coil svg
+            implementation(libs.coil.svg)
+
         }
     }
 }

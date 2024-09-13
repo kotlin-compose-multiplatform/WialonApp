@@ -53,6 +53,7 @@ import cafe.adriel.voyager.koin.koinNavigatorScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import cafe.adriel.voyager.navigator.internal.BackHandler
+import com.gs.wialonlocal.common.CameraPosition
 import com.gs.wialonlocal.common.GoogleMaps
 import com.gs.wialonlocal.common.LatLong
 import com.gs.wialonlocal.common.LatLongZoom
@@ -102,6 +103,7 @@ fun UnitDetails(modifier: Modifier = Modifier, id: String, unitModel: UnitModel)
     val viewModel: MonitoringViewModel = navigator.koinNavigatorScreenModel()
     val units = viewModel.units.collectAsState()
     val fields = viewModel.fieldState.collectAsState()
+    val loadEventState = viewModel.loadEventState.collectAsState()
 
     val startDate = rememberSaveable {
         mutableStateOf(
@@ -272,17 +274,16 @@ fun UnitDetails(modifier: Modifier = Modifier, id: String, unitModel: UnitModel)
             MapContainer(Modifier.fillMaxSize()) {
                 GoogleMaps(
                     modifier = Modifier.fillMaxSize(),
-                    shouldZoomToLatLongZoom = LatLongZoom(LatLong(37.8, 58.7), 18f),
-                    onDidAllowCacheReset = {
-
-                    },
-                    onDidCenterCameraOnLatLong = {
-
-                    },
-                    onDidZoomToLatLongZoom = {
-
-                    },
-                    shouldAllowCacheReset = true
+                    units = listOf(
+                        unitModel
+                    ),
+                    cameraPosition = CameraPosition(
+                        target = LatLong(
+                            unitModel.latitude,
+                            unitModel.longitude
+                        ),
+                        zoom = 14f
+                    )
                 )
             }
         }

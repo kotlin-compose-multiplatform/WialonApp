@@ -19,16 +19,19 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -40,6 +43,12 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import cafe.adriel.voyager.koin.koinNavigatorScreenModel
+import cafe.adriel.voyager.navigator.LocalNavigator
+import cafe.adriel.voyager.navigator.currentOrThrow
+import com.gs.wialonlocal.features.monitoring.data.entity.history.Trip
+import com.gs.wialonlocal.features.monitoring.data.entity.history.convertTimestampToDateTime
+import com.gs.wialonlocal.features.monitoring.presentation.viewmodel.MonitoringViewModel
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
@@ -61,8 +70,11 @@ import wialonlocal.composeapp.generated.resources.line_graph
 import wialonlocal.composeapp.generated.resources.max_speed
 
 
+import kotlinx.datetime.*
+
 fun getStartAndEndOfDayTimestamps(date: LocalDate): Pair<Long, Long> {
-    val timeZone = TimeZone.currentSystemDefault()
+    // Set timezone to Ashgabat, Turkmenistan
+    val timeZone = TimeZone.of("Asia/Ashgabat")
 
     // Start of the day at 00:00:00
     val startOfDay = date.atStartOfDayIn(timeZone)
@@ -75,11 +87,16 @@ fun getStartAndEndOfDayTimestamps(date: LocalDate): Pair<Long, Long> {
     return Pair(startTimestamp, endTimestamp)
 }
 
+
+
 @Composable
 fun HistoryScreen(
     modifier: Modifier = Modifier,
     onDateChanges: (Long, Long) -> Unit
 ) {
+    val navigator = LocalNavigator.currentOrThrow
+    val viewModel: MonitoringViewModel = navigator.koinNavigatorScreenModel()
+    val eventState = viewModel.loadEventState.collectAsState()
     val selectedDate = rememberSaveable {
         mutableStateOf(getStartAndEndOfDayTimestamps(Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date).first)
     }
@@ -99,6 +116,12 @@ fun HistoryScreen(
         mutableStateOf(generateDateList())
     }
 
+    val listState = rememberLazyListState()
+
+    LaunchedEffect(dates.value) {
+        listState.scrollToItem(dates.value.size - 1)
+    }
+
     Column(
         modifier = modifier.fillMaxWidth().verticalScroll(rememberScrollState()).background(
             color = MaterialTheme.colorScheme.background
@@ -106,6 +129,7 @@ fun HistoryScreen(
     ) {
         Spacer(Modifier.height(4.dp))
         LazyRow(
+            state = listState,
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             contentPadding = PaddingValues(
@@ -156,11 +180,20 @@ fun HistoryScreen(
             )
         }
         HorizontalDivider()
-        repeat(20) { index->
-            if(index % 2 == 0) {
-                ParkingItem(Modifier.fillMaxWidth())
-            } else {
-                CarItem(Modifier.fillMaxWidth())
+        if(eventState.value.loading) {
+            LinearProgressIndicator(Modifier.fillMaxWidth())
+        } else if(eventState.value.error.isNullOrEmpty().not()) {
+            Text("Something went wrong ${eventState.value.error}")
+        } else {
+            eventState.value.data?.second?.let { list->
+                repeat(list.count()) { index->
+                    val item = list[index]
+                    when(item.type) {
+                        "park"-> ParkingItem(Modifier.fillMaxWidth(), item)
+                        "stop" -> ParkingItem(Modifier.fillMaxWidth(), item)
+                        "trip" -> CarItem(Modifier.fillMaxWidth(), item)
+                    }
+                }
             }
         }
     }
@@ -168,7 +201,8 @@ fun HistoryScreen(
 
 @Composable
 fun ParkingItem(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    item: Trip
 ) {
     Row(
         modifier = modifier
@@ -184,7 +218,7 @@ fun ParkingItem(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                "8:51", style = MaterialTheme.typography.bodyLarge.copy(
+                item.formatedTime, style = MaterialTheme.typography.bodyLarge.copy(
                     fontWeight = FontWeight.W500
                 ),
                 color = MaterialTheme.colorScheme.onBackground
@@ -226,7 +260,7 @@ fun ParkingItem(
                         )
                         Spacer(Modifier.width(6.dp))
                         Text(
-                            text = "5 min",
+                            text = item.formatedDuration,
                             color = MaterialTheme.colorScheme.onSurface,
                             style = MaterialTheme.typography.bodySmall.copy(
                                 fontWeight = FontWeight.W500
@@ -265,7 +299,8 @@ fun ParkingItem(
 
 @Composable
 fun CarItem(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    item: Trip
 ) {
     Row(
         modifier = modifier
@@ -283,7 +318,7 @@ fun CarItem(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                "8:51", style = MaterialTheme.typography.bodyLarge.copy(
+                item.formatedTime, style = MaterialTheme.typography.bodyLarge.copy(
                     fontWeight = FontWeight.W500
                 ),
                 color = MaterialTheme.colorScheme.onBackground
@@ -322,7 +357,7 @@ fun CarItem(
                         )
                         Spacer(Modifier.width(6.dp))
                         Text(
-                            text = "5 min",
+                            text = item.formatedDuration,
                             color = MaterialTheme.colorScheme.onSurface,
                             style = MaterialTheme.typography.bodySmall.copy(
                                 fontWeight = FontWeight.W500
@@ -341,7 +376,7 @@ fun CarItem(
                         )
                         Spacer(Modifier.width(6.dp))
                         Text(
-                            text = "1.67 km",
+                            text = item.format.distance,
                             color = MaterialTheme.colorScheme.onSurface,
                             style = MaterialTheme.typography.bodySmall.copy(
                                 fontWeight = FontWeight.W500

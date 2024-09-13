@@ -1,0 +1,714 @@
+{
+  "events": {
+    "trips": {
+      "0": 24
+    }
+  },
+  "states": {
+    "trips": {
+      "updateTime": 1650442234
+    }
+  },
+  "selector": {
+    "trips": {
+      "0": [
+        {
+          "from": {
+            "t": 1726027683,
+            "y": 37.8959236145,
+            "x": 58.3973808289
+          },
+          "to": {
+            "t": 1726030020,
+            "y": 37.8990287781,
+            "x": 58.3899078369
+          },
+          "m": 1726030020,
+          "f": 1,
+          "state": 1,
+          "max_speed": 26,
+          "curr_speed": 13,
+          "avg_speed": 4,
+          "distance": 2689,
+          "odometer": 58895615,
+          "course": 189,
+          "altitude": 301,
+          "pos_flags": 0,
+          "format": {
+            "distance": "2.69 km",
+            "avg_speed": "4 km/h"
+          },
+          "track": "ophfFsvlcJBNERKFq@Gq@McBIw@AAHMZ]Bq@DALH|AD@GADnBLFdCGFQCeAEIKAoCJsATYbCy@A{BKCSGwCe@Xa@A_@Pe@HCPQp@O?sDK}@DIXPr@HDl@XBJFjAVRB|@RDL`@?A@RU|Ae@h@?VHFzBRCdFKlBM@iAG?QE_AOEaA]R{DROrCDDN?\\CnFIb@MB{CBJvEHFtDFjAN?ND~@NFhBKh@m@AEGGIBKPGj@JLLB",
+          "p": {}
+        },
+        {
+          "from": {
+            "t": 1726030320,
+            "y": 37.8987388611,
+            "x": 58.389919281
+          },
+          "to": {
+            "t": 1726031714,
+            "y": 37.8986167908,
+            "x": 58.389881134
+          },
+          "m": 1726031714,
+          "f": 1,
+          "state": 1,
+          "max_speed": 27,
+          "curr_speed": 11,
+          "avg_speed": 5,
+          "distance": 1934,
+          "odometer": 58898304,
+          "course": 341,
+          "altitude": 300,
+          "pos_flags": 0,
+          "format": {
+            "distance": "1.93 km",
+            "avg_speed": "5 km/h"
+          },
+          "track": "cbifF_hkcJF]jDZDOJmCLEh@HFh@BLf@~CHAd@KBaADAFAx@OCC?uBMcA[GGYHu@DArBiAMg@GAQ?sBB@OFkEHEbCSEmA?iAUgAOGEOGeAOAuDIq@IASBs@ECJF]hFHtBJXAfFGnFGjFEPGBUAwBK",
+          "p": {}
+        },
+        {
+          "from": {
+            "t": 1726032014,
+            "y": 37.8987617493,
+            "x": 58.3898658752
+          },
+          "to": {
+              "t": 1726034159,
+            "y": 37.9494018555,
+            "x": 58.4116859436
+          },
+          "m": 1726034159,
+          "f": 1,
+          "state": 1,
+          "max_speed": 72,
+          "curr_speed": 8,
+          "avg_speed": 16,
+          "distance": 9242,
+          "odometer": 58900238,
+          "course": 298,
+          "altitude": 219,
+          "pos_flags": 0,
+          "format": {
+            "distance": "9.24 km",
+            "avg_speed": "16 km/h"
+          },
+          "track": "gbifFsgkcJsDQ{D?mDJ?ROhAQ@MHBLD@LATE@JCHC?OCSS?QFI\\QAsACAe@YA[FoFHm@N?rDA~CNDTBpCD?BC@KCAEGIWDkFHYPC`E@pDCBOAyEM}@RcF@mFGm@OC{@\\EJ@PS|AQAuDEoAKEWKeBa@IQFCRMp@Q@}DMc@QSu@Ib@s@@a@MES?eFEKQIkEImECcEA}D@mEAyDIuDEuDByANKZGbGArFCrFClFCjFOhFi@rAmAf@}DJ{D?}D?{DAcEEkEG_EXyDfAeEj@aEYeEcAeEeAqD_AcEaAcEcAcEaA_EcAkDiAkDaAwDiBsDmBsDyBsDgCmDqCyC{ByCiC}CkCeDqC{CgCaDoCcDiCuCaCoCuC_DkBiDoCiDwCwCeCwCkCkDqC_DuCuCyCuCkCoCuCyC{BeDkCcAsAD[jByDvAkCFDHN\\fA",
+          "p": {}
+        },
+        {
+          "from": {
+            "t": 1726035959,
+            "y": 37.9495124817,
+            "x": 58.4118156433
+          },
+          "to": {
+            "t": 1726040102,
+            "y": 37.8994293213,
+            "x": 58.3899307251
+          },
+          "m": 1726040102,
+          "f": 1,
+          "state": 1,
+          "max_speed": 66,
+          "curr_speed": 7,
+          "avg_speed": 10,
+          "distance": 11537,
+          "odometer": 58909480,
+          "course": 178,
+          "altitude": 288,
+          "pos_flags": 0,
+          "format": {
+            "distance": "12 km",
+            "avg_speed": "10 km/h"
+          },
+          "track": "m_sfFypocJGIQkAjB}DfBgEfB}DVa@L@xCdCxCbCd@n@ELgBpEkBdEmBjEoBhEgCfDOTC^J\\|C|BpCbC~C`C~CfCbDpCvChCxChCfDrCjDtCxC|B|CtCzCzBnDjCfDlCtC|BvC`CxChCxCjCbDtCtCbC|CtBtD`CvDrBpDbB|D~AlDbAjDfA`EbA`EbAdE`AlDz@rD~@fEfAnDt@tD?rDu@hEaAfEKzDBvDD`EJbEDdEFhEF`F@hETbEP|DP~DR~DRfEN|D^vDPT]Dg@e@eFA}FFwAFC~BBHL?VDnDJ@vDXpAEBYC_EOGkDQKqCu@e@ABALFLn@xCpAHFI?IDqFG{@MCm@?JA|@E@MEKKCwBGGSQqA_@Ma@MDqANEdBE?q@EKYa@Ak@IYIAo@GCa@G}@DwAANClCND`AT?VB~@VTEt@KHW?FZJAVK?[Hk@NAtD?LO@_@?cBNGtDBtAEDQAyB_@MAD\\?fBCZKxC^HE@DAFGx@TGbAUTPMbAGRDf@FjBWn@JlAh@zDKTUDqBBALFRT@x@LHVHzCVBFCDUq@eALb@V|CEDWGcAFCJAZShCKDmAACGEY@kANGVUAa@@SFEf@BPFBJG`BShAM@qAF?Nd@vDL?h@CCU?s@HSJAp@G@MIwAMEyDDUDCRKfCODe@KEOM}Aw@CsDRCRCv@F@",
+          "p": {}
+        },
+        {
+          "from": {
+            "t": 1726040402,
+            "y": 37.8989601135,
+            "x": 58.3899154663
+          },
+          "to": {
+            "t": 1726040508,
+            "y": 37.8979034424,
+            "x": 58.3908462524
+          },
+          "m": 1726040508,
+          "f": 1,
+          "state": 1,
+          "max_speed": 16,
+          "curr_speed": 16,
+          "avg_speed": 8,
+          "distance": 223,
+          "odometer": 58921017,
+          "course": 13,
+          "altitude": 288,
+          "pos_flags": 0,
+          "format": {
+            "distance": "0.22 km",
+            "avg_speed": "8 km/h"
+          },
+          "track": "ocifF}gkcJ@@\\AtDTJE@GC{DKE",
+          "p": {}
+        },
+        {
+          "from": {
+            "t": 1726040841,
+            "y": 37.8982086182,
+            "x": 58.3908615112
+          },
+          "to": {
+            "t": 1726041395,
+            "y": 37.901260376,
+            "x": 58.3928337097
+          },
+          "m": 1726041395,
+          "f": 1,
+          "state": 1,
+          "max_speed": 21,
+          "curr_speed": 10,
+          "avg_speed": 5,
+          "distance": 714,
+          "odometer": 58921240,
+          "course": 281,
+          "altitude": 287,
+          "pos_flags": 0,
+          "format": {
+            "distance": "0.71 km",
+            "avg_speed": "5 km/h"
+          },
+          "track": "y~hfF{mkcJyD?aCDCLKv@E@wD?uAi@@cESGy@M?_@CqFJ_@NCp@FDNEhA",
+          "p": {}
+        },
+        {
+          "from": {
+            "t": 1726041695,
+            "y": 37.9012489319,
+            "x": 58.39270401
+          },
+          "to": {
+            "t": 1726042834,
+            "y": 37.8987426758,
+            "x": 58.3965034485
+          },
+          "m": 1726042834,
+          "f": 1,
+          "state": 1,
+          "max_speed": 28,
+          "curr_speed": 6,
+          "avg_speed": 5,
+          "distance": 1616,
+          "odometer": 58921954,
+          "course": 261,
+          "altitude": 300,
+          "pos_flags": 0,
+          "format": {
+            "distance": "1.62 km",
+            "avg_speed": "5 km/h"
+          },
+          "track": "yqifFkykcJj@lAI\\x@DBb@?l@JDdACFS@gFIcBOCqBIEUDSJKr@s@C}ASGcCEEHA`@Kj@BLHBH?z@BDIB_AFYJITO@i@CUGESOA_@Am@KCkAKCUN{@NItDAbAH@De@fBOJc@ECMFMZKV@VCBUAs@GuAIWBq@E?E?{@EADBJ~@r@rABNK`@MdDR",
+          "p": {}
+        },
+        {
+          "from": {
+            "t": 1726043134,
+            "y": 37.8987503052,
+            "x": 58.3964385986
+          },
+          "to": {
+            "t": 1726043246,
+            "y": 37.8962135315,
+            "x": 58.3959770203
+          },
+          "m": 1726043246,
+          "f": 1,
+          "state": 1,
+          "max_speed": 14,
+          "curr_speed": 7,
+          "avg_speed": 12,
+          "distance": 362,
+          "odometer": 58923570,
+          "course": 265,
+          "altitude": 306,
+          "pos_flags": 0,
+          "format": {
+            "distance": "0.36 km",
+            "avg_speed": "12 km/h"
+          },
+          "track": "ebifFwplcJDRBzBH@hDEFQJWLAtDQ`AYXLHZ",
+          "p": {}
+        },
+        {
+          "from": {
+            "t": 1726047459,
+            "y": 37.8962173462,
+            "x": 58.3959350586
+          },
+          "to": {
+            "t": 1726052966,
+            "y": 37.9493904114,
+            "x": 58.411655426
+          },
+          "m": 1726052966,
+          "f": 1,
+          "state": 1,
+          "max_speed": 74,
+          "curr_speed": 7,
+          "avg_speed": 8,
+          "distance": 12312,
+          "odometer": 58923932,
+          "course": 295,
+          "altitude": 220,
+          "pos_flags": 0,
+          "format": {
+            "distance": "12 km",
+            "avg_speed": "8 km/h"
+          },
+          "track": "krhfFqmlcJk@TNvAPrAIBQA}BB@BAJNzDF@dC\\G`@HfA_@NiDCId@CfFFXI|AIRC?EIBMHCT]Da@RAb@L?ZNr@B?EHGlALD^LA\\^rD?QOe@Eg@E?uAOMO]qAgADGv@QdBE@q@EuDYsCUGe@Kq@GAsD[oAa@AgAHAb@L?Ju@l@Gw@WM@UJoAR?t@IBSI{@m@m@ByDHEb@@vBEDK@WGiFEaAECmB[OiA_@Y@KJUP{@CAIAq@Wu@YoAODyCXk@h@SbEP~DV`EXpDj@DZMvAM@s@JKnBHJP@`ADDLL`CNBrD?|A@DK@i@EaD?V@pDMFWXB|@JFV\\H^ArAGEODiAMAOK?zAFDIDeAU[IDAXBrADBX^CdAOJwDLCRUjCGAyDAyDAsDAOICYGmDOE}D?}BOEWBeFGcBQKyDCuDEuDCuDE}AFGPMpFKlFBh@DBP@rDFx@N\\pAH`BFG?Ku@aDw@IsDISHCRq@hFo@dFm@`D}DRiEOuDKiE?_EOyDGwDGoEGsEEqEAwDXmDz@gEn@eEYaEaAmDy@oD}@gEeAaEaAeEeA_EaAcEqA{D}AiDwAmDeBsDyBcDyBwDcDaDgC{CoCyCiCmDyCaD}BeDqCoDuCaEiDaDaCiDqCiDmCeDuCyCcCeDyC{CmCwCsCwCmCwCoCeDwCwCaCcCgCF]lBaEpAcCF@FJh@jACL",
+          "p": {}
+        },
+        {
+          "from": {
+            "t": 1726054258,
+            "y": 37.9494438171,
+            "x": 58.4118461609
+          },
+          "to": {
+            "t": 1726060389,
+            "y": 37.9000892639,
+            "x": 58.395980835
+          },
+          "m": 1726060389,
+          "f": 1,
+          "state": 1,
+          "max_speed": 67,
+          "curr_speed": 13,
+          "avg_speed": 8,
+          "distance": 14205,
+          "odometer": 58936244,
+          "course": 246,
+          "altitude": 288,
+          "pos_flags": 0,
+          "format": {
+            "distance": "14 km",
+            "avg_speed": "8 km/h"
+          },
+          "track": "__sfF_qocJ@AMUGWQYBMjB_EvAwCNBvC~BvC`C`@f@Ob@gBdEkBlEiB~DyBfDJV`DfCdDrCfDbCfDrChDvCfErDbDlCzCjCbDjCnDnC~CjB|CnC|CrC`D|BbDpCfDrCbDrChDvC|ClC|C~B|CpBrDvB|DnBlDtAxDlA`ElA`EdA|DbA~D`A|D`AbEfA`EfAfEn@~DGtD_ApDu@~DIhE@zDJfEH|DFdEDfELrEIpDX|DN~DR`ERdER|DPvDX~D`@d@YJ_@K{@_@gF?eFFeANEl@EBiA?gFKEu@IAODGPCzCMFSGeAIEIBs@DAw@?KFgAHKZ@dAHDOCo@KEKMAQFiDv@ENKHYFuBHAb@nBJVTANEv@GBNCnFG~CMBwADCPApFCbFGHM?{CLE|DRNnBD^AAFkBUpDTp@FBJHhAVDlAVBPCNLXAw@xD@vAB@OJmCJEj@BBD@R|@lD\\@@IAMG_AKCaAUE[XkDLD?FEJUbAHnBJFdAZGxAG]NeARCh@IHUCkDUEQMAe@Da@HE~ASE_AMCeAO@oBISs@HCHf@xBd@CAUImBi@_@G}@FIHCfDQACECc@M?QEq@Se@Q{DOE{CC[@u@UASDwCLGzBWKAgBLa@l@{DA{AKAO@[BiBIMW?_AFEPKL{@TAzAMA?C?I?EAC@C@?qD@kASCYPwAUtEVJx@N@\\Lr@P^Jn@LBx@`@_@Hg@g@A_@F]nACBTFjFMbFHnDZB`AP?HMbFBdAJDp@?JQHg@BWLIfBE?WDi@HItDDDIBc@JgBPGzDHxAIFaEGH@LFrAGJIBmAGAIE_CQ?QmABQHEbCO?YQcA{AFo@]DkAK{BQKaC]Ey@I{@EC_EEmDGCKWwBy@BAHHjA",
+          "p": {}
+        },
+        {
+          "from": {
+            "t": 1726061889,
+            "y": 37.9001045227,
+            "x": 58.3958358765
+          },
+          "to": {
+            "t": 1726063931,
+            "y": 37.9106483459,
+            "x": 58.4372329712
+          },
+          "m": 1726063931,
+          "f": 1,
+          "state": 1,
+          "max_speed": 72,
+          "curr_speed": 7,
+          "avg_speed": 14,
+          "distance": 8077,
+          "odometer": 58950449,
+          "course": 359,
+          "altitude": 254,
+          "pos_flags": 0,
+          "format": {
+            "distance": "8.08 km",
+            "avg_speed": "14 km/h"
+          },
+          "track": "sjifF}llcJKXI^o@RAd@Ad@BD^vC|DDxDDfBL@RVnFCfFBDf@FpCT?PBt@J?n@~@GLAr@O|AaC`@[[NQAECAMUBk@E]QAk@ICK@mFFoFCoASeANiFG_CQEsDCqDMCOGgBgAOA[i@}@o@@CJ?RG~Bg@VyAM}BgAH_DXm@d@MtDJzDTdEZ~D`@zDPzDL|AEFQ@kFBaG@eFBgF@qFBiFHsF@{F?kG@oF@wF@eGBeF@kGBeG@_G@oF?iF@iF@cGDcFHa@Xy@E_@QU]EcEh@yDCgEEgEGcEEuD@wDE{DEyDAwDCsDCUOy@yC@oFQcFMgFLwFB_GCuFPgFE{B[gF_@w@_EiAwD}@oD_A{CeAIu@Iw@[OsAm@S[M?",
+          "p": {}
+        },
+        {
+          "from": {
+            "t": 1726064231,
+            "y": 37.9106903076,
+            "x": 58.4372558594
+          },
+          "to": {
+            "t": 1726065038,
+            "y": 37.8958854675,
+            "x": 58.3973999023
+          },
+          "m": 1726065038,
+          "f": 1,
+          "state": 1,
+          "max_speed": 73,
+          "curr_speed": 0,
+          "avg_speed": 25,
+          "distance": 5595,
+          "odometer": 58958526,
+          "course": 0,
+          "altitude": 302,
+          "pos_flags": 0,
+          "format": {
+            "distance": "5.59 km",
+            "avg_speed": "25 km/h"
+          },
+          "track": "ylkfFyotcJMAGT@THPNDlCX@XG`GAzFAlFA|FA|FAzFA`GAjFAdFApFGtF@`GAxFCvFA|FCpFCdGCbFAjFAlFCdFA`GCdFAxFCvFAdGCnFAnF@zFA`GAfFHdBb@V|DHtDB`EBhEDvD@`E@nEHpEDjERjETlEVnETvDVvDVjDBCGEA}DUaDi@AI@GJErDV`BGFWEII@@R",
+          "p": {}
+        },
+        {
+          "from": {
+            "t": 1726114449,
+            "y": 37.8958854675,
+            "x": 58.3973999023
+          },
+          "to": {
+            "t": 1726114692,
+            "y": 37.8996429443,
+            "x": 58.3949165344
+          },
+          "m": 1726114692,
+          "f": 1,
+          "state": 1,
+          "max_speed": 51,
+          "curr_speed": 0,
+          "avg_speed": 10,
+          "distance": 675,
+          "odometer": 58964121,
+          "course": 0,
+          "altitude": 296,
+          "pos_flags": 0,
+          "format": {
+            "distance": "0.68 km",
+            "avg_speed": "10 km/h"
+          },
+          "track": "gphfFwvlcJBLMPa@FsD[m@GIJQZ{DMuDQeBBEP?lFBlA?AFpCBBF?",
+          "p": {}
+        },
+        {
+          "from": {
+            "t": 1726116086,
+            "y": 37.8996429443,
+            "x": 58.3949165344
+          },
+          "to": {
+            "t": 1726118832,
+            "y": 37.9015922546,
+            "x": 58.3892860413
+          },
+          "m": 1726118832,
+          "f": 1,
+          "state": 1,
+          "max_speed": 27,
+          "curr_speed": 16,
+          "avg_speed": 4,
+          "distance": 2975,
+          "odometer": 58964796,
+          "course": 191,
+          "altitude": 285,
+          "pos_flags": 0,
+          "format": {
+            "distance": "2.98 km",
+            "avg_speed": "4 km/h"
+          },
+          "track": "wgifFeglcJGSImFLkAPEvAB@HBbADKDgAnBLpCBx@InBV@RH~@T@TO\\InAL]dFOHaCL@d@N|CJBpBRDZN`ARJ\\OBICMGA]DiDb@ATLhENQfBB?M@_@GA?R?`CKD}ANARBl@FF^XJhFH~@p@w@F?@?ASGCG@s@CIUUO_CPQJARHICKGYK{Au@CIFCNOlCQAc@IAUGqAQCyDCw@\\ANIv@[?yDGsDF]UEOHWH\\d@XEpAMJWJ?FBDND",
+          "p": {}
+        },
+        {
+          "from": {
+            "t": 1726119132,
+            "y": 37.9014778137,
+            "x": 58.389289856
+          },
+          "to": {
+            "t": 1726122667,
+            "y": 37.9493751526,
+            "x": 58.4116821289
+          },
+          "m": 1726122667,
+          "f": 1,
+          "state": 1,
+          "max_speed": 70,
+          "curr_speed": 9,
+          "avg_speed": 11,
+          "distance": 10571,
+          "odometer": 58967771,
+          "course": 289,
+          "altitude": 215,
+          "pos_flags": 0,
+          "format": {
+            "distance": "11 km",
+            "avg_speed": "11 km/h"
+          },
+          "track": "gsifFadkcJ??EHI?ECW[?GHGH?TCBQPqAjB?BOFeANCpDM@O?eEKIyDSAUOs@IAs@K?OAiEKCiCICS@{F@qFLiALC`ADFL@Vz@h@^b@E?GcAME{@[?WG{@HE^DJN@d@Jx@RBt@OTKTaCp@G\\p@OnDELE?R?P{CJ?n@E`@MtDFlB^Db@Mf@Ob@DTPDjAF@HNvBPDxBTLZ?DVrDf@JNKJaC@eBsAKgDGEQ@mFDiCLCrDDbEXl@E?ECGEAiEYsDSeEUgEYeEYwDU_EOeEEaECgEAkECqECkECkEGgEEiEAuD@eEAgEAuDGmEEsBOGW?cAAR?t@GTWHcEWaEw@eDk@WXy@lFy@jF_A`Fu@pFy@pF_ArFy@xEi@dAQ@cEm@aE{@uDs@wDy@{D_AaEiAqDgAqD}AkDaBoDoBmD{BmDmCiDiC}CsCwCeCuCgCkDcCuCmC}CkCkDoCmC_DsDwByC}BiDqCeDqCkDkCaDsCwCoC{C{CcD}CyCsCsCaC{CgCuBuBF[lBeEvAiCDFNZX~@",
+          "p": {}
+        },
+        {
+          "from": {
+            "t": 1726124979,
+            "y": 37.9494094849,
+            "x": 58.411819458
+          },
+          "to": {
+            "t": 1726127999,
+            "y": 37.8969497681,
+            "x": 58.3896141052
+          },
+          "m": 1726127999,
+          "f": 1,
+          "state": 1,
+          "max_speed": 63,
+          "curr_speed": 6,
+          "avg_speed": 12,
+          "distance": 9850,
+          "odometer": 58978342,
+          "course": 133,
+          "altitude": 324,
+          "pos_flags": 0,
+          "format": {
+            "distance": "9.85 km",
+            "avg_speed": "12 km/h"
+          },
+          "track": "y~rfF{pocJQCAWCOSg@Re@hBcEdAsBN?xC~BzCdC`@`@CPaB`EoBpEmB~DgCfD?\\RXfDfCdDrC|CzBvCdC`DnCfDbDhDpCbDlC`DhCvC|BxC`CbDfCdDlC|CzBjDtCtClCbDnC~CnCjDvCzCbClD~BrDvBxDlBvD~AhDrA`EfA|DbA|D~@rD|@nD|@zD~@zFrAhEbAhEFrDu@|D_AxDMbEF`EFfEHvDD`EDnEFpEFdELhENbEPbETdET`ENbE^rDX`@]Fg@g@uF?sFCqFJkEFCrDG?SSaAa@Sc@?EO?WBy@NIz@Cf@E?{@EGMEIYIwD_@?e@SEyDE`CLR@RBRPDvDDx@G@GHy@NAj@K\\StDDf@JdATzDIhAH?HMhAMHmCN@NIRGvBHVNDvD@zAIHYC[IG[EMG?GHDb@HDNF|@N@|ARDTCrFQh@c@VKGDIDALBh@\\BVCfFKr@MBwD?UDGN@|@JF`@T@\\MbFGNPVD@\\A`@G?YKI[BWGC[]oBmCd@\\bCd@AZE",
+          "p": {}
+        },
+        {
+          "from": {
+            "t": 1726128299,
+            "y": 37.8969535828,
+            "x": 58.389629364
+          },
+          "to": {
+            "t": 1726129629,
+            "y": 37.8959274292,
+            "x": 58.3974723816
+          },
+          "m": 1726129629,
+          "f": 1,
+          "state": 1,
+          "max_speed": 45,
+          "curr_speed": 14,
+          "avg_speed": 9,
+          "distance": 3236,
+          "odometer": 58988192,
+          "course": 88,
+          "altitude": 305,
+          "pos_flags": 0,
+          "format": {
+            "distance": "3.24 km",
+            "avg_speed": "9 km/h"
+          },
+          "track": "}vhfFefkcJKGGcAMEcAc@Cc@Ec@ECq@MU_@}D?uDEIJAZI`@O@uDAgAS?_FDCTArDFfA@BWFoBHC|D@rDBLCDOEsEIOI[TkFDeFEgAKCuDSgCLAF?[BCtA@vDVt@J?N@lFFXNHhC^Hh@NjCRADK?OG}AGCa@UCy@MEgCMCW@gFJkCVI|DPtDVf@KEKEAwDSaDg@COBGHEzDZ`ADHM?[",
+          "p": {}
+        },
+        {
+          "from": {
+            "t": 1726129929,
+            "y": 37.8959197998,
+            "x": 58.3975830078
+          },
+          "to": {
+            "t": 1726130359,
+            "y": 37.9119033813,
+            "x": 58.3982124329
+          },
+          "m": 1726130359,
+          "f": 1,
+          "state": 1,
+          "max_speed": 66,
+          "curr_speed": 21,
+          "avg_speed": 15,
+          "distance": 1823,
+          "odometer": 58991428,
+          "course": 84,
+          "altitude": 259,
+          "pos_flags": 0,
+          "format": {
+            "distance": "1.82 km",
+            "avg_speed": "15 km/h"
+          },
+          "track": "ophfF{wlcJGJ@`@EHMNe@?sDa@c@H@LGJEBuDU}DWyDUkEYaESyDA}DEaEE_E?wDE{DEeEEyDC_EC}DIg@MGY",
+          "p": {}
+        },
+        {
+          "from": {
+            "t": 1726130659,
+            "y": 37.9118919373,
+            "x": 58.3988952637
+          },
+          "to": {
+            "t": 1726131380,
+            "y": 37.9031295776,
+            "x": 58.4219017029
+          },
+          "m": 1726131380,
+          "f": 1,
+          "state": 1,
+          "max_speed": 68,
+          "curr_speed": 9,
+          "avg_speed": 25,
+          "distance": 4965,
+          "odometer": 58993251,
+          "course": 252,
+          "altitude": 296,
+          "pos_flags": 0,
+          "format": {
+            "distance": "4.96 km",
+            "avg_speed": "25 km/h"
+          },
+          "track": "itkfFa`mcJ?EAeFAgF?gFEqEc@iADgFAKMG{DEuDC}DCcECwDCaE?uCSIYCyFBaG?cGBkF?yFDwF?_GBiFDkFDgFBuF@yFHcGNaFb@wA~@g@hEQdEEfEE~DAfEBfEBdE@bE@fE@nEBhE?bEA~D?rANBZAfF?jFH~@PHbDALQ@sBM{DI[CUGAIBAF?DHLf@P|@N@J",
+          "p": {}
+        },
+        {
+          "from": {
+            "t": 1726131680,
+            "y": 37.9031448364,
+            "x": 58.4218177795
+          },
+          "to": {
+            "t": 1726133762,
+            "y": 37.9012069702,
+            "x": 58.3905143738
+          },
+          "m": 1726133762,
+          "f": 1,
+          "state": 1,
+          "max_speed": 69,
+          "curr_speed": 9,
+          "avg_speed": 10,
+          "distance": 5733,
+          "odometer": 58998216,
+          "course": 112,
+          "altitude": 302,
+          "pos_flags": 0,
+          "format": {
+            "distance": "5.73 km",
+            "avg_speed": "10 km/h"
+          },
+          "track": "s}ifFkoqcJCH@dFEnFDbFBfAL@|D@v@JDR?d@C{@FE@OCuFBeFGEMA{DE{D?mC@ERCvFCnFG`GEbFB\\LH~DHfE@xDBxDFb@FBFBzFCfFCpFA~FAhF?nFAtFAzFCvFC~FIjF{@hDmC~D}@hDBxEZ\\zD^`E`@VRD^FrALBxDFrDj@BR?jFJVJDfCXNjAFvBD@vBV@PC~@OH}BNAr@PnDxBHDNAv@EDe@LcALARGhCN`@d@bARzBVAVAFKCWEEQ?u@[WUi@RQfA{@s@e@aDI?o@K[]uD?sDCEDAL?r@IDuDEwAE",
+          "p": {}
+        },
+        {
+          "from": {
+            "t": 1726134062,
+            "y": 37.9012680054,
+            "x": 58.3906402588
+          },
+          "to": {
+            "t": 1726135072,
+            "y": 37.896396637,
+            "x": 58.3961791992
+          },
+          "m": 1726135072,
+          "f": 1,
+          "state": 1,
+          "max_speed": 28,
+          "curr_speed": 13,
+          "avg_speed": 6,
+          "distance": 1610,
+          "odometer": 59003949,
+          "course": 70,
+          "altitude": 337,
+          "pos_flags": 0,
+          "format": {
+            "distance": "1.61 km",
+            "avg_speed": "6 km/h"
+          },
+          "track": "}qifFolkcJEQJyDJB|CMBU@uFMmAOAiBOAUOgAUAc@?GoBPGr@FDNCj@BjCNF~BV@\\@|CPFzDDvDHxDA\\Kf@_DlDKBO?y@]cFASJENS_@gF",
+          "p": {}
+        },
+        {
+          "from": {
+            "t": 1726135396,
+            "y": 37.8965644836,
+            "x": 58.3964538574
+          },
+          "to": {
+            "t": 1726135568,
+            "y": 37.901260376,
+            "x": 58.3962173462
+          },
+          "m": 1726135568,
+          "f": 1,
+          "state": 1,
+          "max_speed": 28,
+          "curr_speed": 16,
+          "avg_speed": 13,
+          "distance": 639,
+          "odometer": 59005559,
+          "course": 75,
+          "altitude": 295,
+          "pos_flags": 0,
+          "format": {
+            "distance": "0.64 km",
+            "avg_speed": "13 km/h"
+          },
+          "track": "othfFyplcJWPWbAuDPALS\\wDCuDAKQ?KMkB]BINA^_@d@GMcBPU@kASO_@",
+          "p": {}
+        },
+        {
+          "from": {
+            "t": 1726137968,
+            "y": 37.9013786316,
+            "x": 58.3965339661
+          },
+          "to": {
+            "t": 1726139158,
+            "y": 37.8974647522,
+            "x": 58.3903923035
+          },
+          "m": 1726139158,
+          "f": 1,
+          "state": 1,
+          "max_speed": 31,
+          "curr_speed": 18,
+          "avg_speed": 6,
+          "distance": 1930,
+          "odometer": 59006198,
+          "course": 269,
+          "altitude": 312,
+          "pos_flags": 0,
+          "format": {
+            "distance": "1.93 km",
+            "avg_speed": "6 km/h"
+          },
+          "track": "srifFiqlcJg@BFPLd@HBvDKr@P?TKfAIBi@VMLIMIGCQLBtAC@NIHKBWP?RD|@N\\BfFCbFErDIBgAGAQMkAY?c@EEUA}BAg@CWMCw@HCT?fFGnFBfCL@xCH?OHaADA`DSDF@LVxAPDvDJpDVBKPqCNCf@B@d@",
+          "p": {}
+        },
+        {
+          "from": {
+            "t": 1726139458,
+            "y": 37.8973922729,
+            "x": 58.3897094727
+          },
+          "to": {
+            "t": 1726141467,
+            "y": 37.898349762,
+            "x": 58.3963470459
+          },
+          "m": 1726141467,
+          "f": 1,
+          "state": 1,
+          "max_speed": 18,
+          "curr_speed": 12,
+          "avg_speed": 3,
+          "distance": 1651,
+          "odometer": 59008128,
+          "course": 7,
+          "altitude": 325,
+          "pos_flags": 0,
+          "format": {
+            "distance": "1.65 km",
+            "avg_speed": "3 km/h"
+          },
+          "track": "uyhfFufkcJGuALF`A`@@A?_@DKLC`@MHg@LsBOS]QBa@J_@RErAC@QEiCMADDBdAK@sBKHa@C}DJE`DCHIAKEAE?[QAgAEsAGCMKEJK|ASDmAQ?QIaENIfC[I{EaA?cC[@KHy@C@iBVwBf@",
+          "p": {}
+        }
+      ]
+    }
+  }
+}

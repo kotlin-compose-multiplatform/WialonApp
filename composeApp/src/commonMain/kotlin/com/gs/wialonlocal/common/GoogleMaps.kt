@@ -2,6 +2,9 @@ package com.gs.wialonlocal.common
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.painter.Painter
+import com.gs.wialonlocal.features.monitoring.data.entity.history.Trip
+import com.gs.wialonlocal.features.monitoring.domain.model.UnitModel
 import kotlinx.serialization.Serializable
 import kotlin.math.PI
 
@@ -99,29 +102,10 @@ fun LatLong.toLocation(): Location {
 @Composable
 expect fun GoogleMaps(
     modifier: Modifier,
-    isMapOptionSwitchesVisible: Boolean = true,
-    isTrackingEnabled: Boolean = false,
-    userLocation: LatLong? = null,
-    markers: List<Marker>? = null,
-    shouldCalcClusterItems: Boolean = false,
-    onDidCalculateClusterItemList: () -> Unit = {},
-    shouldSetInitialCameraPosition: CameraPosition? = null,
-    shouldCenterCameraOnLatLong: LatLong? = null,
-    onDidCenterCameraOnLatLong: () -> Unit,
-    cameraLocationBounds: CameraLocationBounds? = null,
-    polyLine: List<LatLong>? = null,
-    onMapClick: ((LatLong) -> Unit)? = {},
-    onMapLongClick: ((LatLong) -> Unit)? = {},
-    onMarkerInfoClick: ((Marker) -> Unit)? = {},
-    seenRadiusMiles: Double = .5,
-    cachedMarkersLastUpdatedLocation: Location? = null,
-    onToggleIsTrackingEnabledClick: (() -> Unit)? = null,
-    onFindMeButtonClick: (() -> Unit)? = null,
-    isMarkersLastUpdatedLocationVisible: Boolean = false,
-    shouldShowInfoMarker: Marker? = null,
-    onDidShowInfoMarker: () -> Unit = {},
-    shouldZoomToLatLongZoom: LatLongZoom?,
-    onDidZoomToLatLongZoom: () -> Unit,
-    shouldAllowCacheReset: Boolean,
-    onDidAllowCacheReset: () -> Unit,
+    cameraPosition: CameraPosition = CameraPosition(
+        target = LatLong(37.7749, 58.8788),
+        zoom = 5f
+    ),
+    units: List<UnitModel> = emptyList(),
+    onUnitClick: (UnitModel) -> Unit = {}
 )

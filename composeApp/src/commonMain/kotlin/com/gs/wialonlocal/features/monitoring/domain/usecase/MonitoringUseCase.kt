@@ -4,6 +4,7 @@ import com.gs.wialonlocal.core.network.Resource
 import com.gs.wialonlocal.features.monitoring.data.entity.history.CustomFields
 import com.gs.wialonlocal.features.monitoring.data.entity.history.GetReportSettings
 import com.gs.wialonlocal.features.monitoring.data.entity.history.LoadEventRequest
+import com.gs.wialonlocal.features.monitoring.data.entity.history.Trip
 import com.gs.wialonlocal.features.monitoring.data.entity.history.TripsResponse
 import com.gs.wialonlocal.features.monitoring.domain.model.UnitModel
 import com.gs.wialonlocal.features.monitoring.domain.repository.MonitoringRepository
@@ -20,7 +21,7 @@ class MonitoringUseCase(private val repository: MonitoringRepository) {
         return repository.getReportSettings(itemId)
     }
 
-    suspend fun loadEvents(req: LoadEventRequest): Flow<Resource<TripsResponse>> {
+    suspend fun loadEvents(req: LoadEventRequest): Flow<Resource<Pair<List<Trip>, List<Trip>>>> {
         return repository.loadEvents(req)
     }
 

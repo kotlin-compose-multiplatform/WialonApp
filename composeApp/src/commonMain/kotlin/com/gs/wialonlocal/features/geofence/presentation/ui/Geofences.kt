@@ -138,18 +138,7 @@ fun Geofences(modifier: Modifier = Modifier) {
                 }
                 MapContainer(Modifier.fillMaxSize()) {
                     GoogleMaps(
-                        modifier = Modifier.fillMaxSize(),
-                        shouldZoomToLatLongZoom = LatLongZoom(LatLong(37.8, 58.7), 18f),
-                        onDidAllowCacheReset = {
-
-                        },
-                        onDidCenterCameraOnLatLong = {
-
-                        },
-                        onDidZoomToLatLongZoom = {
-
-                        },
-                        shouldAllowCacheReset = true
+                        modifier = Modifier.fillMaxSize()
                     )
                 }
             }

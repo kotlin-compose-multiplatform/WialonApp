@@ -90,6 +90,9 @@ class MonitoringViewModel(
                         )
                     }
                     is Resource.Success -> {
+                        println("___________CATEGORIZED_________________________")
+                        println(it.data?.second)
+                        println("___________CATEGORIZED_________________________")
                         _loadEventState.value = _loadEventState.value.copy(
                             loading = false,
                             error = it.message,

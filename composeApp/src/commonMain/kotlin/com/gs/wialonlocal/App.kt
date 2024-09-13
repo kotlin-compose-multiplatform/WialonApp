@@ -4,6 +4,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import cafe.adriel.lyricist.ProvideStrings
 import cafe.adriel.lyricist.rememberStrings
 import cafe.adriel.voyager.navigator.Navigator
+import coil3.compose.rememberAsyncImagePainter
 import com.gs.wialonlocal.core.network.provideHttpClient
 import com.gs.wialonlocal.core.network.provideSettings
 import com.gs.wialonlocal.core.network.provideViewModel

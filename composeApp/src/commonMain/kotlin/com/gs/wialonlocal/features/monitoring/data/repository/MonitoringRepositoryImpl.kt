@@ -1,14 +1,18 @@
 package com.gs.wialonlocal.features.monitoring.data.repository
 
+import com.gs.wialonlocal.common.LatLong
 import com.gs.wialonlocal.core.constant.Constant
 import com.gs.wialonlocal.core.network.Resource
 import com.gs.wialonlocal.features.auth.data.AuthSettings
 import com.gs.wialonlocal.features.monitoring.data.entity.GetUnits
+import com.gs.wialonlocal.features.monitoring.data.entity.TripDetector
 import com.gs.wialonlocal.features.monitoring.data.entity.history.CustomFields
+import com.gs.wialonlocal.features.monitoring.data.entity.history.GetEvents
 import com.gs.wialonlocal.features.monitoring.data.entity.history.GetReportSettings
 import com.gs.wialonlocal.features.monitoring.data.entity.history.LoadEventRequest
 import com.gs.wialonlocal.features.monitoring.data.entity.history.Trip
 import com.gs.wialonlocal.features.monitoring.data.entity.history.TripsResponse
+import com.gs.wialonlocal.features.monitoring.data.entity.history.categorizeAndMergeTrips
 import com.gs.wialonlocal.features.monitoring.data.entity.updates.Data
 import com.gs.wialonlocal.features.monitoring.data.entity.updates.Position
 import com.gs.wialonlocal.features.monitoring.domain.model.UnitModel
@@ -116,7 +120,10 @@ class MonitoringRepositoryImpl(
                                 if(it.id == dynamicKey) {
                                     it.copy(
                                         latitude = newPosition.y,
-                                        longitude = newPosition.x
+                                        longitude = newPosition.x,
+                                        trips = it.trips.plus(
+                                            LatLong(newPosition.y, newPosition.x)
+                                        )
                                     )
                                 } else {
                                     it
@@ -154,16 +161,25 @@ class MonitoringRepositoryImpl(
     }
 
     @OptIn(InternalAPI::class)
-    override suspend fun loadEvents(req: LoadEventRequest): Flow<Resource<TripsResponse>> = flow {
+    override suspend fun loadEvents(req: LoadEventRequest): Flow<Resource<Pair<List<Trip>, List<Trip>>>> = flow {
         emit(Resource.Loading())
         try {
-            val result = httpClient.post("${Constant.BASE_URL}/wialon/ajax.html?svc=/events/load") {
+            val tripDetector = httpClient.post("${Constant.BASE_URL}/wialon/ajax.html?svc=unit/get_trip_detector") {
                 body = FormDataContent(Parameters.build {
                     append("sid", authSettings.getSessionId())
-                    append("params", "{\"itemId\":${req.itemId},\"ivalType\":1,\"timeFrom\":${req.timeFrom},\"timeTo\":${req.timeTo},\"measure\":0,\"lang\":\"en\",\"detectors\":[{\"type\":\"trips\",\"filter1\":0}],\"selector\":{\"type\":\"trips\",\"timeFrom\":${req.timeFrom},\"timeTo\":${req.timeTo},\"detalization\":47}}")
+                    append("params", "{\"itemId\":${req.itemId}}")
                 })
-            }.body<TripsResponse>()
-            emit(Resource.Success(result))
+            }.body<TripDetector>()
+            println("____________DETECTOR__________")
+            println(tripDetector)
+            println("____________DETECTOR__________")
+            val result = httpClient.post("${Constant.BASE_URL}/wialon/ajax.html?svc=unit/get_events") {
+                body = FormDataContent(Parameters.build {
+                    append("sid", authSettings.getSessionId())
+                    append("params", "{\"itemId\":${req.itemId},\"eventType\":\"trips\",\"ivalType\":1,\"ivalFrom\":${req.timeFrom},\"ivalTo\":${req.timeTo},\"detalization\":47}")
+                })
+            }.body<GetEvents>()
+            emit(Resource.Success(Pair(result.trips, categorizeAndMergeTrips(result.trips, tripDetector))))
         } catch (ex: Exception) {
             ex.printStackTrace()
             emit(Resource.Error(ex.message))

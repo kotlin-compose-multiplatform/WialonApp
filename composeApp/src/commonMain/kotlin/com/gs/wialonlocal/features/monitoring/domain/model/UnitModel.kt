@@ -1,6 +1,7 @@
 package com.gs.wialonlocal.features.monitoring.domain.model
 
 import androidx.compose.ui.graphics.Color
+import com.gs.wialonlocal.common.LatLong
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 
@@ -17,6 +18,7 @@ data class UnitModel(
     val isOnline: Boolean,
     var latitude: Double,
     var longitude: Double,
+    var trips: List<LatLong> = emptyList()
 ) {
     fun calculateDifference():Pair<String, Color> {
         val currentDate = Clock.System.now()
