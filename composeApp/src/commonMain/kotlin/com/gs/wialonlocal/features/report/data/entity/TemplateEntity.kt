@@ -7,11 +7,4 @@ import kotlinx.serialization.Serializable
 data class TemplateEntity(
     val id: String,
     val title: String
-) {
-    fun toUiEntity(): TemplateModel {
-        return TemplateModel(
-            id = id,
-            name = title
-        )
-    }
-}
+)

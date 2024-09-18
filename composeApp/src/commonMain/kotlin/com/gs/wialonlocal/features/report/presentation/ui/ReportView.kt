@@ -15,6 +15,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -22,15 +25,23 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.core.screen.Screen
+import cafe.adriel.voyager.koin.koinNavigatorScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import com.gs.wialonlocal.common.PdfViewer
 import com.gs.wialonlocal.features.main.presentation.ui.ToolBar
+import com.gs.wialonlocal.features.report.presentation.viewmodel.ReportViewModel
+import io.ktor.util.encodeBase64
 
 class ReportView : Screen {
     @Composable
     override fun Content() {
         val navigator = LocalNavigator.currentOrThrow
+        val viewModel = navigator.koinNavigatorScreenModel<ReportViewModel>()
+        val reportState = viewModel.reportState.collectAsState()
+        val share = remember {
+            mutableStateOf<()->Unit>({})
+        }
         Column(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
             ToolBar(Modifier.fillMaxWidth()) {
                 Row(
@@ -51,7 +62,7 @@ class ReportView : Screen {
                     }
 
                     Text(
-                        "1293AGE 87_Arçabil 2_31.03.2024",
+                        "${viewModel.selectedUnit.value?.carNumber} ${viewModel.selectedTemplate.value?.name}",
                         modifier = Modifier.weight(1f),
                         color = MaterialTheme.colorScheme.onPrimary,
                         maxLines = 1,
@@ -64,7 +75,7 @@ class ReportView : Screen {
 
                     IconButton(
                         onClick = {
-
+                            share.value()
                         }
                     ) {
                         Icon(
@@ -78,7 +89,11 @@ class ReportView : Screen {
 
             PdfViewer(
                 modifier = Modifier.fillMaxSize(),
-                url = ""
+                url = "",
+                base64 = reportState.value.pdf!!.encodeBase64(),
+                share = { shareIt->
+                    share.value = shareIt
+                }
             )
 
         }

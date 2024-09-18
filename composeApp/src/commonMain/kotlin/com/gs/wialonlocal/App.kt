@@ -15,6 +15,7 @@ import com.gs.wialonlocal.features.global.di.globalModule
 import com.gs.wialonlocal.features.global.presentation.ui.GlobalAuthScreen
 import com.gs.wialonlocal.features.main.presentation.ui.MainScreen
 import com.gs.wialonlocal.features.monitoring.di.monitoringModule
+import com.gs.wialonlocal.features.report.di.reportModule
 import com.gs.wialonlocal.state.LocalTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -35,7 +36,8 @@ fun App() {
                 provideSettings,
                 monitoringModule,
                 authModule,
-                globalModule
+                globalModule,
+                reportModule
             )
         }
     ) {

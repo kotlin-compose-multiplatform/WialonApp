@@ -12,7 +12,7 @@ import platform.PDFKit.PDFView
 
 @OptIn(ExperimentalForeignApi::class)
 @Composable
-actual fun PdfViewer(modifier: Modifier, url: String) {
+actual fun PdfViewer(modifier: Modifier, url: String, base64: String,  share: (()-> Unit)-> Unit) {
     val pdfView = rememberSaveable {
         PDFView().apply {
             autoScales = true

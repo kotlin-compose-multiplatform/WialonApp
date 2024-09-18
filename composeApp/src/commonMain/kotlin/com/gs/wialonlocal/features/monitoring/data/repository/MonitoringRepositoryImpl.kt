@@ -98,8 +98,7 @@ class MonitoringRepositoryImpl(
             emit(Resource.Loading())
             var updated = oldEvents
             try {
-                val jsonResponse =
-                    httpClient.post("${Constant.BASE_URL}/wialon/ajax.html?svc=events/check_updates") {
+                val jsonResponse = httpClient.post("${Constant.BASE_URL}/wialon/ajax.html?svc=events/check_updates") {
                         body = FormDataContent(Parameters.build {
                             append("sid", authSettings.getSessionId())
                             append("params", "{\"lang\":\"tk\",\"measure\":0,\"detalization\":35}")

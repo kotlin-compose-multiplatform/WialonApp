@@ -61,6 +61,7 @@ kotlin {
             implementation(libs.ktor.client.core)
             implementation(libs.ktor.client.negotiation)
             implementation(libs.ktor.client.cia)
+            implementation(libs.ktor.client.utils)
             implementation(libs.ktor.client.json)
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.webview)

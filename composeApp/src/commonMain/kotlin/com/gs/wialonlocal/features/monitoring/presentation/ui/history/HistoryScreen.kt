@@ -122,6 +122,8 @@ fun HistoryScreen(
         listState.scrollToItem(dates.value.size - 1)
     }
 
+    val summary = viewModel.summaryState.collectAsState()
+
     Column(
         modifier = modifier.fillMaxWidth().verticalScroll(rememberScrollState()).background(
             color = MaterialTheme.colorScheme.background
@@ -166,17 +168,17 @@ fun HistoryScreen(
             HistoryStatLabel(
                 modifier = Modifier.weight(1f),
                 icon = painterResource(Res.drawable.circle_car),
-                text = "36 min"
+                text = summary.value.tripMin
             )
             HistoryStatLabel(
                 modifier = Modifier.weight(1f),
                 icon = painterResource(Res.drawable.circle_graph),
-                text = "3.22 km"
+                text = summary.value.dayKm
             )
             HistoryStatLabel(
                 modifier = Modifier.weight(1f),
                 icon = painterResource(Res.drawable.circle_parking),
-                text = "9h 15min"
+                text = summary.value.parkingMin
             )
         }
         HorizontalDivider()

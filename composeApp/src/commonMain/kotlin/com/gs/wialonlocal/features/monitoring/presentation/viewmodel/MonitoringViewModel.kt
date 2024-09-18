@@ -4,17 +4,22 @@ import cafe.adriel.voyager.core.model.ScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
 import com.gs.wialonlocal.core.network.Resource
 import com.gs.wialonlocal.features.monitoring.data.entity.history.LoadEventRequest
+import com.gs.wialonlocal.features.monitoring.data.entity.history.calculateTripStats
 import com.gs.wialonlocal.features.monitoring.domain.usecase.MonitoringUseCase
 import com.gs.wialonlocal.features.monitoring.presentation.state.FieldState
 import com.gs.wialonlocal.features.monitoring.presentation.state.LoadEventState
 import com.gs.wialonlocal.features.monitoring.presentation.state.ReportSettingsState
+import com.gs.wialonlocal.features.monitoring.presentation.state.SummaryState
 import com.gs.wialonlocal.features.monitoring.presentation.state.UnitState
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MonitoringViewModel(
     private val useCase: MonitoringUseCase
@@ -31,12 +36,14 @@ class MonitoringViewModel(
     private val _fieldState = MutableStateFlow(FieldState())
     val fieldState = _fieldState.asStateFlow()
 
+    private val _summaryState = MutableStateFlow(SummaryState())
+    val summaryState = _summaryState.asStateFlow()
 
 
     fun getFields(itemId: String) {
         screenModelScope.launch {
             useCase.getEvent(itemId).onEach {
-                when(it) {
+                when (it) {
                     is Resource.Error -> {
                         _fieldState.value = _fieldState.value.copy(
                             loading = false,
@@ -44,6 +51,7 @@ class MonitoringViewModel(
                             data = it.data
                         )
                     }
+
                     is Resource.Loading -> {
                         _fieldState.value = _fieldState.value.copy(
                             loading = true,
@@ -51,6 +59,7 @@ class MonitoringViewModel(
                             data = it.data
                         )
                     }
+
                     is Resource.Success -> {
                         _fieldState.value = _fieldState.value.copy(
                             loading = false,
@@ -74,7 +83,7 @@ class MonitoringViewModel(
                     timeTo = timeTo
                 )
             ).onEach {
-                when(it) {
+                when (it) {
                     is Resource.Error -> {
                         _loadEventState.value = _loadEventState.value.copy(
                             loading = false,
@@ -82,6 +91,7 @@ class MonitoringViewModel(
                             data = it.data
                         )
                     }
+
                     is Resource.Loading -> {
                         _loadEventState.value = _loadEventState.value.copy(
                             loading = true,
@@ -89,6 +99,7 @@ class MonitoringViewModel(
                             data = it.data
                         )
                     }
+
                     is Resource.Success -> {
                         println("___________CATEGORIZED_________________________")
                         println(it.data?.second)
@@ -98,6 +109,15 @@ class MonitoringViewModel(
                             error = it.message,
                             data = it.data
                         )
+                        it.data?.second?.let { trips ->
+
+                            _summaryState.value = _summaryState.value.copy(
+                                tripMin = calculateTripStats(trips.filter {e-> e.type == "trip" }).first,
+                                dayKm = calculateTripStats(trips).second,
+                                parkingMin = calculateTripStats(trips.filter {e-> e.type == "park" }).first,
+                            )
+                        }
+
                         getFields(itemId)
                     }
                 }
@@ -108,7 +128,7 @@ class MonitoringViewModel(
     fun getReportSettings(itemId: String) {
         screenModelScope.launch {
             useCase.getReportSettings(itemId).onEach {
-                when(it) {
+                when (it) {
                     is Resource.Error -> {
                         _reportSettings.value = _reportSettings.value.copy(
                             loading = false,
@@ -116,6 +136,7 @@ class MonitoringViewModel(
                             settings = it.data
                         )
                     }
+
                     is Resource.Loading -> {
                         _reportSettings.value = _reportSettings.value.copy(
                             loading = true,
@@ -123,6 +144,7 @@ class MonitoringViewModel(
                             settings = it.data
                         )
                     }
+
                     is Resource.Success -> {
                         _reportSettings.value = _reportSettings.value.copy(
                             loading = false,
@@ -136,13 +158,14 @@ class MonitoringViewModel(
         }
     }
 
-    fun unloadEvents(id: String, onDone: ()->Unit = {}) {
+    fun unloadEvents(id: String, onDone: () -> Unit = {}) {
         screenModelScope.launch {
             useCase.unloadEvents(id).onEach {
-                when(it) {
+                when (it) {
                     is Resource.Error -> {
                         onDone()
                     }
+
                     is Resource.Loading -> {}
                     is Resource.Success -> {
                         onDone()
@@ -154,11 +177,11 @@ class MonitoringViewModel(
 
     fun startCheckUpdate() {
         screenModelScope.launch {
-            _units.value.data?.let {
-                while (true) {
-                    delay(5000L)
-                    useCase.getUpdates(it).onEach { result->
-                        when(result) {
+            while (true) {
+                delay(5000L)
+                _units.value.data?.let {
+                    useCase.getUpdates(it).onEach { result ->
+                        when (result) {
                             is Resource.Error -> {}
                             is Resource.Loading -> {}
                             is Resource.Success -> {
@@ -175,7 +198,7 @@ class MonitoringViewModel(
         }
     }
 
-    fun getUnits() {
+    fun getUnits(requireCheckUpdate: Boolean) {
         screenModelScope.launch {
             useCase.getEvents().onEach {
                 when (it) {
@@ -198,7 +221,9 @@ class MonitoringViewModel(
                     }
 
                     is Resource.Success -> {
-                        startCheckUpdate()
+                        if(requireCheckUpdate) {
+                            startCheckUpdate()
+                        }
                         _units.value = _units.value.copy(
                             loading = false,
                             error = it.message,
@@ -211,9 +236,9 @@ class MonitoringViewModel(
         }
     }
 
-    fun initUnits() {
+    fun initUnits(requireCheckUpdate: Boolean) {
         if (_units.value.data.isNullOrEmpty()) {
-            getUnits()
+            getUnits(requireCheckUpdate)
         }
     }
 }

@@ -72,7 +72,7 @@ fun Units() {
     val viewModel = navigator.koinNavigatorScreenModel<MonitoringViewModel>()
     val units = viewModel.units.collectAsState()
     LaunchedEffect(true) {
-        viewModel.initUnits()
+        viewModel.initUnits(requireCheckUpdate = true)
     }
     if (units.value.loading) {
         AppLoading(Modifier.fillMaxSize())

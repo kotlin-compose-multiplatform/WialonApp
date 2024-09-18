@@ -30,7 +30,7 @@ class MapScreen: Screen {
         val viewModel = navigator.koinNavigatorScreenModel<MonitoringViewModel>()
         val units = viewModel.units.collectAsState()
         LaunchedEffect(true) {
-            viewModel.initUnits()
+            viewModel.initUnits(requireCheckUpdate = true)
         }
         Column(Modifier.fillMaxSize()) {
             ToolBar {

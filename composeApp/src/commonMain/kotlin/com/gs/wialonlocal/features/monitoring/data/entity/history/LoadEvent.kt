@@ -11,6 +11,7 @@ import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.decodeFromJsonElement
 import kotlin.time.Duration
 import kotlinx.datetime.*
+import kotlin.math.floor
 
 @Serializable
 data class TripEvent(
@@ -80,6 +81,50 @@ data class TripsResponse(
     val states: TripState,
     val selector: TripSelector
 )
+
+
+fun formatTime(minutes: Long): String {
+    val hours = minutes / 60
+    val remainingMinutes = minutes % 60
+
+    return when {
+        hours > 0 -> "$hours h $remainingMinutes min"
+        else -> "$remainingMinutes min"
+    }
+}
+
+fun formatDistance(distanceInMeters: Double): String {
+    return when {
+        distanceInMeters >= 1000 -> {
+            val km = distanceInMeters / 1000
+            "${floor(km * 100) / 100} km"  // Round to 2 decimal places
+        }
+        else -> "${floor(distanceInMeters)} metr"  // No decimals for meters
+    }
+}
+
+fun calculateTripStats(trips: List<Trip>): Pair<String, String> {
+    var totalTripTimeInSeconds: Long = 0
+    var totalDistanceInMeters: Double = 0.0
+
+    for (trip in trips) {
+        // Calculate trip duration in seconds
+        val tripDuration = trip.to.t - trip.from.t
+        totalTripTimeInSeconds += tripDuration
+
+        // Calculate total distance in meters
+        totalDistanceInMeters += trip.distance.toDouble()
+    }
+
+    // Convert total trip time from seconds to minutes
+    val totalTripTimeInMinutes = totalTripTimeInSeconds / 60
+
+    // Format time and distance
+    val formattedTime = formatTime(totalTripTimeInMinutes)
+    val formattedDistance = formatDistance(totalDistanceInMeters)
+
+    return Pair(formattedTime, formattedDistance)
+}
 
 fun convertMinutesToHours(minutes: Long): String {
     if(minutes>=60){
