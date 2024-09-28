@@ -108,6 +108,7 @@ internal data class Strings(
     val tapToChange: String,
     val interfaceCustom: String,
     val theme: String,
+    val language: String,
     val sameAsDevice: String,
     val navigationBar: String,
     val pushNotification: String,

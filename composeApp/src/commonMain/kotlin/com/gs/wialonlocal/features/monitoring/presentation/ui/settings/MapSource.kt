@@ -1,5 +1,6 @@
 package com.gs.wialonlocal.features.monitoring.presentation.ui.settings
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,11 +19,17 @@ import cafe.adriel.voyager.navigator.currentOrThrow
 import com.gs.wialonlocal.components.BackFragment
 import com.gs.wialonlocal.components.RadioText
 import com.gs.wialonlocal.components.SwitchText
+import com.gs.wialonlocal.features.settings.data.settings.AppSettings
+import com.gs.wialonlocal.features.settings.data.settings.MapType
+import com.gs.wialonlocal.state.LocalAppSettings
+import org.koin.compose.koinInject
 
 class MapSource: Screen {
     @Composable
     override fun Content() {
         val navigator = LocalNavigator.currentOrThrow
+        val appSettings = LocalAppSettings.current
+        val settings = koinInject<AppSettings>()
         BackFragment(
             modifier = Modifier.fillMaxSize(),
             title = strings.mapSource,
@@ -32,21 +39,42 @@ class MapSource: Screen {
         ) {
             Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
                 RadioText(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().clickable {
+                        appSettings.value = appSettings.value.copy(
+                            mapType = MapType.MAP
+                        )
+                        settings.saveMapType("map")
+                        navigator.pop()
+                    },
+                    initial = appSettings.value.mapType == MapType.MAP,
                     text = "Google Default",
                     onChange = { isChecked->
 
                     }
                 )
                 RadioText(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().clickable {
+                        appSettings.value = appSettings.value.copy(
+                            mapType = MapType.SATELLITE
+                        )
+                        settings.saveMapType("satellite")
+                        navigator.pop()
+                    },
+                    initial = appSettings.value.mapType == MapType.SATELLITE,
                     text = "Google Satellite",
                     onChange = { isChecked->
 
                     }
                 )
                 RadioText(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().clickable {
+                        appSettings.value = appSettings.value.copy(
+                            mapType = MapType.HYBRID
+                        )
+                        settings.saveMapType("hybrid")
+                        navigator.pop()
+                    },
+                    initial = appSettings.value.mapType == MapType.HYBRID,
                     text = "Google Hybrid",
                     onChange = { isChecked->
 

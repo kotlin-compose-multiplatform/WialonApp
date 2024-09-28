@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class Pos(
     val c: Int,
-    val s: Int,
+    val s: Double,
     val sc: Int,
     val x: Double? = null,
     val y: Double? = null,

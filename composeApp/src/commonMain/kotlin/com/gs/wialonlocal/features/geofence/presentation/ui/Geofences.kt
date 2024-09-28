@@ -18,6 +18,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.rememberScaffoldState
@@ -34,26 +35,38 @@ import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalViewConfiguration
 import androidx.compose.ui.platform.LocalWindowInfo
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import cafe.adriel.lyricist.strings
+import cafe.adriel.voyager.koin.koinNavigatorScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
+import com.gs.wialonlocal.common.CameraPosition
 import com.gs.wialonlocal.common.GoogleMaps
 import com.gs.wialonlocal.common.LatLong
 import com.gs.wialonlocal.common.LatLongZoom
+import com.gs.wialonlocal.common.defaultMapPos
+import com.gs.wialonlocal.components.AppError
 import com.gs.wialonlocal.components.ContextButton
 import com.gs.wialonlocal.components.ContextMenu
+import com.gs.wialonlocal.features.geofence.data.entity.geofence.P
+import com.gs.wialonlocal.features.geofence.data.entity.geofence.RealGeofenceApiItem
+import com.gs.wialonlocal.features.geofence.presentation.viewmodel.GeofenceViewModel
 import com.gs.wialonlocal.features.map.presentation.ui.MapContainer
+import com.gs.wialonlocal.state.LocalAppSettings
 import org.jetbrains.compose.resources.painterResource
 import wialonlocal.composeapp.generated.resources.Res
 import wialonlocal.composeapp.generated.resources.copy
@@ -70,6 +83,12 @@ fun Geofences(modifier: Modifier = Modifier) {
     val state = rememberStandardBottomSheetState(initialValue = SheetValue.Expanded)
     val scaffoldState = rememberBottomSheetScaffoldState(state)
     val navigator = LocalNavigator.currentOrThrow
+    val viewModel: GeofenceViewModel = navigator.koinNavigatorScreenModel()
+    val geofenceState = viewModel.geofenceState.collectAsState()
+    LaunchedEffect(true) {
+        viewModel.initGeoFences()
+    }
+    val mapType = LocalAppSettings.current
     BottomSheetScaffold(
         scaffoldState = scaffoldState,
         containerColor = MaterialTheme.colorScheme.surface,
@@ -96,11 +115,23 @@ fun Geofences(modifier: Modifier = Modifier) {
         sheetPeekHeight = 300.dp,
         sheetShape = RoundedCornerShape(0.dp),
         sheetContent = {
-            Column(Modifier.fillMaxWidth().fillMaxHeight().verticalScroll(rememberScrollState())) {
-                repeat(12) {
-                    GeofenceItem(modifier = Modifier.fillMaxWidth().clickable {
-                        navigator.push(GeofenceDetails())
-                    })
+            if(geofenceState.value.loading) {
+                LinearProgressIndicator(Modifier.fillMaxWidth())
+            } else if(geofenceState.value.error.isNullOrEmpty().not()) {
+                AppError(
+                    modifier = Modifier.fillMaxSize(),
+                    message = geofenceState.value.error
+                )
+            } else {
+                geofenceState.value.geofence?.let { list->
+                    Column(Modifier.fillMaxWidth().fillMaxHeight().verticalScroll(rememberScrollState())) {
+                        repeat(list.count()) { index->
+                            val item = list[index]
+                            GeofenceItem(modifier = Modifier.fillMaxWidth().clickable {
+                                navigator.push(GeofenceDetails(item))
+                            }, item = list[index])
+                        }
+                    }
                 }
             }
         },
@@ -117,7 +148,7 @@ fun Geofences(modifier: Modifier = Modifier) {
                         tint = MaterialTheme.colorScheme.onPrimary
                     )
                     Text(
-                        "0.926 ha",
+                        "0.0 ha",
                         style = MaterialTheme.typography.bodyLarge.copy(
                             fontWeight = FontWeight.W500
                         ),
@@ -129,7 +160,7 @@ fun Geofences(modifier: Modifier = Modifier) {
                         tint = MaterialTheme.colorScheme.onPrimary
                     )
                     Text(
-                        "387.616 m",
+                        "0.0 m",
                         style = MaterialTheme.typography.bodyLarge.copy(
                             fontWeight = FontWeight.W500
                         ),
@@ -137,9 +168,25 @@ fun Geofences(modifier: Modifier = Modifier) {
                     )
                 }
                 MapContainer(Modifier.fillMaxSize()) {
-                    GoogleMaps(
-                        modifier = Modifier.fillMaxSize()
-                    )
+                    geofenceState.value.geofence?.let { list ->
+                        val geofences = emptyMap<String, List<P>>().toMutableMap()
+                        list.forEach { g->
+                            geofences[g.n.plus(g.d)] = g.p
+                        }
+                        GoogleMaps(
+                            modifier = Modifier.fillMaxSize(),
+                            geofences = geofences,
+                            mapType = mapType.value.mapType,
+                            cameraPosition = CameraPosition(
+                                target = try {
+                                    LatLong(geofences.values.first().first().y, geofences.values.first().first().x)
+                                }catch (ex: Exception) {
+                                    defaultMapPos
+                                },
+                                zoom = 11f
+                            )
+                        )
+                    }
                 }
             }
         }
@@ -148,11 +195,14 @@ fun Geofences(modifier: Modifier = Modifier) {
 
 @Composable
 fun GeofenceItem(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    item: RealGeofenceApiItem
 ) {
     val open = remember {
         mutableStateOf(false)
     }
+    val navigator = LocalNavigator.currentOrThrow
+    val clipboard = LocalClipboardManager.current
 
     Row(
         modifier = modifier.background(
@@ -173,7 +223,7 @@ fun GeofenceItem(
         )
         Text(
             modifier = Modifier.weight(1f),
-            text = "ТимарМаркет",
+            text = item.n,
             color = MaterialTheme.colorScheme.onBackground,
             style = MaterialTheme.typography.bodyMedium.copy(
                 fontWeight = FontWeight.W500
@@ -191,14 +241,20 @@ fun GeofenceItem(
                         text = strings.showDescription,
                         icon = painterResource(Res.drawable.document),
                         onClick = {
-
+                            navigator.push(GeofenceDetails(item))
                         }
                     ),
                     ContextButton(
                         text = strings.copyGeofences,
                         icon = painterResource(Res.drawable.copy),
                         onClick = {
-
+                            clipboard.setText(
+                                buildAnnotatedString {
+                                    item.p.forEach { p->
+                                        append("${p.y},${p.x}")
+                                    }
+                                }
+                            )
                         }
                     ),
                     ContextButton(

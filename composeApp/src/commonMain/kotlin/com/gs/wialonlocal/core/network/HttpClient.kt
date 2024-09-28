@@ -9,11 +9,17 @@ import io.ktor.client.plugins.logging.Logging
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import com.gs.wialonlocal.logger.AppLogger
+import io.ktor.client.plugins.HttpTimeout
 import org.koin.dsl.module
 
 val provideHttpClient = module {
     single {
         HttpClient {
+            install(HttpTimeout) {
+                requestTimeoutMillis = 100000L
+                socketTimeoutMillis = 100000L
+                connectTimeoutMillis = 100000L
+            }
             expectSuccess = true
             install(ContentNegotiation) {
                 json(Json {

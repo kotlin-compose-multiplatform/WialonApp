@@ -2,10 +2,13 @@ package com.gs.wialonlocal.features.global.presentation.ui
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -29,6 +32,7 @@ import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.painterResource
 import wialonlocal.composeapp.generated.resources.Res
 import wialonlocal.composeapp.generated.resources.car
+import wialonlocal.composeapp.generated.resources.ytm_green
 
 class GlobalAuthScreen: Screen {
     @Composable
@@ -62,7 +66,7 @@ fun GlobalAuth() {
     LaunchedEffect(true) {
         auth()
         while (true) {
-            delay(5000L)
+            delay(15000L)
             if(sessionState.value.loading.not()) {
                 auth()
             }
@@ -71,17 +75,34 @@ fun GlobalAuth() {
 
     Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background), contentAlignment = Alignment.Center) {
         if(sessionState.value.checkIndex < 1L && sessionState.value.loading) {
-            CircularProgressIndicator(modifier = Modifier.size(35.dp), color = MaterialTheme.colorScheme.onBackground)
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                Image(
+                    painter = painterResource(Res.drawable.ytm_green),
+                    contentDescription = "logo",
+                    modifier = Modifier.size(200.dp)
+                )
+                LinearProgressIndicator(Modifier.fillMaxWidth(0.5f))
+            }
         } else if(sessionState.value.error == AuthSettings.NO_SESSION_MESSAGE) {
-            CircularProgressIndicator(modifier = Modifier.size(35.dp), color = MaterialTheme.colorScheme.onBackground)
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                Image(
+                    painter = painterResource(Res.drawable.ytm_green),
+                    contentDescription = "logo",
+                    modifier = Modifier.size(200.dp)
+                )
+                LinearProgressIndicator(Modifier.fillMaxWidth(0.5f))
+            }
         } else if(sessionState.value.session != null) {
             Navigator(MainScreen())
         } else {
-            Image(
-                painter = painterResource(Res.drawable.car),
-                contentDescription = "logo",
-                modifier = Modifier.size(120.dp)
-            )
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                Image(
+                    painter = painterResource(Res.drawable.ytm_green),
+                    contentDescription = "logo",
+                    modifier = Modifier.size(200.dp)
+                )
+                LinearProgressIndicator(Modifier.fillMaxWidth(0.5f))
+            }
         }
     }
 }

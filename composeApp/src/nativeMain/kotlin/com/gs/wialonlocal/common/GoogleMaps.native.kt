@@ -27,8 +27,10 @@ import cocoapods.GoogleMaps.GMSMutablePath
 import cocoapods.GoogleMaps.GMSPolyline
 import cocoapods.GoogleMaps.animateWithCameraUpdate
 import cocoapods.GoogleMaps.kGMSTypeNormal
+import com.gs.wialonlocal.features.geofence.data.entity.geofence.P
 import com.gs.wialonlocal.features.monitoring.data.entity.history.Trip
 import com.gs.wialonlocal.features.monitoring.domain.model.UnitModel
+import com.gs.wialonlocal.features.settings.data.settings.MapType
 import kotlinx.cinterop.CValue
 import kotlinx.cinterop.ExperimentalForeignApi
 import platform.CoreLocation.CLLocationCoordinate2D
@@ -43,7 +45,11 @@ actual fun GoogleMaps(
     modifier: Modifier,
     cameraPosition: CameraPosition,
     units: List<UnitModel>,
-    onUnitClick: (UnitModel) -> Unit
+    geofences: Map<String, List<P>>,
+    onUnitClick: (UnitModel) -> Unit,
+    mapType: MapType,
+    polyline: List<String?>?,
+    singleMarker: LatLong?
 ) {
 
 }

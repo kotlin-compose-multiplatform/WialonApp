@@ -19,11 +19,13 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
+import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -38,11 +40,15 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import cafe.adriel.lyricist.strings
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.koinNavigatorScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
+import coil3.compose.LocalPlatformContext
+import com.gs.wialonlocal.common.getUrlSharer
+import com.gs.wialonlocal.common.openNavigationApp
 import com.gs.wialonlocal.components.AppError
 import com.gs.wialonlocal.components.AppLoading
 import com.gs.wialonlocal.components.ContextButton
@@ -99,9 +105,40 @@ internal fun UnitItem(
     modifier: Modifier = Modifier,
     item: UnitModel
 ) {
+    val context = LocalPlatformContext.current
+
     val open = remember {
         mutableStateOf(false)
     }
+    val navigator = LocalNavigator.currentOrThrow
+    val viewModel: MonitoringViewModel = navigator.koinNavigatorScreenModel()
+
+    val showDuration = remember {
+        mutableStateOf(false)
+    }
+
+    val locatorState = viewModel.locatorState.collectAsState()
+
+    LoadingDialog(
+        Modifier.fillMaxSize(),
+        loading = locatorState.value.loading
+    )
+
+
+
+
+    LocatorDurationDialog(
+        onSelect = { duration->
+            viewModel.getLocatorUrl(duration, listOf(item.id), onSuccess = {url->
+                getUrlSharer().shareUrl(url, context = context)
+            })
+        },
+        onDismiss = {
+            showDuration.value = false
+        },
+        show = showDuration.value
+    )
+
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -198,7 +235,7 @@ internal fun UnitItem(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Icon(
-                            painter = painterResource(if (item.isOnline) Res.drawable.key else Res.drawable.key_off),
+                            painter = painterResource(if (item.ignitionOn) Res.drawable.key else Res.drawable.key_off),
                             contentDescription = null,
                             tint = if (item.isOnline) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -271,37 +308,43 @@ internal fun UnitItem(
                         ContextButton(
                             text = strings.sendCommands,
                             icon = painterResource(Res.drawable.send_command),
-                            enabled = true,
+                            enabled = false,
                             onClick = {}
                         ),
                         ContextButton(
                             text = strings.shareLocation,
                             icon = painterResource(Res.drawable.share_location),
                             enabled = true,
-                            onClick = {}
+                            onClick = {
+                                showDuration.value = true
+                            }
                         ),
                         ContextButton(
                             text = strings.navigationApps,
                             icon = painterResource(Res.drawable.navigation_apps),
                             enabled = true,
-                            onClick = {}
+                            onClick = {
+                                openNavigationApp(item.latitude, item.longitude, context)
+                            }
                         ),
                         ContextButton(
                             text = strings.copyCoordinates,
                             icon = painterResource(Res.drawable.copy_coordinate),
                             enabled = true,
-                            onClick = {}
+                            onClick = {
+                                getUrlSharer().shareUrl("${item.latitude}, ${item.longitude}", context = context)
+                            }
                         ),
                         ContextButton(
                             text = strings.executeReports,
                             icon = painterResource(Res.drawable.execute_report),
-                            enabled = true,
+                            enabled = false,
                             onClick = {}
                         ),
                         ContextButton(
                             text = strings.edit,
                             icon = painterResource(Res.drawable.edit),
-                            enabled = true,
+                            enabled = false,
                             onClick = {}
                         )
                     ),
@@ -322,5 +365,59 @@ internal fun UnitItem(
             color = MaterialTheme.colorScheme.inverseSurface,
             thickness = 1.dp
         )
+    }
+}
+
+@Composable
+fun LocatorDurationDialog(
+    onSelect: (Long) -> Unit,
+    show: Boolean = false,
+    onDismiss: () -> Unit
+) {
+    val items = listOf<Pair<String, Long>>(
+        Pair("1 gun", 86400),
+        Pair("3 sagat", 10800),
+        Pair("3 gun", 259200),
+        Pair("Hepde", 604800),
+        Pair("Ay", 8640000),
+    )
+    if(show) {
+        Dialog(
+            onDismissRequest = {
+                onDismiss()
+            }
+        ) {
+            Column(Modifier.fillMaxWidth().background(
+                color = MaterialTheme.colorScheme.surface
+            ).padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Text("Select duration:", style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurface)
+                repeat(items.count()) { index->
+                    val item = items[index]
+                    androidx.compose.material3.TextButton(
+                        modifier = Modifier.fillMaxWidth(),
+                        onClick = {
+                            onDismiss()
+                            onSelect(item.second)
+                        }
+                    ) {
+                        Text(item.first)
+                    }
+                }
+            }
+        }
+    }
+
+}
+
+@Composable
+fun LoadingDialog(modifier: Modifier = Modifier, loading: Boolean = false) {
+    if(loading) {
+        Dialog(
+            onDismissRequest = {}
+        ) {
+            Box(Modifier.fillMaxSize()) {
+                CircularProgressIndicator(Modifier.size(35.dp).align(Alignment.Center))
+            }
+        }
     }
 }

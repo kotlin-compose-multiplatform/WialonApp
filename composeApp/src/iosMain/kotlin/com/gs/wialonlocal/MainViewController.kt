@@ -7,4 +7,8 @@ fun MainViewController() = ComposeUIViewController(
         enforceStrictPlistSanityCheck = false
         platformLayers = false
     }
-) { App() }
+) {
+    App(
+        context = null
+    )
+}

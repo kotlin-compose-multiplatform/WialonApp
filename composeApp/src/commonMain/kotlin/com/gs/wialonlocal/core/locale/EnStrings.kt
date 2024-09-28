@@ -4,7 +4,7 @@ import cafe.adriel.lyricist.LyricistStrings
 import com.gs.wialonlocal.core.locale.Locales
 import com.gs.wialonlocal.core.locale.Strings
 
-@LyricistStrings(languageTag = Locales.EN, default = true)
+@LyricistStrings(languageTag = Locales.EN)
 internal val EnStrings = Strings(
     monitoring = "Monitoring",
     map = "Map",
@@ -124,5 +124,6 @@ internal val EnStrings = Strings(
     viewDocs = "View documentation",
     description = "Description",
     groups = "GROUPS",
-    units = "UNITS"
+    units = "UNITS",
+    language = "Language"
 )

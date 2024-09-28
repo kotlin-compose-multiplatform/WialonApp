@@ -8,6 +8,7 @@ import com.gs.wialonlocal.features.monitoring.data.entity.history.calculateTripS
 import com.gs.wialonlocal.features.monitoring.domain.usecase.MonitoringUseCase
 import com.gs.wialonlocal.features.monitoring.presentation.state.FieldState
 import com.gs.wialonlocal.features.monitoring.presentation.state.LoadEventState
+import com.gs.wialonlocal.features.monitoring.presentation.state.LocatorState
 import com.gs.wialonlocal.features.monitoring.presentation.state.ReportSettingsState
 import com.gs.wialonlocal.features.monitoring.presentation.state.SummaryState
 import com.gs.wialonlocal.features.monitoring.presentation.state.UnitState
@@ -38,6 +39,44 @@ class MonitoringViewModel(
 
     private val _summaryState = MutableStateFlow(SummaryState())
     val summaryState = _summaryState.asStateFlow()
+
+    private val _locatorState = MutableStateFlow(LocatorState())
+    val locatorState = _locatorState.asStateFlow()
+
+
+
+    fun getLocatorUrl(duration: Long, items: List<String>, onSuccess: (String)-> Unit) {
+        screenModelScope.launch {
+            useCase.getLocatorUrl(duration, items).onEach { result->
+                when(result) {
+                    is Resource.Error -> {
+                        _locatorState.value = _locatorState.value.copy(
+                            loading = false,
+                            error = result.message,
+                            result = result.data
+                        )
+                    }
+                    is Resource.Loading -> {
+                        _locatorState.value = _locatorState.value.copy(
+                            loading = true,
+                            error = result.message,
+                            result = result.data
+                        )
+                    }
+                    is Resource.Success -> {
+                        result.data?.let { data->
+                            onSuccess("https://gps.ytm.tm/locator/index.html?t=" + data.h)
+                        }
+                        _locatorState.value = _locatorState.value.copy(
+                            loading = false,
+                            error = result.message,
+                            result = result.data
+                        )
+                    }
+                }
+            }.launchIn(this)
+        }
+    }
 
 
     fun getFields(itemId: String) {

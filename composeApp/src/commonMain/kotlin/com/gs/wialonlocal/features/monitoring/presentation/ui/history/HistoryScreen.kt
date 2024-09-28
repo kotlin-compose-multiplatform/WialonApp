@@ -46,6 +46,7 @@ import androidx.compose.ui.zIndex
 import cafe.adriel.voyager.koin.koinNavigatorScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
+import com.gs.wialonlocal.common.LatLong
 import com.gs.wialonlocal.features.monitoring.data.entity.history.Trip
 import com.gs.wialonlocal.features.monitoring.data.entity.history.convertTimestampToDateTime
 import com.gs.wialonlocal.features.monitoring.presentation.viewmodel.MonitoringViewModel
@@ -92,6 +93,8 @@ fun getStartAndEndOfDayTimestamps(date: LocalDate): Pair<Long, Long> {
 @Composable
 fun HistoryScreen(
     modifier: Modifier = Modifier,
+    onPolylineChange: (List<String?>?) -> Unit,
+    onSingleMarker: (LatLong?) -> Unit,
     onDateChanges: (Long, Long) -> Unit
 ) {
     val navigator = LocalNavigator.currentOrThrow
@@ -141,7 +144,7 @@ fun HistoryScreen(
             items(dates.value.count()) { index->
                 val date = dates.value[index]
                 val dayOfWeek = date.dayOfWeek.name.lowercase().replaceFirstChar { it.uppercase() }
-                val month = date.month.name.lowercase().replaceFirstChar { it.uppercase() }
+                val month = date.month.name.lowercase().take(3).replaceFirstChar { it.uppercase() }
                 val dayOfMonth = date.dayOfMonth
                 HistoryDateButton(
                     dayOfWeek = dayOfWeek,
@@ -161,7 +164,14 @@ fun HistoryScreen(
         HorizontalDivider()
 
         Row(
-            modifier = Modifier.fillMaxWidth().padding(12.dp),
+            modifier = Modifier.fillMaxWidth().clickable {
+                eventState.value.data?.second?.let { list ->
+                    onPolylineChange(list.filter { it.type == "trip" }.map { it.track })
+                    onSingleMarker(null)
+
+                }
+
+            }.padding(12.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -191,9 +201,23 @@ fun HistoryScreen(
                 repeat(list.count()) { index->
                     val item = list[index]
                     when(item.type) {
-                        "park"-> ParkingItem(Modifier.fillMaxWidth(), item)
-                        "stop" -> ParkingItem(Modifier.fillMaxWidth(), item)
-                        "trip" -> CarItem(Modifier.fillMaxWidth(), item)
+                        "park"-> ParkingItem(Modifier.fillMaxWidth().clickable {
+                            onPolylineChange(null)
+                            onSingleMarker(
+                                LatLong(item.to.y, item.to.x)
+                            )
+                        }, item)
+                        "stop" -> ParkingItem(Modifier.fillMaxWidth().clickable {
+                            onPolylineChange(null)
+                            onSingleMarker(
+                                LatLong(item.to.y, item.to.x)
+                            )
+                        }, item)
+                        "trip" -> CarItem(Modifier.fillMaxWidth().clickable {
+                            onPolylineChange(
+                                listOf(item.track))
+                            onSingleMarker(null)
+                        }, item)
                     }
                 }
             }

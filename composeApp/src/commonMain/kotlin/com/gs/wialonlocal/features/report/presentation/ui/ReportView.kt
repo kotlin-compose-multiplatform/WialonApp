@@ -91,6 +91,7 @@ class ReportView : Screen {
                 modifier = Modifier.fillMaxSize(),
                 url = "",
                 base64 = reportState.value.pdf!!.encodeBase64(),
+                byteArray = reportState.value.pdf,
                 share = { shareIt->
                     share.value = shareIt
                 }

@@ -18,13 +18,16 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import com.gs.wialonlocal.components.BackFragment
+import com.gs.wialonlocal.features.geofence.data.entity.geofence.RealGeofenceApiItem
 
-class GeofenceDetails:Screen {
+class GeofenceDetails(
+    private val geofenceApiItem: RealGeofenceApiItem
+):Screen {
     @Composable
     override fun Content() {
         val navigator = LocalNavigator.currentOrThrow
         BackFragment(
-            title = "ТимарМаркет",
+            title = geofenceApiItem.n,
             onBackPresses = {
                 navigator.pop()
             }
@@ -41,7 +44,7 @@ class GeofenceDetails:Screen {
                 )
                 Spacer(Modifier.height(6.dp))
                 Text(
-                    "Kulyýew (2127) Köçesi, Aşgabat, Turkmenistan",
+                    geofenceApiItem.d,
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onBackground
                 )

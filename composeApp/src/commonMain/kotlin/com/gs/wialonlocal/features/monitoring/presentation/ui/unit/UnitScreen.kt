@@ -53,10 +53,13 @@ import cafe.adriel.voyager.koin.koinNavigatorScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import cafe.adriel.voyager.navigator.internal.BackHandler
+import coil3.compose.LocalPlatformContext
 import com.gs.wialonlocal.common.CameraPosition
 import com.gs.wialonlocal.common.GoogleMaps
 import com.gs.wialonlocal.common.LatLong
 import com.gs.wialonlocal.common.LatLongZoom
+import com.gs.wialonlocal.common.getUrlSharer
+import com.gs.wialonlocal.common.openNavigationApp
 import com.gs.wialonlocal.components.ContextButton
 import com.gs.wialonlocal.components.ContextMenu
 import com.gs.wialonlocal.components.ImageLoader
@@ -66,8 +69,11 @@ import com.gs.wialonlocal.features.monitoring.domain.model.UnitModel
 import com.gs.wialonlocal.features.monitoring.presentation.ui.history.HistoryScreen
 import com.gs.wialonlocal.features.monitoring.presentation.ui.history.getStartAndEndOfDayTimestamps
 import com.gs.wialonlocal.features.monitoring.presentation.ui.monitoringlist.Groups
+import com.gs.wialonlocal.features.monitoring.presentation.ui.monitoringlist.LoadingDialog
+import com.gs.wialonlocal.features.monitoring.presentation.ui.monitoringlist.LocatorDurationDialog
 import com.gs.wialonlocal.features.monitoring.presentation.ui.monitoringlist.Units
 import com.gs.wialonlocal.features.monitoring.presentation.viewmodel.MonitoringViewModel
+import com.gs.wialonlocal.state.LocalAppSettings
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
@@ -104,6 +110,7 @@ fun UnitDetails(modifier: Modifier = Modifier, id: String, unitModel: UnitModel)
     val units = viewModel.units.collectAsState()
     val fields = viewModel.fieldState.collectAsState()
     val loadEventState = viewModel.loadEventState.collectAsState()
+    val mapType = LocalAppSettings.current
 
     val startDate = rememberSaveable {
         mutableStateOf(
@@ -113,6 +120,14 @@ fun UnitDetails(modifier: Modifier = Modifier, id: String, unitModel: UnitModel)
         )
     }
 
+    val polyline = rememberSaveable {
+        mutableStateOf<List<String?>?>(null)
+    }
+
+    val singleMarker = rememberSaveable {
+        mutableStateOf<LatLong?>(null)
+    }
+
     val endDate = rememberSaveable {
         mutableStateOf(
             getStartAndEndOfDayTimestamps(
@@ -120,6 +135,42 @@ fun UnitDetails(modifier: Modifier = Modifier, id: String, unitModel: UnitModel)
             ).second
         )
     }
+
+    val sheetPeekHeight = rememberSaveable {
+        mutableStateOf(300)
+    }
+
+    val open = remember {
+        mutableStateOf(false)
+    }
+
+    val showDuration = remember {
+        mutableStateOf(false)
+    }
+
+    val locatorState = viewModel.locatorState.collectAsState()
+
+    LoadingDialog(
+        Modifier.fillMaxSize(),
+        loading = locatorState.value.loading
+    )
+
+    val context = LocalPlatformContext.current
+
+
+
+
+    LocatorDurationDialog(
+        onSelect = { duration->
+            viewModel.getLocatorUrl(duration, listOf(id), onSuccess = {url->
+                getUrlSharer().shareUrl(url, context = context)
+            })
+        },
+        onDismiss = {
+            showDuration.value = false
+        },
+        show = showDuration.value
+    )
 
     BackHandler(true) {
         viewModel.unloadEvents(id)
@@ -166,8 +217,59 @@ fun UnitDetails(modifier: Modifier = Modifier, id: String, unitModel: UnitModel)
 
                 IconButton(
                     onClick = {
+                        open.value = true
                     }
                 ) {
+                    ContextMenu(
+                        buttons = listOf(
+                            ContextButton(
+                                text = strings.sendCommands,
+                                icon = painterResource(Res.drawable.send_command),
+                                enabled = false,
+                                onClick = {}
+                            ),
+                            ContextButton(
+                                text = strings.shareLocation,
+                                icon = painterResource(Res.drawable.share_location),
+                                enabled = true,
+                                onClick = {
+                                    showDuration.value = true
+                                }
+                            ),
+                            ContextButton(
+                                text = strings.navigationApps,
+                                icon = painterResource(Res.drawable.navigation_apps),
+                                enabled = true,
+                                onClick = {
+                                    openNavigationApp(unitModel.latitude, unitModel.longitude, context)
+                                }
+                            ),
+                            ContextButton(
+                                text = strings.copyCoordinates,
+                                icon = painterResource(Res.drawable.copy_coordinate),
+                                enabled = true,
+                                onClick = {
+                                    getUrlSharer().shareUrl("${unitModel.latitude}, ${unitModel.longitude}", context = context)
+                                }
+                            ),
+                            ContextButton(
+                                text = strings.executeReports,
+                                icon = painterResource(Res.drawable.execute_report),
+                                enabled = false,
+                                onClick = {}
+                            ),
+                            ContextButton(
+                                text = strings.edit,
+                                icon = painterResource(Res.drawable.edit),
+                                enabled = false,
+                                onClick = {}
+                            )
+                        ),
+                        open = open.value,
+                        onDismiss = {
+                            open.value = false
+                        }
+                    )
                     Icon(
                         Icons.Default.MoreVert,
                         contentDescription = "More",
@@ -213,7 +315,7 @@ fun UnitDetails(modifier: Modifier = Modifier, id: String, unitModel: UnitModel)
             sheetTonalElevation = 0.dp,
             sheetDragHandle = {},
             sheetShape = RoundedCornerShape(0.dp),
-            sheetPeekHeight = 300.dp,
+            sheetPeekHeight = sheetPeekHeight.value.dp,
             sheetContent = {
                 Column(Modifier.fillMaxWidth()) {
                     Row(
@@ -232,7 +334,7 @@ fun UnitDetails(modifier: Modifier = Modifier, id: String, unitModel: UnitModel)
                         ) {
                             IconButton(
                                 onClick = {
-
+                                    sheetPeekHeight.value = 300
                                 }
                             ) {
                                 Icon(
@@ -244,7 +346,7 @@ fun UnitDetails(modifier: Modifier = Modifier, id: String, unitModel: UnitModel)
 
                             IconButton(
                                 onClick = {
-
+                                    sheetPeekHeight.value = 100
                                 }
                             ) {
                                 Icon(
@@ -261,6 +363,12 @@ fun UnitDetails(modifier: Modifier = Modifier, id: String, unitModel: UnitModel)
                         } else {
                             HistoryScreen(
                                 Modifier.fillMaxSize(),
+                                onPolylineChange = { track->
+                                    polyline.value = track
+                                },
+                                onSingleMarker = { marker->
+                                    singleMarker.value = marker
+                                },
                                 onDateChanges = { start, end ->
                                     startDate.value = start
                                     endDate.value = end
@@ -277,13 +385,16 @@ fun UnitDetails(modifier: Modifier = Modifier, id: String, unitModel: UnitModel)
                     units = listOf(
                         unitModel
                     ),
+                    mapType = mapType.value.mapType,
                     cameraPosition = CameraPosition(
                         target = LatLong(
                             unitModel.latitude,
                             unitModel.longitude
                         ),
                         zoom = 14f
-                    )
+                    ),
+                    polyline = polyline.value,
+                    singleMarker = singleMarker.value
                 )
             }
         }

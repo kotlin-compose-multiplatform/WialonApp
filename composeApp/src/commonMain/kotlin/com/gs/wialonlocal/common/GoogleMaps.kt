@@ -3,8 +3,10 @@ package com.gs.wialonlocal.common
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
+import com.gs.wialonlocal.features.geofence.data.entity.geofence.P
 import com.gs.wialonlocal.features.monitoring.data.entity.history.Trip
 import com.gs.wialonlocal.features.monitoring.domain.model.UnitModel
+import com.gs.wialonlocal.features.settings.data.settings.MapType
 import kotlinx.serialization.Serializable
 import kotlin.math.PI
 
@@ -99,6 +101,8 @@ fun LatLong.toLocation(): Location {
     return Location(latitude, longitude)
 }
 
+val defaultMapPos = LatLong(37.7749, 58.8788)
+
 @Composable
 expect fun GoogleMaps(
     modifier: Modifier,
@@ -107,5 +111,9 @@ expect fun GoogleMaps(
         zoom = 5f
     ),
     units: List<UnitModel> = emptyList(),
-    onUnitClick: (UnitModel) -> Unit = {}
+    geofences: Map<String, List<P>> = emptyMap(),
+    onUnitClick: (UnitModel) -> Unit = {},
+    mapType: MapType = MapType.MAP,
+    polyline: List<String?>? = emptyList(),
+    singleMarker: LatLong? = null
 )

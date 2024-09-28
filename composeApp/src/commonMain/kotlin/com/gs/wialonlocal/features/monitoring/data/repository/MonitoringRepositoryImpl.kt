@@ -13,6 +13,7 @@ import com.gs.wialonlocal.features.monitoring.data.entity.history.LoadEventReque
 import com.gs.wialonlocal.features.monitoring.data.entity.history.Trip
 import com.gs.wialonlocal.features.monitoring.data.entity.history.TripsResponse
 import com.gs.wialonlocal.features.monitoring.data.entity.history.categorizeAndMergeTrips
+import com.gs.wialonlocal.features.monitoring.data.entity.locator.LocatorResponse
 import com.gs.wialonlocal.features.monitoring.data.entity.updates.Data
 import com.gs.wialonlocal.features.monitoring.data.entity.updates.Position
 import com.gs.wialonlocal.features.monitoring.domain.model.UnitModel
@@ -28,6 +29,12 @@ import io.ktor.http.parameters
 import io.ktor.util.InternalAPI
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toInstant
+import kotlinx.datetime.toLocalDateTime
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.decodeFromJsonElement
@@ -52,7 +59,7 @@ class MonitoringRepositoryImpl(
                         append("sid", authSettings.getSessionId())
                         append(
                             "params",
-                            "{\"spec\":{\"itemsType\":\"avl_unit\",\"sortType\":\"sys_name\",\"propName\":\"sys_name\",\"propValueMask\":\"*\"}, \"force\":1, \"flags\":1041, \"from\":0, \"to\":0}"
+                            "{\"spec\":{\"itemsType\":\"avl_unit\",\"sortType\":\"sys_name\",\"propName\":\"sys_name\",\"propValueMask\":\"*\"}, \"force\":1, \"flags\":4611686018427387903, \"from\":0, \"to\":0}"
                         )
                     })
                 }.body<GetUnits>()
@@ -75,6 +82,16 @@ class MonitoringRepositoryImpl(
     }
 
     @OptIn(InternalAPI::class)
+    override suspend fun getTripDetector(): Flow<Resource<TripDetector>> = flow {
+        val tripDetector = httpClient.post("${Constant.BASE_URL}/wialon/ajax.html?svc=unit/get_trip_detector") {
+            body = FormDataContent(Parameters.build {
+                append("sid", authSettings.getSessionId())
+                append("params", "{\"itemId\":118}")
+            })
+        }.body<TripDetector>()
+    }
+
+    @OptIn(InternalAPI::class)
     suspend fun addUnitsToUpdate(ids: List<Long>) {
         try {
             val units = ids.joinToString(",") { "{\"id\":${it},\"detect\":{\"*\":0}}" }
@@ -90,6 +107,14 @@ class MonitoringRepositoryImpl(
         } catch (ex: Exception) {
             ex.printStackTrace()
         }
+    }
+
+    fun getCurrentUnixTimestampWithTimeZone(): Long {
+        val timeZone = TimeZone.of("Asia/Ashgabat")
+        val currentDateTime = Clock.System.now().toLocalDateTime(timeZone)
+        // Convert the current DateTime in the specified time zone back to an Instant
+        val instantInTimeZone = currentDateTime.toInstant(timeZone)
+        return instantInTimeZone.epochSeconds
     }
 
     @OptIn(InternalAPI::class)
@@ -112,6 +137,7 @@ class MonitoringRepositoryImpl(
                         val dynamicKey = entry.key
                         val dataArray = entry.value.jsonArray
                         val data = dataArray[0].jsonObject
+
                         val decode = json.decodeFromString<Data>(data.toString())
                         if (decode.trips != null) {
                             val newPosition = decode.trips.to ?: Position(0, 0.0, 0.0)
@@ -122,7 +148,8 @@ class MonitoringRepositoryImpl(
                                         longitude = newPosition.x,
                                         trips = it.trips.plus(
                                             LatLong(newPosition.y, newPosition.x)
-                                        )
+                                        ),
+                                        lastOnlineTime = decode.trips.to?.t.toString()
                                     )
                                 } else {
                                     it
@@ -223,6 +250,32 @@ class MonitoringRepositoryImpl(
             }.body<List<List<CustomFields>>>()
 
             emit(Resource.Success(result[0][0]))
+        } catch (ex: Exception) {
+            ex.printStackTrace()
+            emit(Resource.Error(ex.message))
+        }
+    }
+
+    @OptIn(InternalAPI::class)
+    override suspend fun getLocatorUrl(
+        duration: Long,
+        items: List<String>
+    ): Flow<Resource<LocatorResponse>> = flow {
+        emit(Resource.Loading())
+        try {
+            val params = "{\"callMode\":\"create\",\"app\":\"locator\",\"at\":0,\"dur\":${duration},\"fl\":256,\"p\":\"{\\\"note\\\":\\\"\\\",\\\"zones\\\":0,\\\"tracks\\\":0}\",\"items\":[${
+                items.joinToString(
+                    ","
+                )
+            }]}"
+            println(params)
+            val result = httpClient.post("${Constant.BASE_URL}/wialon/ajax.html?svc=token/update") {
+                body = FormDataContent(Parameters.build {
+                    append("params", params)
+                    append("sid", authSettings.getSessionId())
+                })
+            }.body<LocatorResponse>()
+            emit(Resource.Success(result))
         } catch (ex: Exception) {
             ex.printStackTrace()
             emit(Resource.Error(ex.message))

@@ -29,13 +29,20 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.PolyUtil
+import com.google.maps.android.compose.Circle
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapType
+import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
+import com.google.maps.android.compose.Polygon
 import com.google.maps.android.compose.Polyline
+import com.google.maps.android.compose.clustering.Clustering
 import com.google.maps.android.compose.rememberCameraPositionState
+import com.google.maps.android.compose.rememberMarkerState
+import com.gs.wialonlocal.features.geofence.data.entity.geofence.P
 import com.gs.wialonlocal.features.monitoring.data.entity.history.Trip
 import com.gs.wialonlocal.features.monitoring.domain.model.UnitModel
 import kotlinx.coroutines.Dispatchers
@@ -44,8 +51,38 @@ import kotlinx.coroutines.withContext
 import java.net.HttpURLConnection
 import java.net.URL
 
+fun joinPolylines(encodedPolylines: List<String>): String {
+    val allPoints = mutableListOf<LatLng>()
+
+    // Decode each polyline string and add points to the list
+    for (encodedPolyline in encodedPolylines) {
+        val decodedPoints = PolyUtil.decode(encodedPolyline)
+        allPoints.addAll(decodedPoints)
+    }
+
+    // Encode the combined list of LatLng points into a single polyline string
+    return PolyUtil.encode(allPoints)
+}
+
+
 // In-memory cache to store downloaded bitmaps
 val bitmapCache = mutableMapOf<String, Bitmap>()
+
+
+// Helper function to interpolate between two colors
+fun interpolateColor(startColor: Color, endColor: Color, fraction: Float): Color {
+    return Color(
+        red = lerp(startColor.red, endColor.red, fraction),
+        green = lerp(startColor.green, endColor.green, fraction),
+        blue = lerp(startColor.blue, endColor.blue, fraction),
+        alpha = 1f
+    )
+}
+
+// Linear interpolation function
+fun lerp(start: Float, stop: Float, fraction: Float): Float {
+    return (start + fraction * (stop - start))
+}
 
 // Function to download and resize a bitmap from a URL, with caching
 suspend fun getBitmapFromURL(imageUrl: String): Bitmap? {
@@ -86,11 +123,21 @@ actual fun GoogleMaps(
     modifier: Modifier,
     cameraPosition: com.gs.wialonlocal.common.CameraPosition,
     units: List<UnitModel>,
-    onUnitClick: (UnitModel) -> Unit
+    geofences: Map<String, List<P>>,
+    onUnitClick: (UnitModel) -> Unit,
+    mapType: com.gs.wialonlocal.features.settings.data.settings.MapType,
+    polyline: List<String?>?,
+    singleMarker: LatLong?
 ) {
     val mapProperties by remember { mutableStateOf(MapProperties(
         isMyLocationEnabled = false,
-        mapType = MapType.HYBRID
+        isBuildingEnabled = true,
+        isTrafficEnabled = false,
+        mapType = when(mapType) {
+            com.gs.wialonlocal.features.settings.data.settings.MapType.SATELLITE -> MapType.SATELLITE
+            com.gs.wialonlocal.features.settings.data.settings.MapType.HYBRID -> MapType.HYBRID
+            else -> MapType.NORMAL
+        }
     )) }
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(LatLng(cameraPosition.target.latitude, cameraPosition.target.longitude), cameraPosition.zoom) // Example LatLng
@@ -133,30 +180,122 @@ actual fun GoogleMaps(
     GoogleMap(
         modifier = Modifier.fillMaxSize(),
         properties = mapProperties,
-        cameraPositionState = cameraPositionState
+        cameraPositionState = cameraPositionState,
+        uiSettings = MapUiSettings(
+            zoomControlsEnabled = true
+        )
     ) {
+        key(geofences) {
+            geofences.entries.forEachIndexed { index, entry ->
+                entry.value.forEach { geofence ->
+                    Circle(
+                        center = LatLng(geofence.y, geofence.x),
+                        radius = geofence.r.toDouble(),
+                        strokeColor = Color.Red,  // Customize the color
+                        fillColor = Color(0x5500FF00),  // Semi-transparent green fill color
+                        strokeWidth = 3f
+                    )
+                }
+
+                // Draw the transparent polygon connecting the center points
+                if (entry.value.size > 2) { // We need at least 3 points to form a polygon
+                    Polygon(
+                        points = entry.value.map { LatLng(it.y, it.x) },  // Use the center points of the geofences
+                        strokeColor = Color.Transparent,  // Transparent stroke
+                        fillColor = Color(0x550000FF),    // Semi-transparent blue fill color
+                        strokeWidth = 0f  // Set stroke width to 0 for fully transparent borders
+                    )
+                }
+            }
+        }
+
+        key(singleMarker) {
+            singleMarker?.let {
+                Marker(
+                    state = MarkerState(
+                        LatLng(
+                            singleMarker.latitude,
+                            singleMarker.longitude
+                        )
+                    ),
+                    title = "Parking",
+                )
+            }
+        }
+
+        key(polyline) {
+            polyline?.let { path->
+                path.forEach { p->
+                    val list = PolyUtil.decode(p)
+                    Polyline(
+                        points = list,
+                        color = Color.Cyan
+                    )
+                }
+
+                if(path.isNotEmpty()) {
+                    val list = PolyUtil.decode(path.first())
+                    if(list.isNotEmpty()) {
+                        Marker(
+                            state = MarkerState(list.first()),
+                            title = "Start",
+                        )
+
+
+                    }
+
+                    val end = PolyUtil.decode(path.last())
+                    if(end.isNotEmpty()) {
+                        Marker(
+                            state = MarkerState(list.last()),
+                            title = "End",
+                        )
+                    }
+                }
+            }
+        }
         key(units) {
             units.forEachIndexed { index, unitModel ->
                 val bitmap = markerImages.value[unitModel.image]
                 val bitmapDescriptor = bitmap?.let { BitmapDescriptorFactory.fromBitmap(it) }
-
+                val markerState = rememberMarkerState(unitModel.carNumber.plus(unitModel.id), LatLng(unitModel.latitude, unitModel.longitude))
                 Marker(
-                    state = MarkerState(position = LatLng(unitModel.latitude, unitModel.longitude)),
+                    state = markerState,
                     icon = bitmapDescriptor,
                     title = unitModel.carNumber,
-                    snippet = unitModel.address,
                     onClick = {
-                        onUnitClick(unitModel)
+                        markerState.showInfoWindow()
                         true
+                    },
+                    onInfoWindowClick = {
+                        onUnitClick(unitModel)
                     }
                 )
 
-                Polyline(
-                    points = unitModel.trips.map {
-                        LatLng(it.latitude, it.longitude)
-                    },
-                    color = Color.Blue
-                )
+
+                // Gradient colors
+                val startColor = Color.Gray
+                val endColor = Color.Green
+
+                val points = unitModel.trips.map {
+                    LatLng(it.latitude, it.longitude)
+                }
+
+                for (i in 0 until  points.size - 1) {
+                    val startPoint = points[i]
+                    val endPoint = points[i + 1]
+                    val fraction = i / (points.size - 1).toFloat()
+                    val color = interpolateColor(startColor, endColor, fraction)
+
+                    // Draw polyline segment
+                    Polyline(
+                        points = listOf(startPoint, endPoint),
+                        color = color,
+                        width = 10f
+                    )
+                }
+
+
             }
         }
     }

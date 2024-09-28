@@ -58,13 +58,13 @@ val Tabs = listOf(
             tab = ReportTab
         )
     ),
-    BottomBarRouter.Notification(
-        BottomBarItem(
-            passiveIcon = Res.drawable.notification_passive,
-            activeIcon = Res.drawable.notification_active,
-            tab = NotificationTab
-        )
-    ),
+//    BottomBarRouter.Notification(
+//        BottomBarItem(
+//            passiveIcon = Res.drawable.notification_passive,
+//            activeIcon = Res.drawable.notification_active,
+//            tab = NotificationTab
+//        )
+//    ),
     BottomBarRouter.Geofences(
         BottomBarItem(
             passiveIcon = Res.drawable.geofences_passive,

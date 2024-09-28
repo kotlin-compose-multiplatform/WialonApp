@@ -14,6 +14,7 @@ import androidx.compose.ui.zIndex
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import com.gs.wialonlocal.features.monitoring.presentation.ui.settings.MapSettings
+import com.gs.wialonlocal.features.monitoring.presentation.ui.settings.MapSource
 import org.jetbrains.compose.resources.painterResource
 import wialonlocal.composeapp.generated.resources.Res
 import wialonlocal.composeapp.generated.resources.settings_active
@@ -27,7 +28,7 @@ fun MapContainer(
     Box(modifier) {
         IconButton(
             onClick = {
-                navigator.push(MapSettings())
+                navigator.push(MapSource())
             },
             colors = IconButtonDefaults.iconButtonColors(
                 containerColor = MaterialTheme.colorScheme.surface

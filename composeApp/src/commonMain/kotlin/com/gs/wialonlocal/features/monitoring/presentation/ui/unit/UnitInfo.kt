@@ -144,14 +144,14 @@ fun UnitInfo(modifier: Modifier = Modifier) {
 
 
 
-            UnitSettingsButton(
-                modifier = Modifier.fillMaxWidth(),
-                text = strings.configureTabView,
-                icon = painterResource(Res.drawable.settings_active),
-                onClick = {
-                    navigator.push(InfoTabSettings())
-                }
-            )
+//            UnitSettingsButton(
+//                modifier = Modifier.fillMaxWidth(),
+//                text = strings.configureTabView,
+//                icon = painterResource(Res.drawable.settings_active),
+//                onClick = {
+//                    navigator.push(InfoTabSettings())
+//                }
+//            )
         }
 
         Spacer(Modifier.height(18.dp))

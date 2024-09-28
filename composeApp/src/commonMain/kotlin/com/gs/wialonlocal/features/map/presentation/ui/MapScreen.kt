@@ -18,10 +18,15 @@ import cafe.adriel.voyager.navigator.currentOrThrow
 import com.gs.wialonlocal.common.GoogleMaps
 import com.gs.wialonlocal.common.LatLong
 import com.gs.wialonlocal.common.LatLongZoom
+import com.gs.wialonlocal.components.AppError
+import com.gs.wialonlocal.components.AppLoading
+import com.gs.wialonlocal.features.geofence.data.entity.geofence.P
+import com.gs.wialonlocal.features.geofence.presentation.viewmodel.GeofenceViewModel
 import com.gs.wialonlocal.features.main.presentation.ui.SearchBar
 import com.gs.wialonlocal.features.main.presentation.ui.ToolBar
 import com.gs.wialonlocal.features.monitoring.presentation.ui.unit.UnitScreen
 import com.gs.wialonlocal.features.monitoring.presentation.viewmodel.MonitoringViewModel
+import com.gs.wialonlocal.state.LocalAppSettings
 
 class MapScreen: Screen {
     @Composable
@@ -29,8 +34,12 @@ class MapScreen: Screen {
         val navigator = LocalNavigator.currentOrThrow
         val viewModel = navigator.koinNavigatorScreenModel<MonitoringViewModel>()
         val units = viewModel.units.collectAsState()
+        val geoFenceViewModel: GeofenceViewModel = navigator.koinNavigatorScreenModel()
+        val geofenceState = geoFenceViewModel.geofenceState.collectAsState()
+        val mapType = LocalAppSettings.current
         LaunchedEffect(true) {
             viewModel.initUnits(requireCheckUpdate = true)
+            geoFenceViewModel.initGeoFences()
         }
         Column(Modifier.fillMaxSize()) {
             ToolBar {
@@ -44,14 +53,29 @@ class MapScreen: Screen {
                     )
                 }
             }
+
+            if(units.value.loading) {
+                AppLoading(Modifier.fillMaxSize())
+            } else if(units.value.error.isNullOrEmpty().not()) {
+                AppError(
+                    Modifier.fillMaxSize(),
+                    message = units.value.error
+                )
+            }
             units.value.data?.let { units->
+                val geofences = emptyMap<String, List<P>>().toMutableMap()
+                geofenceState.value.geofence?.forEach { g->
+                    geofences[g.n.plus(g.d)] = g.p
+                }
                 MapContainer {
                     GoogleMaps(
                         modifier = Modifier.fillMaxSize(),
                         units = units,
+                        geofences = geofences,
                         onUnitClick = { unit->
                             navigator.push(UnitScreen(unit.id, unit))
-                        }
+                        },
+                        mapType = mapType.value.mapType
                     )
                 }
             }

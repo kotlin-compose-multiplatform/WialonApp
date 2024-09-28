@@ -23,10 +23,13 @@ import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -37,8 +40,12 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import cafe.adriel.lyricist.strings
 import cafe.adriel.voyager.core.screen.Screen
+import cafe.adriel.voyager.koin.koinNavigatorScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
+import coil3.compose.LocalPlatformContext
+import com.gs.wialonlocal.common.getUrlSharer
+import com.gs.wialonlocal.common.openNavigationApp
 import com.gs.wialonlocal.components.BackFragment
 import com.gs.wialonlocal.components.CheckText
 import com.gs.wialonlocal.components.ContextButton
@@ -47,6 +54,10 @@ import com.gs.wialonlocal.components.ImageLoader
 import com.gs.wialonlocal.components.RadioText
 import com.gs.wialonlocal.components.SwitchText
 import com.gs.wialonlocal.features.main.presentation.ui.SearchBar
+import com.gs.wialonlocal.features.monitoring.domain.model.UnitModel
+import com.gs.wialonlocal.features.monitoring.presentation.ui.monitoringlist.LoadingDialog
+import com.gs.wialonlocal.features.monitoring.presentation.ui.monitoringlist.LocatorDurationDialog
+import com.gs.wialonlocal.features.monitoring.presentation.viewmodel.MonitoringViewModel
 import org.jetbrains.compose.resources.painterResource
 import wialonlocal.composeapp.generated.resources.Res
 import wialonlocal.composeapp.generated.resources.copy_coordinate
@@ -56,10 +67,15 @@ import wialonlocal.composeapp.generated.resources.navigation_apps
 import wialonlocal.composeapp.generated.resources.send_command
 import wialonlocal.composeapp.generated.resources.share_location
 
-class StatusViewScreen : Screen {
+class StatusViewScreen(
+    private val ids: List<String>
+) : Screen {
     @Composable
     override fun Content() {
         val navigator = LocalNavigator.currentOrThrow
+        val monitoringViewModel: MonitoringViewModel = navigator.koinNavigatorScreenModel()
+        val units = monitoringViewModel.units.collectAsState()
+
         BackFragment(
             modifier = Modifier.fillMaxSize(),
             title = strings.unit,
@@ -74,7 +90,7 @@ class StatusViewScreen : Screen {
                     shape = CircleShape
                 ).padding(2.dp).width(17.dp).height(30.dp), contentAlignment = Alignment.Center) {
                     Text(
-                        "10",
+                        units.value.data?.count { ids.contains(it.id) }?.toString()?:"0",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onPrimary,
                         maxLines = 1,
@@ -94,16 +110,25 @@ class StatusViewScreen : Screen {
                 }
             }
         ) {
+
             Column(
                 Modifier.fillMaxSize().background(
                     MaterialTheme.colorScheme.background
                 ).verticalScroll(rememberScrollState())
             ) {
-                repeat(30) {
-                    StatusCar(
-                        modifier = Modifier.fillMaxWidth()
-                    )
+                if(units.value.loading) {
+                    LinearProgressIndicator(Modifier.fillMaxWidth())
                 }
+                units.value.data?.let { list->
+                    val filtered = list.filter { ids.contains(it.id) }
+                    repeat(filtered.count()) { index->
+                        StatusCar(
+                            modifier = Modifier.fillMaxWidth(),
+                            unitModel = filtered[index]
+                        )
+                    }
+                }
+
             }
         }
     }
@@ -111,11 +136,42 @@ class StatusViewScreen : Screen {
 
 @Composable
 fun StatusCar(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    unitModel: UnitModel
 ) {
     val open = rememberSaveable {
         mutableStateOf(false)
     }
+    val context = LocalPlatformContext.current
+
+    val navigator = LocalNavigator.currentOrThrow
+    val viewModel: MonitoringViewModel = navigator.koinNavigatorScreenModel()
+
+    val showDuration = remember {
+        mutableStateOf(false)
+    }
+
+    val locatorState = viewModel.locatorState.collectAsState()
+
+    LoadingDialog(
+        Modifier.fillMaxSize(),
+        loading = locatorState.value.loading
+    )
+
+
+
+
+    LocatorDurationDialog(
+        onSelect = { duration->
+            viewModel.getLocatorUrl(duration, listOf(unitModel.id), onSuccess = {url->
+                getUrlSharer().shareUrl(url, context = context)
+            })
+        },
+        onDismiss = {
+            showDuration.value = false
+        },
+        show = showDuration.value
+    )
     Row(
         modifier = modifier.background(
             color = MaterialTheme.colorScheme.surface
@@ -128,14 +184,14 @@ fun StatusCar(
                 color = MaterialTheme.colorScheme.inverseSurface,
                 shape = CircleShape
             ),
-            url = "",
+            url = unitModel.image,
             contentScale = ContentScale.FillBounds
         )
 
         Spacer(Modifier.width(12.dp))
 
         Text(
-            "5280AGH 87",
+            unitModel.carNumber,
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier.weight(1f),
@@ -154,37 +210,43 @@ fun StatusCar(
                     ContextButton(
                         text = strings.sendCommands,
                         icon = painterResource(Res.drawable.send_command),
-                        enabled = true,
+                        enabled = false,
                         onClick = {}
                     ),
                     ContextButton(
                         text = strings.shareLocation,
                         icon = painterResource(Res.drawable.share_location),
                         enabled = true,
-                        onClick = {}
+                        onClick = {
+                            showDuration.value = true
+                        }
                     ),
                     ContextButton(
                         text = strings.navigationApps,
                         icon = painterResource(Res.drawable.navigation_apps),
                         enabled = true,
-                        onClick = {}
+                        onClick = {
+                            openNavigationApp(unitModel.latitude, unitModel.longitude, context)
+                        }
                     ),
                     ContextButton(
                         text = strings.copyCoordinates,
                         icon = painterResource(Res.drawable.copy_coordinate),
                         enabled = true,
-                        onClick = {}
+                        onClick = {
+                            getUrlSharer().shareUrl("${unitModel.latitude}, ${unitModel.longitude}", context = context)
+                        }
                     ),
                     ContextButton(
                         text = strings.executeReports,
                         icon = painterResource(Res.drawable.execute_report),
-                        enabled = true,
+                        enabled = false,
                         onClick = {}
                     ),
                     ContextButton(
                         text = strings.edit,
                         icon = painterResource(Res.drawable.edit),
-                        enabled = true,
+                        enabled = false,
                         onClick = {}
                     )
                 ),

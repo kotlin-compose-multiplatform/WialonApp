@@ -81,6 +81,9 @@ kotlin {
             implementation(libs.coil.network.ktor)
 
             implementation(libs.kotlinx)
+
+            // toast
+            implementation(libs.toast)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

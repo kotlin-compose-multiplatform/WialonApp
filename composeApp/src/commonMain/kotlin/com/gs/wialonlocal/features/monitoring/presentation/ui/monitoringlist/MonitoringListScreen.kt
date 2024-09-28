@@ -84,13 +84,13 @@ class MonitoringListScreen: Screen {
                                         navigator.push(SelectUnits())
                                     }
                                 ),
-                                ContextButton(
-                                    text = strings.configureTabView,
-                                    icon = painterResource(Res.drawable.settings_2),
-                                    onClick = {
-                                        navigator.push(UnitViewSettings())
-                                    }
-                                )
+//                                ContextButton(
+//                                    text = strings.configureTabView,
+//                                    icon = painterResource(Res.drawable.settings_2),
+//                                    onClick = {
+//                                        navigator.push(UnitViewSettings())
+//                                    }
+//                                )
                             )
                         )
 

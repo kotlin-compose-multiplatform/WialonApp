@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class GetUnits(
-    val dataFlags: Int,
+    val dataFlags: Long,
     val indexFrom: Int,
     val indexTo: Int,
     val items: List<Item>,

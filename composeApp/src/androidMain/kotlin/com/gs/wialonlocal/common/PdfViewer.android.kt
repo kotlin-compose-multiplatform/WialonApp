@@ -35,6 +35,7 @@ actual fun PdfViewer(
     modifier: Modifier,
     url: String,
     base64: String,
+    byteArray: ByteArray?,
     share: (()-> Unit)-> Unit
 ) {
     val context = LocalContext.current

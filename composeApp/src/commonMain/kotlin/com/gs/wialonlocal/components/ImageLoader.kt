@@ -8,6 +8,8 @@ import coil3.compose.AsyncImage
 import org.jetbrains.compose.resources.painterResource
 import wialonlocal.composeapp.generated.resources.Res
 import wialonlocal.composeapp.generated.resources.car
+import wialonlocal.composeapp.generated.resources.ytm_green
+import wialonlocal.composeapp.generated.resources.ytm_white
 
 @Composable
 fun ImageLoader(
@@ -20,6 +22,7 @@ fun ImageLoader(
         modifier = modifier,
         contentDescription = null,
         contentScale = contentScale,
-        placeholder = painterResource(Res.drawable.car)
+        placeholder = painterResource(Res.drawable.ytm_white),
+        error = painterResource(Res.drawable.ytm_white)
     )
 }

@@ -5,4 +5,5 @@ import androidx.compose.ui.Modifier
 
 
 @Composable
-expect fun PdfViewer(modifier: Modifier = Modifier, url: String, base64: String,  share: (()-> Unit)-> Unit)
+expect fun PdfViewer(
+    modifier: Modifier = Modifier, url: String, base64: String, byteArray: ByteArray?,  share: (()-> Unit)-> Unit)
