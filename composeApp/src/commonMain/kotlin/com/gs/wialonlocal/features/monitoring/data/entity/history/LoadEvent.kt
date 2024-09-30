@@ -59,6 +59,7 @@ data class Trip(
     var type: String = "", // New field to store the type (trip, stop, park),
     var formatedTime: String="",
     var formatedDuration: String="",
+    val address: String = ""
 )
 
 
@@ -182,7 +183,8 @@ fun categorizeAndMergeTrips(tripsResponse: List<Trip>?, tripDetector: TripDetect
                     pos_flags = trip.pos_flags,
                     curr_speed = trip.curr_speed,
                     formatedDuration = convertMinutesToHours(parkingDurationMinutes),
-                    formatedTime = parkingStartTime
+                    formatedTime = parkingStartTime,
+                    address = ""
                 )
 
                 allTrips.add(parkingTrip)

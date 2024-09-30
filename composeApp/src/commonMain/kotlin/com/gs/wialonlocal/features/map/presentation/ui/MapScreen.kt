@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import cafe.adriel.lyricist.strings
@@ -28,7 +30,7 @@ import com.gs.wialonlocal.features.monitoring.presentation.ui.unit.UnitScreen
 import com.gs.wialonlocal.features.monitoring.presentation.viewmodel.MonitoringViewModel
 import com.gs.wialonlocal.state.LocalAppSettings
 
-class MapScreen: Screen {
+class MapScreen : Screen {
     @Composable
     override fun Content() {
         val navigator = LocalNavigator.currentOrThrow
@@ -37,6 +39,9 @@ class MapScreen: Screen {
         val geoFenceViewModel: GeofenceViewModel = navigator.koinNavigatorScreenModel()
         val geofenceState = geoFenceViewModel.geofenceState.collectAsState()
         val mapType = LocalAppSettings.current
+        val searchQuery = rememberSaveable {
+            mutableStateOf("")
+        }
         LaunchedEffect(true) {
             viewModel.initUnits(requireCheckUpdate = true)
             geoFenceViewModel.initGeoFences()
@@ -48,31 +53,36 @@ class MapScreen: Screen {
                         modifier = Modifier.fillMaxWidth(),
                         placeholder = strings.search,
                         onSearch = {
-
+                            searchQuery.value = it
                         }
                     )
                 }
             }
 
-            if(units.value.loading) {
+            if (units.value.loading) {
                 AppLoading(Modifier.fillMaxSize())
-            } else if(units.value.error.isNullOrEmpty().not()) {
+            } else if (units.value.error.isNullOrEmpty().not()) {
                 AppError(
                     Modifier.fillMaxSize(),
                     message = units.value.error
                 )
             }
-            units.value.data?.let { units->
+            units.value.data?.let { units ->
+                val filtered = units.filter {
+                    it.carNumber.lowercase()
+                        .contains(searchQuery.value.lowercase()) || it.address.lowercase()
+                        .contains(searchQuery.value.lowercase()) || searchQuery.value.isEmpty()
+                }
                 val geofences = emptyMap<String, List<P>>().toMutableMap()
-                geofenceState.value.geofence?.forEach { g->
+                geofenceState.value.geofence?.forEach { g ->
                     geofences[g.n.plus(g.d)] = g.p
                 }
                 MapContainer {
                     GoogleMaps(
                         modifier = Modifier.fillMaxSize(),
-                        units = units,
+                        units = filtered,
                         geofences = geofences,
-                        onUnitClick = { unit->
+                        onUnitClick = { unit ->
                             navigator.push(UnitScreen(unit.id, unit))
                         },
                         mapType = mapType.value.mapType

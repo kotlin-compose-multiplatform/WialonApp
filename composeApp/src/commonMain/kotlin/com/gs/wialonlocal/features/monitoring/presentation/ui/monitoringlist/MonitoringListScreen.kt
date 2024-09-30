@@ -20,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -31,14 +32,12 @@ import com.gs.wialonlocal.components.ContextButton
 import com.gs.wialonlocal.components.ContextMenu
 import com.gs.wialonlocal.features.main.presentation.ui.SearchBar
 import com.gs.wialonlocal.features.main.presentation.ui.ToolBar
-import com.gs.wialonlocal.features.monitoring.presentation.ui.settings.UnitViewSettings
 import com.gs.wialonlocal.features.monitoring.presentation.ui.unit.SelectUnits
 import com.gs.wialonlocal.state.LocalTheme
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import wialonlocal.composeapp.generated.resources.Res
 import wialonlocal.composeapp.generated.resources.check_list
-import wialonlocal.composeapp.generated.resources.settings_2
 import wialonlocal.composeapp.generated.resources.settings_passive
 
 class MonitoringListScreen: Screen {
@@ -55,6 +54,10 @@ class MonitoringListScreen: Screen {
             mutableStateOf(false)
         }
 
+        val searchQuery = rememberSaveable {
+            mutableStateOf("")
+        }
+
 
         Column(modifier = Modifier.fillMaxSize()) {
             ToolBar {
@@ -63,7 +66,7 @@ class MonitoringListScreen: Screen {
                         modifier = Modifier.weight(1f),
                         placeholder = strings.search,
                         onSearch = {query->
-
+                            searchQuery.value = query
                         }
                     )
                     IconButton(
@@ -129,7 +132,7 @@ class MonitoringListScreen: Screen {
 
             HorizontalPager(pagerState) { index->
                 if(index == 0) {
-                    Units()
+                    Units(searchQuery.value)
                 } else {
                     Groups()
                 }

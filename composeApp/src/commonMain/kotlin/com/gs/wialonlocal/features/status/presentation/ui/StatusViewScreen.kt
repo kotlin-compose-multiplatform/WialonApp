@@ -75,6 +75,9 @@ class StatusViewScreen(
         val navigator = LocalNavigator.currentOrThrow
         val monitoringViewModel: MonitoringViewModel = navigator.koinNavigatorScreenModel()
         val units = monitoringViewModel.units.collectAsState()
+        val searchQuery = rememberSaveable {
+            mutableStateOf("")
+        }
 
         BackFragment(
             modifier = Modifier.fillMaxSize(),
@@ -83,14 +86,21 @@ class StatusViewScreen(
                 navigator.pop()
             },
             badge = {
-                Box(Modifier.background(
-                    color = MaterialTheme.colorScheme.onSurface.copy(
-                        alpha = 0.5f
-                    ),
-                    shape = CircleShape
-                ).padding(2.dp).width(17.dp).height(30.dp), contentAlignment = Alignment.Center) {
+                Box(
+                    Modifier.background(
+                        color = MaterialTheme.colorScheme.onSurface.copy(
+                            alpha = 0.5f
+                        ),
+                        shape = CircleShape
+                    ).padding(2.dp).width(17.dp).height(30.dp), contentAlignment = Alignment.Center
+                ) {
                     Text(
-                        units.value.data?.count { ids.contains(it.id) }?.toString()?:"0",
+                        units.value.data?.count {
+                            ids.contains(it.id) && (it.carNumber.lowercase()
+                                .contains(searchQuery.value.lowercase()) || it.address.lowercase()
+                                .contains(searchQuery.value.lowercase()) || searchQuery.value.trim()
+                                .isEmpty())
+                        }?.toString() ?: "0",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onPrimary,
                         maxLines = 1,
@@ -104,7 +114,7 @@ class StatusViewScreen(
                         modifier = Modifier.fillMaxWidth(),
                         placeholder = strings.search,
                         onSearch = {
-
+                            searchQuery.value = it
                         }
                     )
                 }
@@ -116,12 +126,17 @@ class StatusViewScreen(
                     MaterialTheme.colorScheme.background
                 ).verticalScroll(rememberScrollState())
             ) {
-                if(units.value.loading) {
+                if (units.value.loading) {
                     LinearProgressIndicator(Modifier.fillMaxWidth())
                 }
-                units.value.data?.let { list->
-                    val filtered = list.filter { ids.contains(it.id) }
-                    repeat(filtered.count()) { index->
+                units.value.data?.let { list ->
+                    val filtered = list.filter {
+                        ids.contains(it.id) && (it.carNumber.lowercase()
+                            .contains(searchQuery.value.lowercase()) || it.address.lowercase()
+                            .contains(searchQuery.value.lowercase()) || searchQuery.value.trim()
+                            .isEmpty())
+                    }
+                    repeat(filtered.count()) { index ->
                         StatusCar(
                             modifier = Modifier.fillMaxWidth(),
                             unitModel = filtered[index]
@@ -162,8 +177,8 @@ fun StatusCar(
 
 
     LocatorDurationDialog(
-        onSelect = { duration->
-            viewModel.getLocatorUrl(duration, listOf(unitModel.id), onSuccess = {url->
+        onSelect = { duration ->
+            viewModel.getLocatorUrl(duration, listOf(unitModel.id), onSuccess = { url ->
                 getUrlSharer().shareUrl(url, context = context)
             })
         },
@@ -234,7 +249,10 @@ fun StatusCar(
                         icon = painterResource(Res.drawable.copy_coordinate),
                         enabled = true,
                         onClick = {
-                            getUrlSharer().shareUrl("${unitModel.latitude}, ${unitModel.longitude}", context = context)
+                            getUrlSharer().shareUrl(
+                                "${unitModel.latitude}, ${unitModel.longitude}",
+                                context = context
+                            )
                         }
                     ),
                     ContextButton(

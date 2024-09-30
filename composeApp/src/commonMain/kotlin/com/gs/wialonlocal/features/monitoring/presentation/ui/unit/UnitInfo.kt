@@ -64,7 +64,7 @@ fun UnitInfo(modifier: Modifier = Modifier) {
                 list.d?.flds?.let { fields ->
                     if (fields.values.isNotEmpty()) {
                         InfoAccordion(
-                            title = "Custom fields",
+                            title = strings.customFields,
                             items = fields.values.mapIndexed { index, flds ->
                                 InfoItem(flds.n ?: "Name", flds.v ?: "")
                             }
@@ -76,7 +76,7 @@ fun UnitInfo(modifier: Modifier = Modifier) {
                 list.d?.sens?.let { sensors ->
                     if (sensors.values.isNotEmpty()) {
                         InfoAccordion(
-                            title = "Sensors",
+                            title = strings.sensors,
                             items = sensors.values.mapIndexed { index, sens ->
                                 println(sens)
                                 InfoItem(
@@ -95,7 +95,7 @@ fun UnitInfo(modifier: Modifier = Modifier) {
                 list.d?.pflds?.let {profiles->
                     if(profiles.values.isNotEmpty()) {
                         InfoAccordion(
-                            title = "Profiles",
+                            title = strings.profile,
                             items = profiles.values.mapIndexed { index, pflds ->
                                 InfoItem(pflds.n ?: "Name", pflds.v ?: "")
                             }
@@ -104,7 +104,7 @@ fun UnitInfo(modifier: Modifier = Modifier) {
                 }
 
                 InfoAccordion(
-                    title = "Counters",
+                    title = strings.counters,
                     items = listOf(
                         InfoItem(
                             "Mileage",
@@ -124,7 +124,7 @@ fun UnitInfo(modifier: Modifier = Modifier) {
                 list.d?.prms?.let {parameters->
                     if(parameters.values.isNotEmpty()) {
                         InfoAccordion(
-                            title = "Parameters",
+                            title = strings.parameters,
                             items = parameters.entries.mapIndexed { index, param ->
                                 val paramValue = findParam(param.key, list.d.prms)
                                 InfoItem(param.key, if(param.key != "posinfo") paramValue.first?.v?.toString()?:"" else paramValue.second?:"")
@@ -135,9 +135,9 @@ fun UnitInfo(modifier: Modifier = Modifier) {
 
 
                 Spacer(Modifier.height(12.dp))
-                list.d?.lmsg?.pos?.z?.toString()?.let { InfoItem("Altitude", it+"m") }
+                list.d?.lmsg?.pos?.z?.toString()?.let { InfoItem(strings.altitude, it+"m") }
                     ?.let { InfoItemUi(item = it) }
-                InfoItemUi(item = InfoItem("Satellites", "${list.d?.lmsg?.pos?.sc}"))
+                InfoItemUi(item = InfoItem(strings.satellites, "${list.d?.lmsg?.pos?.sc}"))
                 Spacer(Modifier.height(18.dp))
 
             }

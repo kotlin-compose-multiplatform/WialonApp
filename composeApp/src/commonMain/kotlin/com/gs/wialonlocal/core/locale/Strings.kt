@@ -127,10 +127,19 @@ internal data class Strings(
     val dragToHide: String,
     val hideDescription: String,
     val feedback1: String,
+    val feedback10: String,
     val feedback2: String,
+    val feedback20: String,
     val feedback3: String,
+    val feedback30: String,
     val feedback4: String,
+    val feedback40: String,
     val feedback5: String,
+    val feedback50: String,
     val feedback6: String,
+    val feedback60: String,
     val viewDocs: String,
+
+    val history: String,
+    val info: String
 )

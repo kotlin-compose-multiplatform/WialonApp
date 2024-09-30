@@ -25,3 +25,8 @@ class AndroidUrlSharer : UrlSharer {
 }
 
 actual fun getUrlSharer(): UrlSharer = AndroidUrlSharer()
+actual fun getDevice(): String = "android"
+
+actual fun getVersion(): String = "1.0.0"
+
+actual fun getStoreUrl(): String = "https://play.google.com/store/apps/details?id=com.gurtam.wialon_client&hl=en"

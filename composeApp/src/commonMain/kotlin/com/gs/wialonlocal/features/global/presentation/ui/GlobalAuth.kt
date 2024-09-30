@@ -28,6 +28,7 @@ import com.gs.wialonlocal.features.auth.data.AuthSettings
 import com.gs.wialonlocal.features.auth.presentation.ui.AuthScreen
 import com.gs.wialonlocal.features.auth.presentation.viewmodel.AuthViewModel
 import com.gs.wialonlocal.features.main.presentation.ui.MainScreen
+import com.gs.wialonlocal.state.LocalGlobalNavigator
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.painterResource
 import wialonlocal.composeapp.generated.resources.Res
@@ -44,7 +45,9 @@ class GlobalAuthScreen: Screen {
 
 @Composable
 fun GlobalAuth() {
+    val globalNavigator = LocalGlobalNavigator.current
     val navigator = LocalNavigator.currentOrThrow
+    globalNavigator.value = navigator
     val authViewModel: AuthViewModel = navigator.koinNavigatorScreenModel()
     val sessionState = authViewModel.sessionState.collectAsState()
 

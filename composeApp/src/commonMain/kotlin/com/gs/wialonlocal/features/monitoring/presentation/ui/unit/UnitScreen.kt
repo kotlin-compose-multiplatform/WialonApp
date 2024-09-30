@@ -124,7 +124,7 @@ fun UnitDetails(modifier: Modifier = Modifier, id: String, unitModel: UnitModel)
         mutableStateOf<List<String?>?>(null)
     }
 
-    val singleMarker = rememberSaveable {
+    val singleMarker = remember {
         mutableStateOf<LatLong?>(null)
     }
 
@@ -291,7 +291,7 @@ fun UnitDetails(modifier: Modifier = Modifier, id: String, unitModel: UnitModel)
                     }
                 }, text = {
                     androidx.compose.material.Text(
-                        "INFO",
+                        strings.info.uppercase(),
                         color = MaterialTheme.colorScheme.onPrimary,
                         style = MaterialTheme.typography.bodyLarge
                     )
@@ -302,7 +302,7 @@ fun UnitDetails(modifier: Modifier = Modifier, id: String, unitModel: UnitModel)
                     }
                 }, text = {
                     androidx.compose.material.Text(
-                        "HISTORY",
+                        strings.history.uppercase(),
                         color = MaterialTheme.colorScheme.onPrimary,
                         style = MaterialTheme.typography.bodyLarge
                     )

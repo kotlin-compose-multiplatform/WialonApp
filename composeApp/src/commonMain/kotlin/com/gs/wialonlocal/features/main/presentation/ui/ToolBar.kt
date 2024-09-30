@@ -81,7 +81,12 @@ fun SearchBar(
         CompositionLocalProvider(LocalMinimumInteractiveComponentEnforcement provides false) {
             NoPaddingTextField(
                 value = query.value,
-                onValueChange = { query.value = it },
+                onValueChange = {
+                    query.value = it
+                    if (it.trim().isEmpty()) {
+                        onSearch(it)
+                    }
+                },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Text,
                     imeAction = ImeAction.Search

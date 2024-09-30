@@ -58,6 +58,9 @@ class ReportUnitSelect: Screen {
         val viewModel: ReportViewModel = navigator.koinNavigatorScreenModel()
         val selectedUnit = viewModel.selectedUnit
         val units = monitoringViewModel.units.collectAsState()
+        val searchQuery = rememberSaveable {
+            mutableStateOf("")
+        }
         BackFragment(
             modifier = Modifier.fillMaxSize(),
             title = strings.unit,
@@ -70,7 +73,7 @@ class ReportUnitSelect: Screen {
                         modifier = Modifier.fillMaxWidth(),
                         placeholder = strings.search,
                         onSearch = {
-
+                            searchQuery.value = it
                         }
                     )
                 }
@@ -88,8 +91,11 @@ class ReportUnitSelect: Screen {
                     MaterialTheme.colorScheme.background
                 ).verticalScroll(rememberScrollState())) {
                     units.value.data?.let { list->
-                        repeat(list.count()) { index->
-                            val unit = list[index]
+                        val filtered = list.filter {
+                            it.carNumber.lowercase().contains(searchQuery.value.lowercase()) || it.address.lowercase().contains(searchQuery.value.lowercase()) || searchQuery.value.trim().isEmpty()
+                        }
+                        repeat(filtered.count()) { index->
+                            val unit = filtered[index]
                             ReportSelectCar(
                                 modifier = Modifier.fillMaxWidth(),
                                 unit = unit,

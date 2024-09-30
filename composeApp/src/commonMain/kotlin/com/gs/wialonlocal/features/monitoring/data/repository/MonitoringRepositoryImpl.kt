@@ -205,7 +205,24 @@ class MonitoringRepositoryImpl(
                     append("params", "{\"itemId\":${req.itemId},\"eventType\":\"trips\",\"ivalType\":1,\"ivalFrom\":${req.timeFrom},\"ivalTo\":${req.timeTo},\"detalization\":47}")
                 })
             }.body<GetEvents>()
-            emit(Resource.Success(Pair(result.trips, categorizeAndMergeTrips(result.trips, tripDetector))))
+            val categorized = categorizeAndMergeTrips(result.trips, tripDetector)
+                .map {
+                    if(it.type == "trip"){
+                        it
+                    } else {
+                        try {
+                            val address =
+                                httpClient.get("${Constant.BASE_URL}/gis_geocode?coords=[{\"lon\":${it.from.x},\"lat\":${it.from.y}}]&flags=1255211008&uid=${authSettings.getId()}")
+                                    .body<List<String>>()
+                            it.copy(
+                                address = address[0]
+                            )
+                        } catch (ex: Exception) {
+                            it
+                        }
+                    }
+                }
+            emit(Resource.Success(Pair(result.trips, categorized)))
         } catch (ex: Exception) {
             ex.printStackTrace()
             emit(Resource.Error(ex.message))

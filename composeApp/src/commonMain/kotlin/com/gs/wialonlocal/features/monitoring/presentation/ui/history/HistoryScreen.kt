@@ -314,7 +314,7 @@ fun ParkingItem(
                     }
                 }
                 Text(
-                    text = "Ankara (1956) Köçesi, Aşgabat, Türkmenistan",
+                    text = item.address,
                     color = MaterialTheme.colorScheme.outline,
                     style = MaterialTheme.typography.bodySmall
                 )

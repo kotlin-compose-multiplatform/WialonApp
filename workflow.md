@@ -3,14 +3,14 @@
 - [X] add pdf support for iOS
 - [X] pdf share iOS
 - [X] link share iOS
-- [ ] ! add 3 languages 
+- [X] add 3 languages 
 - [ ] geofences status
 - [X] unit detail more button
-- [ ] ! search items
+- [X] search items
 - [ ] select units functionality
-- [ ] ! check update api
-- [ ] ! logout fix loading
-- [ ] ! Feedback page
+- [X] ! check update api
+- [X] ! logout fix loading
+- [X] ! Feedback page
 - [X] Unit view settings page
 - [X] Monitoring list check ignition on
 - [ ] Unit detail history parking time plus yesterday

@@ -34,6 +34,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -62,6 +63,9 @@ class SelectUnits : Screen {
         val navigator = LocalNavigator.currentOrThrow
         val viewModel: MonitoringViewModel = navigator.koinNavigatorScreenModel()
         val units = viewModel.units.collectAsState()
+        val searchQuery = rememberSaveable {
+            mutableStateOf("")
+        }
         Column(
             Modifier.fillMaxSize().verticalScroll(rememberScrollState()).background(
                 color = MaterialTheme.colorScheme.background
@@ -78,7 +82,7 @@ class SelectUnits : Screen {
                             modifier = Modifier.weight(1f),
                             placeholder = strings.search,
                             onSearch = {
-
+                                searchQuery.value = it
                             }
                         )
 //                        IconButton(
@@ -139,8 +143,11 @@ class SelectUnits : Screen {
             )
             Spacer(Modifier.height(12.dp))
             units.value.data?.let { list->
-                repeat(list.count()) { index->
-                    val item = list[index]
+                val filtered = list.filter {
+                    it.carNumber.lowercase().contains(searchQuery.value.lowercase()) || it.address.lowercase().contains(searchQuery.value.lowercase()) || searchQuery.value.trim().isEmpty()
+                }
+                repeat(filtered.count()) { index->
+                    val item = filtered[index]
                     SelectCar(
                         modifier = Modifier.fillMaxWidth(),
                         unitModel = item

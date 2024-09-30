@@ -9,3 +9,7 @@ interface UrlSharer {
 
 expect fun getUrlSharer(): UrlSharer
 
+expect fun getDevice(): String
+expect fun getVersion(): String
+expect fun getStoreUrl(): String
+

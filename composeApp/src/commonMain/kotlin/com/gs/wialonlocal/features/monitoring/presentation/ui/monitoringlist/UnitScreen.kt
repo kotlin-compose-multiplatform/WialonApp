@@ -19,18 +19,15 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
-import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,7 +39,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import cafe.adriel.lyricist.strings
-import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.koinNavigatorScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
@@ -58,7 +54,6 @@ import com.gs.wialonlocal.features.monitoring.domain.model.UnitModel
 import com.gs.wialonlocal.features.monitoring.presentation.ui.unit.UnitScreen
 import com.gs.wialonlocal.features.monitoring.presentation.viewmodel.MonitoringViewModel
 import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
 import wialonlocal.composeapp.generated.resources.Res
 import wialonlocal.composeapp.generated.resources.clock
 import wialonlocal.composeapp.generated.resources.copy_coordinate
@@ -73,7 +68,7 @@ import wialonlocal.composeapp.generated.resources.send_command
 import wialonlocal.composeapp.generated.resources.share_location
 
 @Composable
-fun Units() {
+fun Units(searchQuery: String) {
     val navigator = LocalNavigator.currentOrThrow
     val viewModel = navigator.koinNavigatorScreenModel<MonitoringViewModel>()
     val units = viewModel.units.collectAsState()
@@ -86,8 +81,11 @@ fun Units() {
         AppError(Modifier.fillMaxSize(), units.value.error)
     } else {
         units.value.data?.let { list ->
+            val filtered = list.filter {
+                it.carNumber.lowercase().contains(searchQuery.lowercase()) || it.address.lowercase().contains(searchQuery.lowercase()) || searchQuery.trim().isEmpty()
+            }
             LazyColumn {
-                items(list) { item ->
+                items(filtered) { item ->
                     UnitItem(
                         modifier = Modifier.clickable {
                             navigator.push(UnitScreen(item.id, item))
@@ -169,7 +167,7 @@ internal fun UnitItem(
                 Spacer(Modifier.height(12.dp))
                 Box(
                     modifier = Modifier.defaultMinSize(minWidth = 80.dp).clip(shape).background(
-                        color = item.calculateDifference().second,
+                        color = item.calculateDifference().second.copy(alpha = 0.5f),
                         shape = shape
                     ).padding(
                         horizontal = 24.dp,

@@ -4,6 +4,7 @@ import com.gs.wialonlocal.core.constant.Constant
 import com.gs.wialonlocal.core.network.Resource
 import com.gs.wialonlocal.features.auth.data.AuthSettings
 import com.gs.wialonlocal.features.global.data.entity.CheckSessionEntity
+import com.gs.wialonlocal.features.global.data.entity.GetVersionsItem
 import com.gs.wialonlocal.features.global.domain.model.CheckSessionModel
 import com.gs.wialonlocal.features.global.domain.repository.GlobalRepository
 import io.ktor.client.HttpClient
@@ -29,6 +30,21 @@ class GlobalRepositoryImpl(
 
         } else {
             emit(Resource.Error(AuthSettings.NO_SESSION_MESSAGE))
+        }
+    }
+
+    override suspend fun getVersions(): Flow<Resource<List<GetVersionsItem>>> = flow {
+        emit(Resource.Loading())
+        try {
+            val response = httpClient.get("https://geekspace.dev/wialon-version")
+            if(response.status.value in 200..299) {
+                emit(Resource.Success(response.body()))
+            } else {
+                emit(Resource.Error(response.status.description, response.status.value))
+            }
+        } catch (ex: Exception) {
+            ex.printStackTrace()
+            emit(Resource.Error(ex.message))
         }
     }
 

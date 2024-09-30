@@ -25,11 +25,14 @@ import cafe.adriel.voyager.navigator.currentOrThrow
 import com.gs.wialonlocal.components.BackFragment
 import com.gs.wialonlocal.features.auth.data.AuthSettings
 import com.gs.wialonlocal.features.auth.presentation.viewmodel.AuthViewModel
+import com.gs.wialonlocal.features.global.presentation.ui.GlobalAuthScreen
+import com.gs.wialonlocal.state.LocalGlobalNavigator
 import org.koin.compose.koinInject
 
 class ProfileScreen : Screen {
     @Composable
     override fun Content() {
+        val globalNavigator = LocalGlobalNavigator.current
         val navigator = LocalNavigator.currentOrThrow
         val authSettings: AuthSettings = koinInject()
         val authViewModel: AuthViewModel = navigator.koinNavigatorScreenModel()
@@ -58,6 +61,11 @@ class ProfileScreen : Screen {
                             authViewModel.logout(
                                 onSuccess = {
                                     authSettings.logout()
+                                    globalNavigator.value?.replace(AuthScreen(
+                                        onSuccess = {
+                                            globalNavigator.value?.replace(GlobalAuthScreen())
+                                        }
+                                    ))
                                 }
                             )
 
