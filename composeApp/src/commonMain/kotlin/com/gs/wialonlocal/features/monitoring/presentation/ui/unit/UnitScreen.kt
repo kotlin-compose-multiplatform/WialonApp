@@ -28,10 +28,12 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -148,6 +150,8 @@ fun UnitDetails(modifier: Modifier = Modifier, id: String, unitModel: UnitModel)
         mutableStateOf(false)
     }
 
+    val coroutineScope = rememberCoroutineScope()
+
     val locatorState = viewModel.locatorState.collectAsState()
 
     LoadingDialog(
@@ -176,6 +180,8 @@ fun UnitDetails(modifier: Modifier = Modifier, id: String, unitModel: UnitModel)
         viewModel.unloadEvents(id)
         navigator.pop()
     }
+
+    val scaffoldState = rememberBottomSheetScaffoldState()
 
     LaunchedEffect(id, startDate.value, endDate.value) {
         viewModel.unloadEvents(id) {
@@ -311,6 +317,7 @@ fun UnitDetails(modifier: Modifier = Modifier, id: String, unitModel: UnitModel)
         }
 
         BottomSheetScaffold(
+            scaffoldState = scaffoldState,
             containerColor = MaterialTheme.colorScheme.surface,
             sheetTonalElevation = 0.dp,
             sheetDragHandle = {},
@@ -334,7 +341,20 @@ fun UnitDetails(modifier: Modifier = Modifier, id: String, unitModel: UnitModel)
                         ) {
                             IconButton(
                                 onClick = {
-                                    sheetPeekHeight.value = 300
+                                    if(scaffoldState.bottomSheetState.currentValue == SheetValue.PartiallyExpanded) {
+                                        if(sheetPeekHeight.value==100){
+                                            sheetPeekHeight.value = 300
+                                        } else {
+                                            coroutineScope.launch {
+                                                scaffoldState.bottomSheetState.expand()
+                                            }
+                                        }
+                                    } else {
+
+                                        coroutineScope.launch {
+                                            scaffoldState.bottomSheetState.expand()
+                                        }
+                                    }
                                 }
                             ) {
                                 Icon(
@@ -346,7 +366,16 @@ fun UnitDetails(modifier: Modifier = Modifier, id: String, unitModel: UnitModel)
 
                             IconButton(
                                 onClick = {
-                                    sheetPeekHeight.value = 100
+                                    if(scaffoldState.bottomSheetState.currentValue == SheetValue.Expanded) {
+                                        coroutineScope.launch {
+                                            scaffoldState.bottomSheetState.partialExpand()
+                                        }
+                                    } else {
+                                        sheetPeekHeight.value = 100
+                                        coroutineScope.launch {
+                                            scaffoldState.bottomSheetState.partialExpand()
+                                        }
+                                    }
                                 }
                             ) {
                                 Icon(

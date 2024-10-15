@@ -49,7 +49,13 @@ class MapSource: Screen {
                     initial = appSettings.value.mapType == MapType.MAP,
                     text = "Google Default",
                     onChange = { isChecked->
-
+                        if(isChecked) {
+                            appSettings.value = appSettings.value.copy(
+                                mapType = MapType.MAP
+                            )
+                            settings.saveMapType("map")
+                            navigator.pop()
+                        }
                     }
                 )
                 RadioText(
@@ -63,7 +69,13 @@ class MapSource: Screen {
                     initial = appSettings.value.mapType == MapType.SATELLITE,
                     text = "Google Satellite",
                     onChange = { isChecked->
-
+                        if(isChecked) {
+                            appSettings.value = appSettings.value.copy(
+                                mapType = MapType.SATELLITE
+                            )
+                            settings.saveMapType("satellite")
+                            navigator.pop()
+                        }
                     }
                 )
                 RadioText(
@@ -77,7 +89,13 @@ class MapSource: Screen {
                     initial = appSettings.value.mapType == MapType.HYBRID,
                     text = "Google Hybrid",
                     onChange = { isChecked->
-
+                        if(isChecked) {
+                            appSettings.value = appSettings.value.copy(
+                                mapType = MapType.HYBRID
+                            )
+                            settings.saveMapType("hybrid")
+                            navigator.pop()
+                        }
                     }
                 )
             }

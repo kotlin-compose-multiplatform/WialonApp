@@ -307,7 +307,6 @@ fun ThemeSelectDialog(
         val theme = LocalTheme.current
         val themeType = LocalAppSettings.current
         val settings = koinInject<AppSettings>()
-        val isSystemDark = isSystemInDarkTheme()
         Dialog(
             onDismissRequest = onDismiss
         ) {
@@ -321,26 +320,6 @@ fun ThemeSelectDialog(
                         fontWeight = FontWeight.W500
                     )
                 )
-                Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    RadioButton(
-                        selected = themeType.value.theme == AppTheme.SYSTEM,
-                        onClick = {
-                            theme.value = isSystemDark
-                            themeType.value = themeType.value.copy(
-                                theme = AppTheme.SYSTEM
-                            )
-                            settings.saveTheme("system")
-                        }
-                    )
-
-                    androidx.compose.material.Text(
-                        strings.sameAsDevice,
-                        color = MaterialTheme.colorScheme.onBackground,
-                        style = MaterialTheme.typography.bodyLarge.copy(
-                            fontWeight = FontWeight.W500
-                        )
-                    )
-                }
                 Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                     RadioButton(
                         selected = themeType.value.theme == AppTheme.LIGHT,

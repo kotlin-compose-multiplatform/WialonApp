@@ -4,19 +4,19 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class User(
-    val bact: Int,
-    val cls: Int,
-    val crt: Int,
-    val ct: Int,
-    val fl: Int,
-    val ftp: Ftp,
-    val hm: String,
-    val id: Int,
-    val ld: Int,
-    val mappsmax: Int,
-    val mu: Int,
-    val nm: String,
-    val pfl: Int,
-    val prp: Prp?,
-    val uacl: Int
+    val bact: Int? = null,
+    val cls: Int? = null,
+    val crt: Int? = null,
+    val ct: Int? = null,
+    val fl: Int? = null,
+    val ftp: Ftp? = null,
+    val hm: String? = null,
+    val id: Int? = null,
+    val ld: Int? = null,
+    val mappsmax: Int? = null,
+    val mu: Int? = null,
+    val nm: String? = null,
+    val pfl: Int? = null,
+    val prp: Prp? = null,
+    val uacl: Int? = null
 )

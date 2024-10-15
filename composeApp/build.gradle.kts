@@ -36,6 +36,12 @@ kotlin {
             //    version = "7.4.0" // for GoogleMapsUtils 4.2.2 (doesn't build for some c-interop reason, waiting for 5.0.0)
             extraOpts += listOf("-compiler-option", "-fmodules")
         }
+
+        pod("Google-Maps-iOS-Utils") {
+            version = libs.versions.pods.google.mapsUtils.get()
+            //    version = "7.4.0" // for GoogleMapsUtils 4.2.2 (doesn't build for some c-interop reason, waiting for 5.0.0)
+            extraOpts += listOf("-compiler-option", "-fmodules")
+        }
     }
     
     sourceSets {

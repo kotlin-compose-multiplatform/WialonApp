@@ -7,8 +7,8 @@ import com.gs.wialonlocal.features.settings.data.settings.MapType
 
 data class AppSettings(
     val mapType: MapType = MapType.MAP, // hybrid, satellite
-    val language: String = "tm", // ru, en
-    val theme: AppTheme = AppTheme.SYSTEM, // dark,light
+    val language: String = "ru", // ru, en
+    val theme: AppTheme = AppTheme.LIGHT, // dark,light
 )
 
 val LocalAppSettings = compositionLocalOf {

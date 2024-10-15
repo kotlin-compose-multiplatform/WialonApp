@@ -21,6 +21,7 @@ import cafe.adriel.voyager.navigator.Navigator
 import coil3.compose.rememberAsyncImagePainter
 import com.gs.wialonlocal.common.getDevice
 import com.gs.wialonlocal.common.getVersion
+import com.gs.wialonlocal.components.AppError
 import com.gs.wialonlocal.components.AppLoading
 import com.gs.wialonlocal.core.network.provideHttpClient
 import com.gs.wialonlocal.core.network.provideSettings
@@ -88,7 +89,6 @@ fun App(
 
         val settings = koinInject<AppSettings>()
 
-        val isSystemDark = isSystemInDarkTheme()
 
 
         val localSettings = remember {
@@ -105,7 +105,7 @@ fun App(
         ProvideStrings(lyricist) {
             CompositionLocalProvider(
                 LocalTheme provides rememberSaveable {
-                    mutableStateOf(settings.getTheme() == AppTheme.DARK || isSystemDark)
+                    mutableStateOf(settings.getTheme() == AppTheme.DARK)
                 },
                 LocalAppSettings provides remember {
                     mutableStateOf(localSettings.value)
@@ -146,6 +146,11 @@ fun App(
                                 color = MaterialTheme.colorScheme.onSurface
                             )
                         }
+                    } else if(versionState.value.error.isNullOrEmpty().not()) {
+                        AppError(
+                            modifier = Modifier.fillMaxSize(),
+                            message = "Check version error! Please check internet connection and re-open the app!"
+                        )
                     } else {
                         versionState.value.version?.let { list ->
                             val newVersion =

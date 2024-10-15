@@ -4,7 +4,9 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
 import android.util.Log
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -16,6 +18,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
 import coil.decode.SvgDecoder
 import coil3.ImageLoader
 import coil3.annotation.ExperimentalCoilApi
@@ -36,12 +40,14 @@ import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapType
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
+import com.google.maps.android.compose.MarkerComposable
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.Polygon
 import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.clustering.Clustering
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberMarkerState
+import com.gs.wialonlocal.R
 import com.gs.wialonlocal.features.geofence.data.entity.geofence.P
 import com.gs.wialonlocal.features.monitoring.data.entity.history.Trip
 import com.gs.wialonlocal.features.monitoring.domain.model.UnitModel
@@ -229,27 +235,38 @@ actual fun GoogleMaps(
                     val list = PolyUtil.decode(p)
                     Polyline(
                         points = list,
-                        color = Color.Cyan
+                        color = Color(0xFF009AFF),
+                        width = 10.0f
                     )
                 }
 
                 if(path.isNotEmpty()) {
                     val list = PolyUtil.decode(path.first())
                     if(list.isNotEmpty()) {
-                        Marker(
-                            state = MarkerState(list.first()),
-                            title = "Start",
-                        )
+                        MarkerComposable(
+                            state = MarkerState(position = list.first()),
+                        ) {
+                            Image(
+                                modifier = Modifier.size(30.dp),
+                                painter = painterResource(id = R.drawable.points),
+                                contentDescription = "Start",
+                            )
+                        }
 
 
                     }
 
                     val end = PolyUtil.decode(path.last())
                     if(end.isNotEmpty()) {
-                        Marker(
-                            state = MarkerState(list.last()),
-                            title = "End",
-                        )
+                        MarkerComposable(
+                            state = MarkerState(position = list.last()),
+                        ) {
+                            Image(
+                                modifier = Modifier.size(30.dp),
+                                painter = painterResource(id = R.drawable.finish2),
+                                contentDescription = "End",
+                            )
+                        }
                     }
                 }
             }

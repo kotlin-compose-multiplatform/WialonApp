@@ -16,3 +16,4 @@
 - [ ] Unit detail history parking time plus yesterday
 - [X] History date button trim month name
 - [X] select units screen check/uncheck
+- [ ] Add firebase crashlytics

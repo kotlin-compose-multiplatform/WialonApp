@@ -27,7 +27,7 @@ settings = "1.1.1"
 lyricist = "1.7.0"
 ksp="2.0.20-1.0.25"
 pods-google-maps = "8.4.0"  # IDE says not used, but _it is_ used via a .get() (why can't gradle see that?)
-pods-google-mapsUtils = "4.2.2" # IDE says not used, but _it is_ used via a .get() (why can't gradle see that?)
+pods-google-mapsUtils = "5.0.0" # IDE says not used, but _it is_ used via a .get() (why can't gradle see that?)
 google-MapsAndroidComposeVersion = "3.1.0"
 google-PlayServicesAndroidLocation = "21.2.0"
 google-PlayServicesAndroidMaps = "18.2.0"
@@ -36,6 +36,9 @@ coil3 = "3.0.0-alpha06"
 coil = "2.7.0"
 kotlinx = "0.6.0"
 toast="0.3.8"
+firebaseCrashlytics = "19.1.0"
+googleGmsGoogleServices = "4.4.2"
+googleFirebaseCrashlytics = "3.0.2"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -99,6 +102,7 @@ coil-mp = { module = "io.coil-kt.coil3:coil", version.ref = "coil3" }
 coil-android = { module = "io.coil-kt.coil:coil", version.ref = "coil" }
 kotlinx = {module="org.jetbrains.kotlinx:kotlinx-datetime", version.ref="kotlinx"}
 toast={module="io.github.dokar3:sonner", version.ref="toast"}
+firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics", version.ref = "firebaseCrashlytics" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
@@ -109,3 +113,5 @@ kotlinCocoapods = { id = "org.jetbrains.kotlin.native.cocoapods", version.ref = 
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 jetbrainsCompose = { id = "org.jetbrains.compose", version.ref = "compose-plugin" }
 com-google-devtools-ksp = {id="com.google.devtools.ksp",version.ref="ksp"}
+google-gms-google-services = { id = "com.google.gms.google-services", version.ref = "googleGmsGoogleServices" }
+google-firebase-crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "googleFirebaseCrashlytics" }

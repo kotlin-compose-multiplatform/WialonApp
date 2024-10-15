@@ -1,3 +1,6 @@
+import com.google.gms.googleservices.GoogleServicesTask
+
+
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.kotlinAndroid)
@@ -5,8 +8,18 @@ plugins {
     // for Google Maps API key secrets gradle plugin
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
 
-    // Google Services - for feedback
+
+
     id("com.google.gms.google-services")
+    // Google Services - for feedback
+    alias(libs.plugins.google.firebase.crashlytics)
+}
+
+
+project.afterEvaluate {
+    tasks.withType<GoogleServicesTask> {
+        gmpAppId.set(File(project.buildDir, "${name}-gmpAppId.txt"))
+    }
 }
 
 android {
@@ -30,6 +43,12 @@ android {
     buildTypes {
         getByName("release") {
             isMinifyEnabled = false
+            signingConfig = signingConfigs.getByName("debug")
+            isShrinkResources = false
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
         }
     }
     compileOptions {
@@ -47,5 +66,6 @@ dependencies {
     implementation(libs.compose.ui.tooling.preview)
     implementation(libs.compose.material3)
     implementation(libs.androidx.activity.compose)
+    implementation(libs.firebase.crashlytics)
     debugImplementation(libs.compose.ui.tooling)
 }

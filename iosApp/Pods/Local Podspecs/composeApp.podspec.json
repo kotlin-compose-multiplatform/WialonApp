@@ -14,6 +14,9 @@
     "ios": "16.0"
   },
   "dependencies": {
+    "Google-Maps-iOS-Utils": [
+      "5.0.0"
+    ],
     "GoogleMaps": [
       "8.4.0"
     ]

@@ -49,7 +49,7 @@ class AuthScreen(
 @Composable
 fun AuthUI(onSuccess: () -> Unit) {
     val webViewState =
-        rememberWebViewState("${Constant.BASE_URL}/login.html?client_id=YTMerkezi&duration=2592000&access_type=-1")
+        rememberWebViewState("${Constant.BASE_URL}/login.html?client_id=YTM&duration=2592000&access_type=-1")
     val authSettings: AuthSettings = koinInject()
     val navigator = LocalNavigator.currentOrThrow
     LaunchedEffect(webViewState.lastLoadedUrl) {

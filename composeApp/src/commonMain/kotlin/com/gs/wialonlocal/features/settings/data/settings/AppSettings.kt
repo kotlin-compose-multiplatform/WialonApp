@@ -4,7 +4,6 @@ import com.gs.wialonlocal.core.locale.Locales
 import com.russhwolf.settings.Settings
 
 enum class AppTheme {
-    SYSTEM,
     DARK,
     LIGHT
 }
@@ -35,7 +34,7 @@ class AppSettings(
      * This function can return this values: [Locales.TM],[Locales.EN],[Locales.RU]
      */
     fun getLanguage(): String {
-        return settings.getString(LANGUAGE_KEY, Locales.TM)
+        return settings.getString(LANGUAGE_KEY, Locales.RU)
     }
 
 
@@ -51,10 +50,9 @@ class AppSettings(
      * This function return [AppTheme] enum class
      */
     fun getTheme(): AppTheme {
-       return when(settings.getString(THEME_KEY, "system")) {
+       return when(settings.getString(THEME_KEY, "light")) {
            "dark" -> AppTheme.DARK
-           "light" -> AppTheme.LIGHT
-           else -> AppTheme.SYSTEM
+           else -> AppTheme.LIGHT
         }
     }
 

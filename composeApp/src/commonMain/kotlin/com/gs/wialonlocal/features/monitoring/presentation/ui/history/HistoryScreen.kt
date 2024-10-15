@@ -487,9 +487,9 @@ fun HistoryDateButton(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            dayOfWeek,
+            dayOfWeek.take(3),
             color = if (selected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant,
-            style = MaterialTheme.typography.bodyMedium
+            style = MaterialTheme.typography.bodySmall
         )
 
         Row(
@@ -499,7 +499,7 @@ fun HistoryDateButton(
             Text(
                 day,
                 color = if (selected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onBackground,
-                style = MaterialTheme.typography.bodyLarge.copy(
+                style = MaterialTheme.typography.bodyMedium.copy(
                     fontWeight = FontWeight.W500
                 )
             )

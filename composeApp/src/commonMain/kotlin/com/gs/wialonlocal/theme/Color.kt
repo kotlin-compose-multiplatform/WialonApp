@@ -1,9 +1,9 @@
 package com.gs.wialonlocal.theme
 import androidx.compose.ui.graphics.Color
 
-val primaryLight = Color(0xFF009AFF)
+val primaryLight = Color(0xFF05823C)
 val onPrimaryLight = Color(0xFFFFFFFF) // button
-val primaryContainerLight = Color(0xFF4BA7FF)
+val primaryContainerLight = Color(0xff09ae51)
 val onPrimaryContainerLight = Color(0xFF00182F)
 val secondaryLight = Color(0xFF4DB251)
 val onSecondaryLight = Color(0xFFFFFFFF)
@@ -37,9 +37,9 @@ val surfaceContainerLight = Color(0xFFEAEEF7)
 val surfaceContainerHighLight = Color(0xFFE5E8F1)
 val surfaceContainerHighestLight = Color(0xFFDFE2EB)
 
-val primaryDark = Color(0xFF9ECAFF)
+val primaryDark = Color(0xFF05823C)
 val onPrimaryDark = Color(0xFF003258)
-val primaryContainerDark = Color(0xFF0078C8)
+val primaryContainerDark = Color(0xff034922)
 val onPrimaryContainerDark = Color(0xFFFFFFFF)
 val secondaryDark = Color(0xFF77DD76)
 val onSecondaryDark = Color(0xFF00390A)
