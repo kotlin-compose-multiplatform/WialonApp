@@ -144,5 +144,6 @@ internal val TmStrings = Strings(
     feedback50 = "Waka parametrleriniň käbir bahalary (wagtyň aralygy, ýangyç mukdary, ýerleşýän ýer) monitoring ulgamynyň hasabatlaryndaky meňzeş parametrleriň bahalaryndan tapawutlanyp biler. Munuň sebäbi web interfeýsinde we mobil programmada dürli hasaplaýyş ulgamlarynyň ulanylmagy bilen baglanyşyklydyr. Mysal üçin, mobil programmada ýangyç doldurmalaryny/ogurluklaryny kesgitläniňde, ýangyç derejesiniň üýtgemegi başlamazdan ozalky soňky habar wagty ulanylýar. Munuň tersine, monitoring ulgamynda ýangyç doldurmalaryny/ogurluklaryny kesgitläniňde, iň ýokary ýangyç derejesiniň peselmeginiň aralygyndan ilkinji habar wagty ulanylýar. Mundan başga-da, mobil programmada birlikleriň hereket ýagdaýy diňe GPS tizlik bilen kesgitlenýär, monitoring ulgamynda bolsa başga usullar ulanylyp bilner.\n" +
             "Mobil programmada wakanyň esasynda alnan maglumatlaryň dogrulygy saparyň kesgitleniş parametrlerine baglydygyny ýadyňyzdan çykarmaň.",
     feedback60 = "",
+    noData = "Maglumat yok"
 
     )

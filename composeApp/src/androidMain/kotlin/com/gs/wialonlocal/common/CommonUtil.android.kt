@@ -3,6 +3,8 @@ package com.gs.wialonlocal.common
 import android.content.Intent
 import android.net.Uri
 import android.content.Context
+import android.os.Parcelable
+import kotlinx.android.parcel.Parcelize
 
 actual fun openNavigationApp(endLatitude: Double, endLongitude: Double, context: Any?) {
     val uri = Uri.parse("google.navigation:q=$endLatitude,$endLongitude")
@@ -30,3 +32,7 @@ actual fun getDevice(): String = "android"
 actual fun getVersion(): String = "1.0.0"
 
 actual fun getStoreUrl(): String = "https://play.google.com/store/apps/details?id=com.gurtam.wialon_client&hl=en"
+
+actual typealias CommonParcelize = Parcelize
+
+actual typealias CommonParcelable = Parcelable

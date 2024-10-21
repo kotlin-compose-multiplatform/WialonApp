@@ -12,7 +12,7 @@ plugins {
 
     id("com.google.gms.google-services")
     // Google Services - for feedback
-    alias(libs.plugins.google.firebase.crashlytics)
+//    alias(libs.plugins.google.firebase.crashlytics)
 }
 
 
@@ -32,6 +32,16 @@ android {
         versionCode = 1
         versionName = "1.0"
     }
+
+    signingConfigs {
+        create("release") {
+            keyAlias = "upload"
+            keyPassword = "QwertyWeb123"
+            storeFile = file("key.jks")
+            storePassword = "QwertyWeb123"
+        }
+    }
+
     buildFeatures {
         compose = true
     }
@@ -42,9 +52,9 @@ android {
     }
     buildTypes {
         getByName("release") {
-            isMinifyEnabled = false
-            signingConfig = signingConfigs.getByName("debug")
-            isShrinkResources = false
+            isMinifyEnabled = true
+            signingConfig = signingConfigs.getByName("release")
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -66,6 +76,6 @@ dependencies {
     implementation(libs.compose.ui.tooling.preview)
     implementation(libs.compose.material3)
     implementation(libs.androidx.activity.compose)
-    implementation(libs.firebase.crashlytics)
+//    implementation(libs.firebase.crashlytics)
     debugImplementation(libs.compose.ui.tooling)
 }

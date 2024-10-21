@@ -930,6 +930,23 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		0C2A95E97F7482A93181C26007A10EE9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 24CFA5DD1DC1548254B985D77C1097D3 /* GoogleMaps.debug.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
 		264AD7CA49BDC1DF16C0F1041F32A24F /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 9C49AEBC7AA7C80C03295804C6F07963 /* Pods-iosApp.release.xcconfig */;
@@ -1030,7 +1047,42 @@
 			};
 			name = Release;
 		};
-		53E11DFDB2E239001B8758FB830553F4 /* Release */ = {
+		4D3EBCC20DE99A69197E31E0BEDAE0EF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 24CFA5DD1DC1548254B985D77C1097D3 /* GoogleMaps.debug.xcconfig */;
+			buildSettings = {
+				CODE_SIGNING_ALLOWED = NO;
+				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/GoogleMaps";
+				IBSC_MODULE = GoogleMaps;
+				INFOPLIST_FILE = "Target Support Files/GoogleMaps/ResourceBundle-GoogleMapsResources-GoogleMaps-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				PRODUCT_NAME = GoogleMapsResources;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				WRAPPER_EXTENSION = bundle;
+			};
+			name = Debug;
+		};
+		66B165043BBE973656B26F10875F248A /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = A8BD58C20EC78311D90FC09CF7DA9FF3 /* composeApp.release.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		7938813CADABA0AE7F9E1DE26A6C82F0 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 84F254A85543547E4F7E20837CEF78D9 /* Google-Maps-iOS-Utils.release.xcconfig */;
 			buildSettings = {
@@ -1046,7 +1098,7 @@
 				GCC_PREFIX_HEADER = "Target Support Files/Google-Maps-iOS-Utils/Google-Maps-iOS-Utils-prefix.pch";
 				INFOPLIST_FILE = "Target Support Files/Google-Maps-iOS-Utils/Google-Maps-iOS-Utils-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1064,24 +1116,6 @@
 				VALIDATE_PRODUCT = YES;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
-			};
-			name = Release;
-		};
-		66B165043BBE973656B26F10875F248A /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = A8BD58C20EC78311D90FC09CF7DA9FF3 /* composeApp.release.xcconfig */;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
-				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
 		};
@@ -1122,31 +1156,14 @@
 			};
 			name = Debug;
 		};
-		877F13263FFEDAFFA21321A76F7AD304 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 24CFA5DD1DC1548254B985D77C1097D3 /* GoogleMaps.debug.xcconfig */;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
-				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		8ACA93254F9D717EA4A1FBAFC72B5DD2 /* Release */ = {
+		9945E828EF19351A924B7301E76414CB /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 1926EAF3E808B271D1E255BAC3FACF73 /* GoogleMaps.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ENABLE_OBJC_WEAK = NO;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1157,7 +1174,7 @@
 			};
 			name = Release;
 		};
-		D5B80EFAB28BE4E096366AEC734AAB9F /* Release */ = {
+		B06AD3E504234F37EEC2F7F7A1E6A2BE /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 1926EAF3E808B271D1E255BAC3FACF73 /* GoogleMaps.release.xcconfig */;
 			buildSettings = {
@@ -1165,7 +1182,7 @@
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/GoogleMaps";
 				IBSC_MODULE = GoogleMaps;
 				INFOPLIST_FILE = "Target Support Files/GoogleMaps/ResourceBundle-GoogleMapsResources-GoogleMaps-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				PRODUCT_NAME = GoogleMapsResources;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
@@ -1173,23 +1190,6 @@
 				WRAPPER_EXTENSION = bundle;
 			};
 			name = Release;
-		};
-		EB0FB9D55C9E1EEB146D2BE0B75CF34D /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 24CFA5DD1DC1548254B985D77C1097D3 /* GoogleMaps.debug.xcconfig */;
-			buildSettings = {
-				CODE_SIGNING_ALLOWED = NO;
-				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/GoogleMaps";
-				IBSC_MODULE = GoogleMaps;
-				INFOPLIST_FILE = "Target Support Files/GoogleMaps/ResourceBundle-GoogleMapsResources-GoogleMaps-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
-				PRODUCT_NAME = GoogleMapsResources;
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				WRAPPER_EXTENSION = bundle;
-			};
-			name = Debug;
 		};
 		ED33B8B7229CCD5B640EAF196A15EB51 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -1274,7 +1274,7 @@
 			};
 			name = Debug;
 		};
-		FA275F3EEBBB2A3F6AEDB090B3EE58CB /* Debug */ = {
+		FC3C1372107EDA2A4DB77613ACF6B911 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 855CE5BFC378C382ED007CB686AE4198 /* Google-Maps-iOS-Utils.debug.xcconfig */;
 			buildSettings = {
@@ -1290,7 +1290,7 @@
 				GCC_PREFIX_HEADER = "Target Support Files/Google-Maps-iOS-Utils/Google-Maps-iOS-Utils-prefix.pch";
 				INFOPLIST_FILE = "Target Support Files/Google-Maps-iOS-Utils/Google-Maps-iOS-Utils-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1316,8 +1316,8 @@
 		3C8BA410157DEEC3BC9E6DE222C88739 /* Build configuration list for PBXNativeTarget "Google-Maps-iOS-Utils" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				FA275F3EEBBB2A3F6AEDB090B3EE58CB /* Debug */,
-				53E11DFDB2E239001B8758FB830553F4 /* Release */,
+				FC3C1372107EDA2A4DB77613ACF6B911 /* Debug */,
+				7938813CADABA0AE7F9E1DE26A6C82F0 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -1334,8 +1334,8 @@
 		7E2B9C402CBE5F260131D17DCC0DD5E2 /* Build configuration list for PBXNativeTarget "GoogleMaps-GoogleMapsResources" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				EB0FB9D55C9E1EEB146D2BE0B75CF34D /* Debug */,
-				D5B80EFAB28BE4E096366AEC734AAB9F /* Release */,
+				4D3EBCC20DE99A69197E31E0BEDAE0EF /* Debug */,
+				B06AD3E504234F37EEC2F7F7A1E6A2BE /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -1343,8 +1343,8 @@
 		9B8115B9BA2A2CC525854C51E501AB35 /* Build configuration list for PBXAggregateTarget "GoogleMaps" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				877F13263FFEDAFFA21321A76F7AD304 /* Debug */,
-				8ACA93254F9D717EA4A1FBAFC72B5DD2 /* Release */,
+				0C2A95E97F7482A93181C26007A10EE9 /* Debug */,
+				9945E828EF19351A924B7301E76414CB /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

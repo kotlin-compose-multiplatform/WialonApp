@@ -4,10 +4,10 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class GetUnits(
-    val dataFlags: Long,
-    val indexFrom: Int,
-    val indexTo: Int,
-    val items: List<Item>,
-    val searchSpec: SearchSpec,
-    val totalItemsCount: Int
+    val dataFlags: Long? = null,
+    val indexFrom: Int? = null,
+    val indexTo: Int? = null,
+    val items: List<Item>? = null,
+    val searchSpec: SearchSpec? = null,
+    val totalItemsCount: Int? = null
 )

@@ -193,7 +193,7 @@ class SettingScreen: Screen {
             )
             SwitchText(
                 modifier = Modifier.fillMaxWidth().clickable {
-                    navigator.push(MapSource())
+                    navigator.push(MapSource(isBack = false))
                 },
                 text = strings.mapSettings,
                 arrow = true

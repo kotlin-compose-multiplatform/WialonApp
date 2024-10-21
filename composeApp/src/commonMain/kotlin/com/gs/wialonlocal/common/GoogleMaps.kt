@@ -7,6 +7,8 @@ import com.gs.wialonlocal.features.geofence.data.entity.geofence.P
 import com.gs.wialonlocal.features.monitoring.data.entity.history.Trip
 import com.gs.wialonlocal.features.monitoring.domain.model.UnitModel
 import com.gs.wialonlocal.features.settings.data.settings.MapType
+import dev.icerock.moko.parcelize.Parcelable
+import dev.icerock.moko.parcelize.Parcelize
 import kotlinx.serialization.Serializable
 import kotlin.math.PI
 
@@ -29,8 +31,10 @@ fun Double.metersToDegrees(latitude: Double): Double {
     val radiansToDegrees = 180.0 / PI
     return (this / earthRadius) * radiansToDegrees
 }
+
+@Parcelize
 @Serializable
-data class LatLong(val latitude: Double = 0.0, val longitude: Double = 0.0)
+data class LatLong(val latitude: Double = 0.0, val longitude: Double = 0.0): Parcelable
 
 data class LatLongZoom(
     val latLong: LatLong,

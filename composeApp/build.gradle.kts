@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.compose.compiler)
     kotlin("plugin.serialization") version "1.9.10"
     alias(libs.plugins.com.google.devtools.ksp)
+    id("kotlin-parcelize")
 }
 
 kotlin {
@@ -32,12 +33,14 @@ kotlin {
         }
 
         pod("GoogleMaps") {
+            moduleName = "GoogleMaps"
             version = libs.versions.pods.google.maps.get()
             //    version = "7.4.0" // for GoogleMapsUtils 4.2.2 (doesn't build for some c-interop reason, waiting for 5.0.0)
             extraOpts += listOf("-compiler-option", "-fmodules")
         }
 
         pod("Google-Maps-iOS-Utils") {
+            moduleName = "GoogleMapsUtils"
             version = libs.versions.pods.google.mapsUtils.get()
             //    version = "7.4.0" // for GoogleMapsUtils 4.2.2 (doesn't build for some c-interop reason, waiting for 5.0.0)
             extraOpts += listOf("-compiler-option", "-fmodules")
@@ -90,6 +93,14 @@ kotlin {
 
             // toast
             implementation(libs.toast)
+
+            // parcelize
+            implementation("dev.icerock.moko:parcelize:0.9.0")
+
+            // lottie
+            implementation(libs.compottie.resources)
+            implementation(libs.compottie.dot)
+            implementation(libs.compottie)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

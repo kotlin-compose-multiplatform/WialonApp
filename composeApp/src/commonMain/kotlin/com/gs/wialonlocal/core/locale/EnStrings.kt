@@ -143,5 +143,6 @@ internal val EnStrings = Strings(
     units = "UNITS",
     language = "Language",
     history = "History",
-    info = "Info"
+    info = "Info",
+    noData="No data"
 )

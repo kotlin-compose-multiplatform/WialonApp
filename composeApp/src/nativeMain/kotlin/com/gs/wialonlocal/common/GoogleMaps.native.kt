@@ -15,6 +15,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.viewinterop.UIKitInteropProperties
 import androidx.compose.ui.viewinterop.UIKitView
+import cocoapods.GoogleMaps.*
+import cocoapods.Google_Maps_iOS_Utils.*
 import cocoapods.GoogleMaps.GMSAdvancedMarker.Companion.markerImageWithColor
 import cocoapods.GoogleMaps.GMSCameraPosition
 import cocoapods.GoogleMaps.GMSCameraUpdate
@@ -28,6 +30,7 @@ import cocoapods.GoogleMaps.GMSMapViewOptions
 import cocoapods.GoogleMaps.GMSMapViewType
 import cocoapods.GoogleMaps.GMSMarker
 import cocoapods.GoogleMaps.GMSMutablePath
+import cocoapods.GoogleMaps.GMSPath
 import cocoapods.GoogleMaps.GMSPolyline
 import cocoapods.GoogleMaps.animateWithCameraUpdate
 import cocoapods.GoogleMaps.kGMSTypeHybrid
@@ -64,6 +67,7 @@ import platform.darwin.NSObject
 import kotlin.coroutines.CoroutineContext
 import platform.CoreGraphics.*
 import platform.UIKit.UIColor.Companion.blueColor
+import platform.UIKit.UIColor.Companion.greenColor
 import platform.UIKit.UIGraphicsBeginImageContextWithOptions
 import platform.UIKit.UIGraphicsEndImageContext
 import platform.UIKit.UIGraphicsGetImageFromCurrentImageContext
@@ -72,6 +76,12 @@ import platform.UIKit.UIGraphicsGetImageFromCurrentImageContext
 val uiScope: CoroutineScope = CoroutineScope(Dispatchers.Main)
 
 val client = AppHttpClient
+
+val imageCache = mutableStateMapOf<String, UIImage?>()
+
+@OptIn(ExperimentalForeignApi::class)
+val oldPolylines = mutableStateOf<List<GMSPolyline>>(emptyList())
+
 
 // A list to keep track of markers
 @OptIn(ExperimentalForeignApi::class)
@@ -100,14 +110,23 @@ fun resizeImage(image: UIImage, targetWidth: Double, targetHeight: Double): UIIm
 
 @OptIn(ExperimentalForeignApi::class)
 suspend fun downloadImage(url: String, targetWidth: Double, targetHeight: Double): UIImage? {
+    // Check cache first
+    imageCache[url]?.let { cachedImage ->
+        return cachedImage
+    }
+
+    // If not cached, download the image
     return try {
-        val response = client.get(url) // Download the image data
+        val response = client.get(url)
         val byteArray = response.body<ByteArray>()
         val nsData = byteArray.usePinned { pinned ->
             NSData.dataWithBytes(pinned.addressOf(0), byteArray.size.toULong())
         }
-        val image = UIImage.imageWithData(nsData)  // Convert NSData to UIImage
-        image?.let { resizeImage(it, targetWidth, targetHeight) }  // Resize the image
+        val image = UIImage.imageWithData(nsData)?.let { resizeImage(it, targetWidth, targetHeight) }
+
+        // Store the image in cache
+        imageCache[url] = image
+        image
     } catch (e: Exception) {
         println("Failed to download image: ${e.message}")
         null
@@ -160,12 +179,12 @@ actual fun GoogleMaps(
             settings.setScrollGestures(true)
             settings.setZoomGestures(true)
             settings.setCompassButton(true)
-            this.setMapStyle(
-                GMSMapStyle.styleWithJSONString(
-                    mapStyle1(),
-                    error = null
-                )
-            )
+//            this.setMapStyle(
+//                GMSMapStyle.styleWithJSONString(
+//                    mapStyle1(),
+//                    error = null
+//                )
+//            )
         }
     }
 
@@ -187,6 +206,22 @@ actual fun GoogleMaps(
             else -> {
                 googleMapView.mapType = kGMSTypeNormal
             }
+        }
+    }
+
+    LaunchedEffect(polyline) {
+        // Add Polyline if present
+        oldPolylines.value.forEach { p->
+            p.map = null
+        }
+        oldPolylines.value = emptyList()
+        polyline?.forEach { p ->
+            val decodedPath = GMSPath.pathFromEncodedPath(p!!) ?: return@forEach
+            val pol = GMSPolyline.polylineWithPath(decodedPath)
+            pol.strokeColor = UIColor.colorWithRed(0.0, 153.0, 255.0, 1.0)
+            pol.strokeWidth = 10.0
+            pol.map = googleMapView
+            oldPolylines.value = oldPolylines.value.plus(pol)
         }
     }
 
@@ -213,7 +248,7 @@ actual fun GoogleMaps(
             val poly = GMSPolyline.polylineWithPath(path)
             poly.strokeWidth = 10.0
             poly.geodesic = true
-            poly.strokeColor = blueColor
+            poly.strokeColor = greenColor
             poly.map = googleMapView
 
 
@@ -255,241 +290,4 @@ actual fun GoogleMaps(
             isNativeAccessibilityEnabled = true
         )
     )
-}
-// https://mapstyle.withgoogle.com/
-fun mapStyle1(): String {
-    return """
-    [
-  {
-    "elementType": "geometry",
-    "stylers": [
-      {
-        "color": "#242f3e"
-      }
-    ]
-  },
-  {
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#746855"
-      }
-    ]
-  },
-  {
-    "elementType": "labels.text.stroke",
-    "stylers": [
-      {
-        "color": "#242f3e"
-      }
-    ]
-  },
-  {
-    "featureType": "administrative.land_parcel",
-    "elementType": "labels",
-    "stylers": [
-      {
-        "visibility": "off"
-      }
-    ]
-  },
-  {
-    "featureType": "administrative.locality",
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#d59563"
-      }
-    ]
-  },
-  {
-    "featureType": "poi",
-    "elementType": "labels.text",
-    "stylers": [
-      {
-        "visibility": "off"
-      }
-    ]
-  },
-  {
-    "featureType": "poi",
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#d59563"
-      }
-    ]
-  },
-  {
-    "featureType": "poi.business",
-    "stylers": [
-      {
-        "visibility": "off"
-      }
-    ]
-  },
-  {
-    "featureType": "poi.park",
-    "elementType": "geometry",
-    "stylers": [
-      {
-        "color": "#263c3f"
-      }
-    ]
-  },
-  {
-    "featureType": "poi.park",
-    "elementType": "labels.text",
-    "stylers": [
-      {
-        "visibility": "off"
-      }
-    ]
-  },
-  {
-    "featureType": "poi.park",
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#6b9a76"
-      }
-    ]
-  },
-  {
-    "featureType": "road",
-    "elementType": "geometry",
-    "stylers": [
-      {
-        "color": "#38414e"
-      }
-    ]
-  },
-  {
-    "featureType": "road",
-    "elementType": "geometry.stroke",
-    "stylers": [
-      {
-        "color": "#212a37"
-      }
-    ]
-  },
-  {
-    "featureType": "road",
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#9ca5b3"
-      }
-    ]
-  },
-  {
-    "featureType": "road.highway",
-    "elementType": "geometry",
-    "stylers": [
-      {
-        "color": "#746855"
-      }
-    ]
-  },
-  {
-    "featureType": "road.highway",
-    "elementType": "geometry.stroke",
-    "stylers": [
-      {
-        "color": "#1f2835"
-      }
-    ]
-  },
-  {
-    "featureType": "road.highway",
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#f3d19c"
-      }
-    ]
-  },
-  {
-    "featureType": "road.highway.controlled_access",
-    "stylers": [
-      {
-        "visibility": "simplified"
-      }
-    ]
-  },
-  {
-    "featureType": "road.highway.controlled_access",
-    "elementType": "geometry",
-    "stylers": [
-      {
-        "visibility": "simplified"
-      }
-    ]
-  },
-  {
-    "featureType": "road.highway.controlled_access",
-    "elementType": "labels",
-    "stylers": [
-      {
-        "visibility": "on"
-      }
-    ]
-  },
-  {
-    "featureType": "road.local",
-    "elementType": "labels",
-    "stylers": [
-      {
-        "visibility": "off"
-      }
-    ]
-  },
-  {
-    "featureType": "transit",
-    "elementType": "geometry",
-    "stylers": [
-      {
-        "color": "#2f3948"
-      }
-    ]
-  },
-  {
-    "featureType": "transit.station",
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#d59563"
-      }
-    ]
-  },
-  {
-    "featureType": "water",
-    "elementType": "geometry",
-    "stylers": [
-      {
-        "color": "#17263c"
-      }
-    ]
-  },
-  {
-    "featureType": "water",
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#515c6d"
-      }
-    ]
-  },
-  {
-    "featureType": "water",
-    "elementType": "labels.text.stroke",
-    "stylers": [
-      {
-        "color": "#17263c"
-      }
-    ]
-  }
-]
-    """.trimIndent()
-
 }

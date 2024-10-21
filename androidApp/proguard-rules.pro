@@ -21,10 +21,6 @@
 #-renamesourcefileattribute SourceFile
 -dontwarn com.ryanharter.auto.value.gson.GsonTypeAdapterFactory
 -dontwarn org.slf4j.impl.StaticLoggerBinder
+-dontwarn com.gemalto.jp2.JP2Decoder
 
--keep class tm.com.balary.features.home.data.entity.** { *; }
-
-
--keep class com.sun.jna.** { *; }
--keep class com.google.firebase.** { *; }
--keep class * implements com.sun.jna.** { *; }
+-keep class com.rizzi.bouquet.** { *; }

@@ -79,3 +79,5 @@ actual fun getDevice(): String = "ios"
 actual fun getVersion(): String = "1.0.0"
 
 actual fun getStoreUrl(): String = "https://apps.apple.com/me/app/wialon-local/id1011136393"
+
+actual interface CommonParcelable

@@ -92,6 +92,22 @@ fun UnitInfo(modifier: Modifier = Modifier) {
                     }
                 }
 
+                list.d?.uid?.let { uid->
+                    InfoAccordion(
+                        title = strings.hardware,
+                        items = listOf(
+                            InfoItem(
+                                "Device type",
+                                viewModel.findHardwareType(list.d.hw)?.name.toString()
+                            ),
+                            InfoItem(
+                                "Unique ID",
+                                uid.toString()
+                            )
+                        )
+                    )
+                }
+
                 list.d?.pflds?.let {profiles->
                     if(profiles.values.isNotEmpty()) {
                         InfoAccordion(
@@ -237,7 +253,7 @@ fun InfoAccordion(
             )
             IconButton(
                 onClick = {
-
+                    open.value = open.value.not()
                 }
             ) {
                 Icon(

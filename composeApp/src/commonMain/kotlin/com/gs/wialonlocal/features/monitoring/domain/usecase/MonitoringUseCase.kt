@@ -2,6 +2,7 @@ package com.gs.wialonlocal.features.monitoring.domain.usecase
 
 import com.gs.wialonlocal.core.network.Resource
 import com.gs.wialonlocal.features.monitoring.data.entity.TripDetector
+import com.gs.wialonlocal.features.monitoring.data.entity.hardware.HardwareTypeEntity
 import com.gs.wialonlocal.features.monitoring.data.entity.history.CustomFields
 import com.gs.wialonlocal.features.monitoring.data.entity.history.GetReportSettings
 import com.gs.wialonlocal.features.monitoring.data.entity.history.LoadEventRequest
@@ -40,5 +41,8 @@ class MonitoringUseCase(private val repository: MonitoringRepository) {
     }
     suspend fun getTripDetector(): Flow<Resource<TripDetector>> {
         return repository.getTripDetector()
+    }
+    suspend fun getHardwareTypes(): Flow<Resource<List<HardwareTypeEntity>>> {
+        return repository.getHardwareTypes()
     }
 }

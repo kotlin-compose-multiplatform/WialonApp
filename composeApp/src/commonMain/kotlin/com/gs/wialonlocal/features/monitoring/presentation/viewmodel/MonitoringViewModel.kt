@@ -3,10 +3,12 @@ package com.gs.wialonlocal.features.monitoring.presentation.viewmodel
 import cafe.adriel.voyager.core.model.ScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
 import com.gs.wialonlocal.core.network.Resource
+import com.gs.wialonlocal.features.monitoring.data.entity.hardware.HardwareTypeEntity
 import com.gs.wialonlocal.features.monitoring.data.entity.history.LoadEventRequest
 import com.gs.wialonlocal.features.monitoring.data.entity.history.calculateTripStats
 import com.gs.wialonlocal.features.monitoring.domain.usecase.MonitoringUseCase
 import com.gs.wialonlocal.features.monitoring.presentation.state.FieldState
+import com.gs.wialonlocal.features.monitoring.presentation.state.HardwareTypeState
 import com.gs.wialonlocal.features.monitoring.presentation.state.LoadEventState
 import com.gs.wialonlocal.features.monitoring.presentation.state.LocatorState
 import com.gs.wialonlocal.features.monitoring.presentation.state.ReportSettingsState
@@ -42,6 +44,54 @@ class MonitoringViewModel(
 
     private val _locatorState = MutableStateFlow(LocatorState())
     val locatorState = _locatorState.asStateFlow()
+
+    private val _hardwareTypes = MutableStateFlow(HardwareTypeState())
+    val hardwareTypes = _hardwareTypes.asStateFlow()
+
+    init {
+        initHardwareTypes()
+    }
+
+    fun initHardwareTypes() {
+        if(_hardwareTypes.value.types.isNullOrEmpty()) {
+            getHardwareTypes()
+        }
+    }
+
+    fun findHardwareType(id: Int?): HardwareTypeEntity? {
+        return _hardwareTypes.value.types?.find { it.id == id }
+    }
+
+    fun getHardwareTypes() {
+        screenModelScope.launch {
+            useCase.getHardwareTypes().onEach {
+                when(it) {
+                    is Resource.Error -> {
+                        _hardwareTypes.value = _hardwareTypes.value.copy(
+                            loading = false,
+                            error = it.message,
+                            types = it.data
+                        )
+                    }
+                    is Resource.Loading -> {
+                        _hardwareTypes.value = _hardwareTypes.value.copy(
+                            loading = true,
+                            error = it.message,
+                            types = it.data
+                        )
+                    }
+                    is Resource.Success -> {
+                        _hardwareTypes.value = _hardwareTypes.value.copy(
+                            loading = false,
+                            error = it.message,
+                            types = it.data
+                        )
+                    }
+                }
+            }.launchIn(this)
+
+        }
+    }
 
 
 

@@ -44,7 +44,7 @@ class GeofenceViewModel(
                     is Resource.Success -> {
                         _geofenceState.value = _geofenceState.value.copy(
                             loading = false,
-                            error = result.message,
+                            error = null,
                             geofence = result.data
                         )
                     }

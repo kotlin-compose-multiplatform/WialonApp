@@ -6,6 +6,7 @@ import com.gs.wialonlocal.core.network.Resource
 import com.gs.wialonlocal.features.auth.data.AuthSettings
 import com.gs.wialonlocal.features.monitoring.data.entity.GetUnits
 import com.gs.wialonlocal.features.monitoring.data.entity.TripDetector
+import com.gs.wialonlocal.features.monitoring.data.entity.hardware.HardwareTypeEntity
 import com.gs.wialonlocal.features.monitoring.data.entity.history.CustomFields
 import com.gs.wialonlocal.features.monitoring.data.entity.history.GetEvents
 import com.gs.wialonlocal.features.monitoring.data.entity.history.GetReportSettings
@@ -63,16 +64,16 @@ class MonitoringRepositoryImpl(
                         )
                     })
                 }.body<GetUnits>()
-            addUnitsToUpdate(result.items.map { it.id.toLong() })
+            addUnitsToUpdate(result.items?.map { it.id.toLong() }?: emptyList())
 
-            val locations = result.items.map { it.getLocation() }.joinToString(",")
+            val locations = result.items?.map { it.getLocation() }?.joinToString(",")
 
             val address =
                 httpClient.get("${Constant.BASE_URL}/gis_geocode?coords=[${locations}]&flags=1255211008&uid=${authSettings.getId()}")
                     .body<List<String>>()
 
             emit(Resource.Success(
-                data = result.items.mapIndexed { index, item ->
+                data = result.items?.mapIndexed { index, item ->
                     item.toUiEntity(address[index])
                 }
             ))
@@ -296,6 +297,27 @@ class MonitoringRepositoryImpl(
         } catch (ex: Exception) {
             ex.printStackTrace()
             emit(Resource.Error(ex.message))
+        }
+    }
+
+    @OptIn(InternalAPI::class)
+    override suspend fun getHardwareTypes(): Flow<Resource<List<HardwareTypeEntity>>> = flow {
+        emit(Resource.Loading())
+        try {
+            val response =  httpClient.post("${Constant.BASE_URL}/wialon/ajax.html?svc=core/get_hw_types") {
+                body = FormDataContent(Parameters.build {
+                    append("sid", authSettings.getSessionId())
+                    append("params", "{}")
+                })
+            }
+
+            if(response.status.value in 200..299) {
+                emit(Resource.Success(response.body()))
+            } else {
+                emit(Resource.Error(response.status.description, response.status.value))
+            }
+        } catch (ex: Exception) {
+            ex.printStackTrace()
         }
     }
 

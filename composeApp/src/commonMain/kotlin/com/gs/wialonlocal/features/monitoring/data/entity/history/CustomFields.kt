@@ -43,7 +43,10 @@ data class D(
     @SerialName("rfc") val rfc: Rfc? = null,
     @SerialName("uri") val uri: String? = null,
     @SerialName("ugi") val ugi: Int? = null,
-    @SerialName("uacl") val uacl: Long? = null
+    @SerialName("uacl") val uacl: Long? = null,
+    @SerialName("hw") val hw: Int? = null,
+    @SerialName("uid") val uid: String? = null,
+    @SerialName("uid2") val uid2: String? = null,
 )
 
 fun findParamValue(key: String,prms: Map<String, JsonElement>?, m: String): List<String> {

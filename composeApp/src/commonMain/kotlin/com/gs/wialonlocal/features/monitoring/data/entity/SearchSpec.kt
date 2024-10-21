@@ -4,10 +4,10 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class SearchSpec(
-    val itemsType: String,
-    val or_logic: String,
-    val propName: String,
-    val propType: String,
-    val propValueMask: String,
-    val sortType: String
+    val itemsType: String? = null,
+    val or_logic: String? = null,
+    val propName: String? = null,
+    val propType: String? = null,
+    val propValueMask: String? = null,
+    val sortType: String? = null
 )

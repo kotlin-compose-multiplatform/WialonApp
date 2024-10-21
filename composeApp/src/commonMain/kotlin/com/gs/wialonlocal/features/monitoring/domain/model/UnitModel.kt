@@ -2,12 +2,17 @@ package com.gs.wialonlocal.features.monitoring.domain.model
 
 import androidx.compose.ui.graphics.Color
 import com.gs.wialonlocal.common.LatLong
+import dev.icerock.moko.parcelize.Parcelable
+import dev.icerock.moko.parcelize.Parcelize
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
+import kotlinx.serialization.Serializable
 
+@Parcelize
+@Serializable
 data class UnitModel(
     val id: String,
     val carNumber: String,
@@ -28,7 +33,8 @@ data class UnitModel(
     var ignitionOn: Boolean = false,
     var noActualState: Boolean = false,
     var noMessages: Boolean = true
-) {
+): Parcelable {
+
     fun calculateDifference(): Pair<String, Color> {
         // Get the current date in the Asia/Ashgabat timezone
         val timeZone = TimeZone.of("Asia/Ashgabat")

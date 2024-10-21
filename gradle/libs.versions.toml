@@ -26,8 +26,8 @@ napier = "2.7.1"
 settings = "1.1.1"
 lyricist = "1.7.0"
 ksp="2.0.20-1.0.25"
-pods-google-maps = "8.4.0"  # IDE says not used, but _it is_ used via a .get() (why can't gradle see that?)
-pods-google-mapsUtils = "5.0.0" # IDE says not used, but _it is_ used via a .get() (why can't gradle see that?)
+pods-google-maps = "9.1.1"  # IDE says not used, but _it is_ used via a .get() (why can't gradle see that?)
+pods-google-mapsUtils = "6.0.0" # IDE says not used, but _it is_ used via a .get() (why can't gradle see that?)
 google-MapsAndroidComposeVersion = "3.1.0"
 google-PlayServicesAndroidLocation = "21.2.0"
 google-PlayServicesAndroidMaps = "18.2.0"
@@ -39,6 +39,7 @@ toast="0.3.8"
 firebaseCrashlytics = "19.1.0"
 googleGmsGoogleServices = "4.4.2"
 googleFirebaseCrashlytics = "3.0.2"
+compottie="2.0.0-rc01"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -103,6 +104,10 @@ coil-android = { module = "io.coil-kt.coil:coil", version.ref = "coil" }
 kotlinx = {module="org.jetbrains.kotlinx:kotlinx-datetime", version.ref="kotlinx"}
 toast={module="io.github.dokar3:sonner", version.ref="toast"}
 firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics", version.ref = "firebaseCrashlytics" }
+compottie = { module = "io.github.alexzhirkevich:compottie", version.ref = "compottie" }
+compottie-dot = { module = "io.github.alexzhirkevich:compottie-dot", version.ref = "compottie" }
+compottie-network = { module = "io.github.alexzhirkevich:compottie-network", version.ref = "compottie" }
+compottie-resources = { module = "io.github.alexzhirkevich:compottie-resources", version.ref = "compottie" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

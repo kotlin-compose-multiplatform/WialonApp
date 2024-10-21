@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -76,10 +77,13 @@ import com.gs.wialonlocal.features.monitoring.presentation.ui.monitoringlist.Loc
 import com.gs.wialonlocal.features.monitoring.presentation.ui.monitoringlist.Units
 import com.gs.wialonlocal.features.monitoring.presentation.viewmodel.MonitoringViewModel
 import com.gs.wialonlocal.state.LocalAppSettings
+import dev.icerock.moko.parcelize.Parcelable
+import dev.icerock.moko.parcelize.Parcelize
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import kotlinx.serialization.Serializable
 import org.jetbrains.compose.resources.painterResource
 import wialonlocal.composeapp.generated.resources.Res
 import wialonlocal.composeapp.generated.resources.clock
@@ -94,10 +98,12 @@ import wialonlocal.composeapp.generated.resources.navigation_apps
 import wialonlocal.composeapp.generated.resources.send_command
 import wialonlocal.composeapp.generated.resources.share_location
 
+@Parcelize
+@Serializable
 class UnitScreen(
     private val id: String,
     private val model: UnitModel
-) : Screen {
+) : Screen, Parcelable {
     @Composable
     override fun Content() {
         UnitDetails(id = id, unitModel = model)
@@ -113,6 +119,8 @@ fun UnitDetails(modifier: Modifier = Modifier, id: String, unitModel: UnitModel)
     val fields = viewModel.fieldState.collectAsState()
     val loadEventState = viewModel.loadEventState.collectAsState()
     val mapType = LocalAppSettings.current
+
+
 
     val startDate = rememberSaveable {
         mutableStateOf(
@@ -182,6 +190,8 @@ fun UnitDetails(modifier: Modifier = Modifier, id: String, unitModel: UnitModel)
     }
 
     val scaffoldState = rememberBottomSheetScaffoldState()
+
+
 
     LaunchedEffect(id, startDate.value, endDate.value) {
         viewModel.unloadEvents(id) {
@@ -394,9 +404,21 @@ fun UnitDetails(modifier: Modifier = Modifier, id: String, unitModel: UnitModel)
                                 Modifier.fillMaxSize(),
                                 onPolylineChange = { track->
                                     polyline.value = track
+                                    if(scaffoldState.bottomSheetState.currentValue == SheetValue.Expanded) {
+                                        coroutineScope.launch {
+                                            sheetPeekHeight.value = 300
+                                            scaffoldState.bottomSheetState.partialExpand()
+                                        }
+                                    }
                                 },
                                 onSingleMarker = { marker->
                                     singleMarker.value = marker
+                                    if(scaffoldState.bottomSheetState.currentValue == SheetValue.Expanded) {
+                                        coroutineScope.launch {
+                                            sheetPeekHeight.value = 300
+                                            scaffoldState.bottomSheetState.partialExpand()
+                                        }
+                                    }
                                 },
                                 onDateChanges = { start, end ->
                                     startDate.value = start
@@ -408,17 +430,24 @@ fun UnitDetails(modifier: Modifier = Modifier, id: String, unitModel: UnitModel)
                 }
             }
         ) {
-            MapContainer(Modifier.fillMaxSize()) {
+            MapContainer(Modifier.fillMaxWidth().fillMaxHeight(
+                fraction = when(scaffoldState.bottomSheetState.currentValue) {
+                    SheetValue.Hidden -> 1f
+                    SheetValue.Expanded -> 0f
+                    SheetValue.PartiallyExpanded -> if(sheetPeekHeight.value<=100) 0.8f else 0.45f
+                }
+            )) {
+                val u = units.value.data!!.find { it.id == id }!!
                 GoogleMaps(
                     modifier = Modifier.fillMaxSize(),
                     units = listOf(
-                        unitModel
+                        u
                     ),
                     mapType = mapType.value.mapType,
                     cameraPosition = CameraPosition(
                         target = LatLong(
-                            unitModel.latitude,
-                            unitModel.longitude
+                            u.latitude,
+                            u.longitude
                         ),
                         zoom = 14f
                     ),
@@ -527,9 +556,9 @@ internal fun UnitItem(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         androidx.compose.material.Icon(
-                            painter = painterResource(if (item.isOnline) Res.drawable.key else Res.drawable.key_off),
+                            painter = painterResource(if (item.ignitionOn) Res.drawable.key else Res.drawable.key_off),
                             contentDescription = null,
-                            tint = if (item.isOnline) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.onSurfaceVariant
+                            tint = if (item.ignitionOn) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
 

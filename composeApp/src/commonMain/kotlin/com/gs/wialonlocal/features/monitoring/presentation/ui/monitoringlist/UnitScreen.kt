@@ -235,7 +235,7 @@ internal fun UnitItem(
                         Icon(
                             painter = painterResource(if (item.ignitionOn) Res.drawable.key else Res.drawable.key_off),
                             contentDescription = null,
-                            tint = if (item.isOnline) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.onSurfaceVariant
+                            tint = if (item.ignitionOn) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
 

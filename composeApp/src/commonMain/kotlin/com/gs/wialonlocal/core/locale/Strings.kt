@@ -141,5 +141,6 @@ internal data class Strings(
     val viewDocs: String,
 
     val history: String,
-    val info: String
+    val info: String,
+    val noData: String,
 )

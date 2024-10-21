@@ -33,7 +33,9 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.LatLngBounds
 import com.google.maps.android.PolyUtil
+import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.Circle
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
@@ -51,6 +53,7 @@ import com.gs.wialonlocal.R
 import com.gs.wialonlocal.features.geofence.data.entity.geofence.P
 import com.gs.wialonlocal.features.monitoring.data.entity.history.Trip
 import com.gs.wialonlocal.features.monitoring.domain.model.UnitModel
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -124,6 +127,42 @@ suspend fun getBitmapFromURL(imageUrl: String): Bitmap? {
     }
 }
 
+fun getCenterLatLng(latLngs: List<LatLng>): LatLng? {
+    if (latLngs.isEmpty()) return null
+
+    var totalLat = 0.0
+    var totalLng = 0.0
+
+    latLngs.forEach { latLng ->
+        totalLat += latLng.latitude
+        totalLng += latLng.longitude
+    }
+
+    val centerLat = totalLat / latLngs.size
+    val centerLng = totalLng / latLngs.size
+
+    return LatLng(centerLat, centerLng)
+}
+
+fun calculateBounds(latLngs: List<LatLng>): LatLngBounds? {
+    if (latLngs.isEmpty()) return null
+
+    val builder = LatLngBounds.Builder()
+    latLngs.forEach { builder.include(it) }
+    return builder.build()
+}
+
+fun CameraPositionState.moveToBounds(
+    bounds: LatLngBounds,
+    coroutineScope: CoroutineScope,
+    padding: Int
+) {
+    val cameraUpdate = CameraUpdateFactory.newLatLngBounds(bounds, padding)
+    coroutineScope.launch {
+        animate(cameraUpdate)
+    }
+}
+
 @Composable
 actual fun GoogleMaps(
     modifier: Modifier,
@@ -135,18 +174,27 @@ actual fun GoogleMaps(
     polyline: List<String?>?,
     singleMarker: LatLong?
 ) {
-    val mapProperties by remember { mutableStateOf(MapProperties(
-        isMyLocationEnabled = false,
-        isBuildingEnabled = true,
-        isTrafficEnabled = false,
-        mapType = when(mapType) {
-            com.gs.wialonlocal.features.settings.data.settings.MapType.SATELLITE -> MapType.SATELLITE
-            com.gs.wialonlocal.features.settings.data.settings.MapType.HYBRID -> MapType.HYBRID
-            else -> MapType.NORMAL
-        }
-    )) }
+    val mapProperties by remember {
+        mutableStateOf(
+            MapProperties(
+                isMyLocationEnabled = false,
+                isBuildingEnabled = true,
+                isTrafficEnabled = false,
+                mapType = when (mapType) {
+                    com.gs.wialonlocal.features.settings.data.settings.MapType.SATELLITE -> MapType.SATELLITE
+                    com.gs.wialonlocal.features.settings.data.settings.MapType.HYBRID -> MapType.HYBRID
+                    else -> MapType.NORMAL
+                }
+            )
+        )
+    }
     val cameraPositionState = rememberCameraPositionState {
-        position = CameraPosition.fromLatLngZoom(LatLng(cameraPosition.target.latitude, cameraPosition.target.longitude), cameraPosition.zoom) // Example LatLng
+        position = CameraPosition.fromLatLngZoom(
+            LatLng(
+                cameraPosition.target.latitude,
+                cameraPosition.target.longitude
+            ), cameraPosition.zoom
+        ) // Example LatLng
     }
 
     val markerImages = remember { mutableStateOf<Map<String, Bitmap>>(emptyMap()) }
@@ -206,7 +254,12 @@ actual fun GoogleMaps(
                 // Draw the transparent polygon connecting the center points
                 if (entry.value.size > 2) { // We need at least 3 points to form a polygon
                     Polygon(
-                        points = entry.value.map { LatLng(it.y, it.x) },  // Use the center points of the geofences
+                        points = entry.value.map {
+                            LatLng(
+                                it.y,
+                                it.x
+                            )
+                        },  // Use the center points of the geofences
                         strokeColor = Color.Transparent,  // Transparent stroke
                         fillColor = Color(0x550000FF),    // Semi-transparent blue fill color
                         strokeWidth = 0f  // Set stroke width to 0 for fully transparent borders
@@ -217,6 +270,17 @@ actual fun GoogleMaps(
 
         key(singleMarker) {
             singleMarker?.let {
+                coroutineScope.launch {
+                    cameraPositionState.animate(
+                        update = CameraUpdateFactory.newCameraPosition(
+                            CameraPosition(
+                                LatLng(singleMarker.latitude, singleMarker.longitude),
+                                15f, 0f, 0f
+                            )
+                        ),
+                        durationMs = 500
+                    )
+                }
                 Marker(
                     state = MarkerState(
                         LatLng(
@@ -230,8 +294,19 @@ actual fun GoogleMaps(
         }
 
         key(polyline) {
-            polyline?.let { path->
-                path.forEach { p->
+            polyline?.let { path ->
+
+                if (path.isNotEmpty()) {
+                    val list: List<LatLng> = path.flatMap { p ->
+                        PolyUtil.decode(p)
+                    }
+                    val bounds = calculateBounds(list)
+                    bounds?.let {
+                        cameraPositionState.moveToBounds(it, coroutineScope, 200)
+                    }
+                }
+
+                path.forEach { p ->
                     val list = PolyUtil.decode(p)
                     Polyline(
                         points = list,
@@ -240,9 +315,10 @@ actual fun GoogleMaps(
                     )
                 }
 
-                if(path.isNotEmpty()) {
+                if (path.isNotEmpty()) {
                     val list = PolyUtil.decode(path.first())
-                    if(list.isNotEmpty()) {
+                    if (list.isNotEmpty()) {
+
                         MarkerComposable(
                             state = MarkerState(position = list.first()),
                         ) {
@@ -257,7 +333,7 @@ actual fun GoogleMaps(
                     }
 
                     val end = PolyUtil.decode(path.last())
-                    if(end.isNotEmpty()) {
+                    if (end.isNotEmpty()) {
                         MarkerComposable(
                             state = MarkerState(position = list.last()),
                         ) {
@@ -275,7 +351,10 @@ actual fun GoogleMaps(
             units.forEachIndexed { index, unitModel ->
                 val bitmap = markerImages.value[unitModel.image]
                 val bitmapDescriptor = bitmap?.let { BitmapDescriptorFactory.fromBitmap(it) }
-                val markerState = rememberMarkerState(unitModel.carNumber.plus(unitModel.id), LatLng(unitModel.latitude, unitModel.longitude))
+                val markerState = rememberMarkerState(
+                    unitModel.carNumber.plus(unitModel.id),
+                    LatLng(unitModel.latitude, unitModel.longitude)
+                )
                 Marker(
                     state = markerState,
                     icon = bitmapDescriptor,
@@ -298,7 +377,7 @@ actual fun GoogleMaps(
                     LatLng(it.latitude, it.longitude)
                 }
 
-                for (i in 0 until  points.size - 1) {
+                for (i in 0 until points.size - 1) {
                     val startPoint = points[i]
                     val endPoint = points[i + 1]
                     val fraction = i / (points.size - 1).toFloat()

@@ -24,12 +24,21 @@ import com.gs.wialonlocal.features.settings.data.settings.MapType
 import com.gs.wialonlocal.state.LocalAppSettings
 import org.koin.compose.koinInject
 
-class MapSource: Screen {
+class MapSource(
+    private val isBack: Boolean = true
+) : Screen {
     @Composable
     override fun Content() {
         val navigator = LocalNavigator.currentOrThrow
         val appSettings = LocalAppSettings.current
         val settings = koinInject<AppSettings>()
+
+        fun onSelected() {
+            if (isBack) {
+                navigator.pop()
+            }
+        }
+
         BackFragment(
             modifier = Modifier.fillMaxSize(),
             title = strings.mapSource,
@@ -44,17 +53,17 @@ class MapSource: Screen {
                             mapType = MapType.MAP
                         )
                         settings.saveMapType("map")
-                        navigator.pop()
+                        onSelected()
                     },
                     initial = appSettings.value.mapType == MapType.MAP,
                     text = "Google Default",
-                    onChange = { isChecked->
-                        if(isChecked) {
+                    onChange = { isChecked ->
+                        if (isChecked) {
                             appSettings.value = appSettings.value.copy(
                                 mapType = MapType.MAP
                             )
                             settings.saveMapType("map")
-                            navigator.pop()
+                            onSelected()
                         }
                     }
                 )
@@ -64,17 +73,17 @@ class MapSource: Screen {
                             mapType = MapType.SATELLITE
                         )
                         settings.saveMapType("satellite")
-                        navigator.pop()
+                        onSelected()
                     },
                     initial = appSettings.value.mapType == MapType.SATELLITE,
                     text = "Google Satellite",
-                    onChange = { isChecked->
-                        if(isChecked) {
+                    onChange = { isChecked ->
+                        if (isChecked) {
                             appSettings.value = appSettings.value.copy(
                                 mapType = MapType.SATELLITE
                             )
                             settings.saveMapType("satellite")
-                            navigator.pop()
+                            onSelected()
                         }
                     }
                 )
@@ -84,17 +93,17 @@ class MapSource: Screen {
                             mapType = MapType.HYBRID
                         )
                         settings.saveMapType("hybrid")
-                        navigator.pop()
+                        onSelected()
                     },
                     initial = appSettings.value.mapType == MapType.HYBRID,
                     text = "Google Hybrid",
-                    onChange = { isChecked->
-                        if(isChecked) {
+                    onChange = { isChecked ->
+                        if (isChecked) {
                             appSettings.value = appSettings.value.copy(
                                 mapType = MapType.HYBRID
                             )
                             settings.saveMapType("hybrid")
-                            navigator.pop()
+                            onSelected()
                         }
                     }
                 )

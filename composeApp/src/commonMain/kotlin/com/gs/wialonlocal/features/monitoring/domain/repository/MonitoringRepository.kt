@@ -2,6 +2,7 @@ package com.gs.wialonlocal.features.monitoring.domain.repository
 
 import com.gs.wialonlocal.core.network.Resource
 import com.gs.wialonlocal.features.monitoring.data.entity.TripDetector
+import com.gs.wialonlocal.features.monitoring.data.entity.hardware.HardwareTypeEntity
 import com.gs.wialonlocal.features.monitoring.data.entity.history.CustomFields
 import com.gs.wialonlocal.features.monitoring.data.entity.history.GetReportSettings
 import com.gs.wialonlocal.features.monitoring.data.entity.history.LoadEventRequest
@@ -20,5 +21,5 @@ interface MonitoringRepository {
     suspend fun unloadEvents(id: String): Flow<Resource<Unit>>
     suspend fun getEvent(id: String,mode: Int = 0): Flow<Resource<CustomFields>>
     suspend fun getLocatorUrl(duration: Long, items: List<String>): Flow<Resource<LocatorResponse>>
-
+    suspend fun getHardwareTypes(): Flow<Resource<List<HardwareTypeEntity>>>
 }

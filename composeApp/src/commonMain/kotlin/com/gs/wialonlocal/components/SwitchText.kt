@@ -116,7 +116,7 @@ fun RadioText(
     subTitle: String? = null,
     onChange: (Boolean) -> Unit = {}
 ) {
-    val checked = rememberSaveable {
+    val checked = rememberSaveable(initial) {
         mutableStateOf(initial)
     }
     Column(

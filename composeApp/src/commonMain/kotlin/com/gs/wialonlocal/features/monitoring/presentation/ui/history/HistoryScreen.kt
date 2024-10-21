@@ -421,7 +421,7 @@ fun CarItem(
                         )
                         Spacer(Modifier.width(6.dp))
                         Text(
-                            text = "47 km",
+                            text = "${item.max_speed} km",
                             color = MaterialTheme.colorScheme.onSurface,
                             style = MaterialTheme.typography.bodySmall.copy(
                                 fontWeight = FontWeight.W500

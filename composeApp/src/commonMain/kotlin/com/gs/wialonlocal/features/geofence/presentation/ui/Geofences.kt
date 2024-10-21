@@ -62,6 +62,7 @@ import com.gs.wialonlocal.common.defaultMapPos
 import com.gs.wialonlocal.components.AppError
 import com.gs.wialonlocal.components.ContextButton
 import com.gs.wialonlocal.components.ContextMenu
+import com.gs.wialonlocal.components.Empty
 import com.gs.wialonlocal.features.geofence.data.entity.geofence.P
 import com.gs.wialonlocal.features.geofence.data.entity.geofence.RealGeofenceApiItem
 import com.gs.wialonlocal.features.geofence.presentation.viewmodel.GeofenceViewModel
@@ -115,79 +116,108 @@ fun Geofences(modifier: Modifier = Modifier) {
         sheetPeekHeight = 300.dp,
         sheetShape = RoundedCornerShape(0.dp),
         sheetContent = {
-            if(geofenceState.value.loading) {
+            if(geofenceState.value.geofence.isNullOrEmpty()) {
+                Empty(Modifier.fillMaxWidth())
+
+            }
+            if (geofenceState.value.loading) {
                 LinearProgressIndicator(Modifier.fillMaxWidth())
-            } else if(geofenceState.value.error.isNullOrEmpty().not()) {
+            } else if (geofenceState.value.error.isNullOrEmpty().not()) {
                 AppError(
                     modifier = Modifier.fillMaxSize(),
-                    message = geofenceState.value.error
+                    message = "Something went wrong"
                 )
             } else {
-                geofenceState.value.geofence?.let { list->
-                    Column(Modifier.fillMaxWidth().fillMaxHeight().verticalScroll(rememberScrollState())) {
-                        repeat(list.count()) { index->
-                            val item = list[index]
-                            GeofenceItem(modifier = Modifier.fillMaxWidth().clickable {
-                                navigator.push(GeofenceDetails(item))
-                            }, item = list[index])
+                geofenceState.value.geofence?.let { list ->
+                    if(list.isNotEmpty()) {
+                        Column(
+                            Modifier.fillMaxWidth().fillMaxHeight()
+                                .verticalScroll(rememberScrollState())
+                        ) {
+                            repeat(list.count()) { index ->
+                                val item = list[index]
+                                GeofenceItem(modifier = Modifier.fillMaxWidth().clickable {
+                                    navigator.push(GeofenceDetails(item))
+                                }, item = list[index])
+                            }
                         }
                     }
                 }
+
+
             }
+
+
+
+
         },
         content = {
             Box(Modifier.fillMaxSize()) {
-                Row(modifier = Modifier.zIndex(20f).fillMaxWidth().background(
-                    color = MaterialTheme.colorScheme.onSurface.copy(
-                        alpha = 0.4f
-                    )
-                ).padding(12.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Icon(
-                        painter = painterResource(Res.drawable.tile),
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onPrimary
-                    )
-                    Text(
-                        "0.0 ha",
-                        style = MaterialTheme.typography.bodyLarge.copy(
-                            fontWeight = FontWeight.W500
-                        ),
-                        color = MaterialTheme.colorScheme.onPrimary
-                    )
-                    Icon(
-                        painter = painterResource(Res.drawable.ellipse),
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onPrimary
-                    )
-                    Text(
-                        "0.0 m",
-                        style = MaterialTheme.typography.bodyLarge.copy(
-                            fontWeight = FontWeight.W500
-                        ),
-                        color = MaterialTheme.colorScheme.onPrimary
-                    )
-                }
-                MapContainer(Modifier.fillMaxSize()) {
-                    geofenceState.value.geofence?.let { list ->
-                        val geofences = emptyMap<String, List<P>>().toMutableMap()
-                        list.forEach { g->
-                            geofences[g.n.plus(g.d)] = g.p
-                        }
-                        GoogleMaps(
-                            modifier = Modifier.fillMaxSize(),
-                            geofences = geofences,
-                            mapType = mapType.value.mapType,
-                            cameraPosition = CameraPosition(
-                                target = try {
-                                    LatLong(geofences.values.first().first().y, geofences.values.first().first().x)
-                                }catch (ex: Exception) {
-                                    defaultMapPos
-                                },
-                                zoom = 11f
+                geofenceState.value.geofence?.let {
+                    Row(
+                        modifier = Modifier.zIndex(20f).fillMaxWidth().background(
+                            color = MaterialTheme.colorScheme.onSurface.copy(
+                                alpha = 0.4f
                             )
+                        ).padding(12.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Icon(
+                            painter = painterResource(Res.drawable.tile),
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onPrimary
+                        )
+                        Text(
+                            "0.0 ha",
+                            style = MaterialTheme.typography.bodyLarge.copy(
+                                fontWeight = FontWeight.W500
+                            ),
+                            color = MaterialTheme.colorScheme.onPrimary
+                        )
+                        Icon(
+                            painter = painterResource(Res.drawable.ellipse),
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onPrimary
+                        )
+                        Text(
+                            "0.0 m",
+                            style = MaterialTheme.typography.bodyLarge.copy(
+                                fontWeight = FontWeight.W500
+                            ),
+                            color = MaterialTheme.colorScheme.onPrimary
                         )
                     }
                 }
+                geofenceState.value.geofence?.let { list ->
+                    if(list.isNotEmpty()) {
+                        MapContainer(Modifier.fillMaxSize()) {
+
+                            val geofences = emptyMap<String, List<P>>().toMutableMap()
+                            list.forEach { g ->
+                                geofences[g.n.plus(g.d)] = g.p
+                            }
+                            GoogleMaps(
+                                modifier = Modifier.fillMaxSize(),
+                                geofences = geofences,
+                                mapType = mapType.value.mapType,
+                                cameraPosition = CameraPosition(
+                                    target = try {
+                                        LatLong(
+                                            geofences.values.first().first().y,
+                                            geofences.values.first().first().x
+                                        )
+                                    } catch (ex: Exception) {
+                                        defaultMapPos
+                                    },
+                                    zoom = 11f
+                                )
+                            )
+                        }
+                    }
+                }
+
+
             }
         }
     )
@@ -250,7 +280,7 @@ fun GeofenceItem(
                         onClick = {
                             clipboard.setText(
                                 buildAnnotatedString {
-                                    item.p.forEach { p->
+                                    item.p.forEach { p ->
                                         append("${p.y},${p.x}")
                                     }
                                 }

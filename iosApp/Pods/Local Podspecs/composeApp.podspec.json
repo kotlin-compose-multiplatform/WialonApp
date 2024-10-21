@@ -15,10 +15,10 @@
   },
   "dependencies": {
     "Google-Maps-iOS-Utils": [
-      "5.0.0"
+      "6.0.0"
     ],
     "GoogleMaps": [
-      "8.4.0"
+      "9.1.1"
     ]
   },
   "xcconfig": {
