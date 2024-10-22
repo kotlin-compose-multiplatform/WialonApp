@@ -47,6 +47,7 @@ import io.ktor.client.request.get
 import kotlinx.cinterop.CValue
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.addressOf
+import kotlinx.cinterop.cValue
 import kotlinx.cinterop.usePinned
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -66,11 +67,13 @@ import platform.UIKit.UIImage
 import platform.darwin.NSObject
 import kotlin.coroutines.CoroutineContext
 import platform.CoreGraphics.*
+import platform.MapKit.MKCircle
 import platform.UIKit.UIColor.Companion.blueColor
 import platform.UIKit.UIColor.Companion.greenColor
 import platform.UIKit.UIGraphicsBeginImageContextWithOptions
 import platform.UIKit.UIGraphicsEndImageContext
 import platform.UIKit.UIGraphicsGetImageFromCurrentImageContext
+import platform.darwin.NSUInteger
 
 // Coroutine scope for main thread operations
 val uiScope: CoroutineScope = CoroutineScope(Dispatchers.Main)
@@ -134,7 +137,37 @@ suspend fun downloadImage(url: String, targetWidth: Double, targetHeight: Double
 }
 
 @OptIn(ExperimentalForeignApi::class)
+fun calculateBounds(latLngs: List<CValue<CLLocationCoordinate2D>>): GMSCoordinateBounds? {
+    if (latLngs.isEmpty()) return null
+
+    var bounds: GMSCoordinateBounds? = null
+    latLngs.forEach { coordinate ->
+        bounds = if (bounds == null) {
+            GMSCoordinateBounds(coordinate, coordinate)
+        } else {
+            bounds?.includingCoordinate(coordinate)
+        }
+    }
+    return bounds
+}
+
+@OptIn(ExperimentalForeignApi::class)
+fun moveToBounds(
+    mapView: GMSMapView,
+    bounds: GMSCoordinateBounds,
+    coroutineScope: CoroutineScope,
+    padding: Int
+) {
+    val cameraUpdate = GMSCameraUpdate.fitBounds(bounds, padding.toDouble())
+
+    coroutineScope.launch(Dispatchers.Main) {
+        mapView.animateWithCameraUpdate(cameraUpdate)
+    }
+}
+
+@OptIn(ExperimentalForeignApi::class)
 fun setMarkerIconFromUrlKtor(
+    id: String,
     urlString: String,
     latitude: Double,
     longitude: Double,
@@ -142,6 +175,7 @@ fun setMarkerIconFromUrlKtor(
     title: String
 ) {
     uiScope.launch {
+
         val image = downloadImage(urlString, 30.0,30.0)  // Download image using Ktor
         if (image != null) {
             // Set up the marker with the downloaded image
@@ -152,12 +186,41 @@ fun setMarkerIconFromUrlKtor(
             marker.title = title
             marker.icon = image
             marker.map = mapView
+            marker.userData = id
+
 
             // Add the new marker to the list
             markers.add(marker)
         }
     }
 }
+
+@OptIn(ExperimentalForeignApi::class)
+var startMarker: GMSMarker? = null
+
+@OptIn(ExperimentalForeignApi::class)
+var endMarker: GMSMarker? = null
+
+@OptIn(ExperimentalForeignApi::class)
+var parkingMarker: GMSMarker? = null
+
+@OptIn(ExperimentalForeignApi::class)
+val geofenceCircles = mutableListOf<GMSCircle>()
+
+
+@OptIn(ExperimentalForeignApi::class)
+val geofencePolygons =  mutableListOf<GMSPolygon>()
+
+// Delegate to handle marker info window click events
+fun UIColorFromHex(hex: Long, alpha: Double = 1.0): UIColor {
+    val red = ((hex shr 16) and 0xFF) / 255.0
+    val green = ((hex shr 8) and 0xFF) / 255.0
+    val blue = (hex and 0xFF) / 255.0
+
+    return UIColor(red = red, green = green, blue = blue, alpha = alpha)
+}
+
+
 
 @OptIn(ExperimentalForeignApi::class)
 @Composable
@@ -188,6 +251,13 @@ actual fun GoogleMaps(
         }
     }
 
+    fun moveCamera(latitude: Double, longitude: Double, zoom: Float) {
+        googleMapView.camera = GMSCameraPosition.cameraWithTarget(
+            CLLocationCoordinate2DMake(latitude = latitude, longitude = longitude),
+            zoom
+        )
+    }
+
     LaunchedEffect(true) {
         googleMapView.camera = GMSCameraPosition.cameraWithTarget(
             CLLocationCoordinate2DMake(latitude = cameraPosition.target.latitude, longitude = cameraPosition.target.longitude),
@@ -209,8 +279,87 @@ actual fun GoogleMaps(
         }
     }
 
+    LaunchedEffect(singleMarker) {
+        singleMarker?.let {
+            parkingMarker?.map = null
+            val position = CLLocationCoordinate2DMake(latitude = singleMarker.latitude, longitude = singleMarker.longitude)
+            parkingMarker = addMarker(
+                mapView = googleMapView,
+                position = position,
+                iconName = "points",  // Ensure this image exists in assets
+                description = "Start"
+            )
+
+            moveCamera(singleMarker.latitude, singleMarker.longitude, 14f)
+        }
+    }
+
+    LaunchedEffect(geofences) {
+
+        geofenceCircles.forEach { it.map = null }
+        geofencePolygons.forEach { it.map = null }
+
+        geofenceCircles.clear()
+        geofencePolygons.clear()
+
+
+        geofences.forEach { entry ->
+            entry.value.forEach { geofence ->
+                val circle = GMSCircle()
+                circle.position = CLLocationCoordinate2DMake(geofence.y, geofence.x)
+                circle.radius = geofence.r.toDouble()
+                circle.strokeColor = UIColor.redColor
+                circle.fillColor = UIColor.greenColor.colorWithAlphaComponent(0.33)
+                circle.map = googleMapView
+
+                geofenceCircles.add(circle)
+            }
+
+            // Create polygons if geofence has more than 2 points
+            if (entry.value.size > 2) {
+                val path = GMSMutablePath()
+                entry.value.forEach {
+                    path.addLatitude(it.y, longitude = it.x)
+                }
+                val polygon = GMSPolygon()
+                polygon.path = path
+                polygon.strokeColor = UIColor.clearColor
+                polygon.fillColor = UIColor.blueColor.colorWithAlphaComponent(0.33)
+                polygon.map = googleMapView
+
+                geofencePolygons.add(polygon)
+            }
+        }
+
+    }
+
+
+
     LaunchedEffect(polyline) {
         // Add Polyline if present
+
+        if(polyline.isNullOrEmpty().not()) {
+            parkingMarker?.map = null
+
+            polyline?.let { path->
+                val coordinates: List<CValue<CLLocationCoordinate2D>> = path.flatMap { encodedPath ->
+                    GMSPath.pathFromEncodedPath(encodedPath!!)?.let { gmsPath ->
+                        (0 until gmsPath.count().toInt()).map { index -> gmsPath.coordinateAtIndex(
+                            index.toULong()
+                        ) }
+                    } ?: emptyList()
+                }
+
+                val bounds = calculateBounds(coordinates)
+                bounds?.let {
+                    moveToBounds(googleMapView, it, CoroutineScope(Dispatchers.Main), padding = 20)
+                }
+            }
+        }
+
+        startMarker?.map = null
+        endMarker?.map = null
+
         oldPolylines.value.forEach { p->
             p.map = null
         }
@@ -218,10 +367,44 @@ actual fun GoogleMaps(
         polyline?.forEach { p ->
             val decodedPath = GMSPath.pathFromEncodedPath(p!!) ?: return@forEach
             val pol = GMSPolyline.polylineWithPath(decodedPath)
-            pol.strokeColor = UIColor.colorWithRed(0.0, 153.0, 255.0, 1.0)
-            pol.strokeWidth = 10.0
+            pol.strokeColor = UIColorFromHex(0xFF009AFF)
+            pol.strokeWidth = 4.0
             pol.map = googleMapView
             oldPolylines.value = oldPolylines.value.plus(pol)
+
+
+        }
+
+        if(polyline.isNullOrEmpty().not()) {
+            try {
+                val decodedPath = GMSPath.pathFromEncodedPath(polyline?.first()!!)
+                if (decodedPath!!.count() > 0u) {
+                    val startPosition = decodedPath.coordinateAtIndex(0u)
+                    startMarker = addMarker(
+                        mapView = googleMapView,
+                        position = startPosition,
+                        iconName = "points",  // Ensure this image exists in assets
+                        description = "Start"
+                    )
+                }
+            } catch (ex: Exception) {
+                ex.printStackTrace()
+            }
+
+           try {
+               val decodedPath = GMSPath.pathFromEncodedPath(polyline?.last()!!)
+               if (decodedPath!!.count() > 0u) {
+                   val endPosition = decodedPath.coordinateAtIndex(decodedPath.count() - 1u)
+                   endMarker = addMarker(
+                       mapView = googleMapView,
+                       position = endPosition,
+                       iconName = "finish2",  // Ensure this image exists in assets
+                       description = "End"
+                   )
+               }
+           } catch (ex: Exception) {
+               ex.printStackTrace()
+           }
         }
     }
 
@@ -229,6 +412,7 @@ actual fun GoogleMaps(
         clearMarkers() // Remove old markers
         units.forEachIndexed { index, unitModel ->
             setMarkerIconFromUrlKtor(
+                id = unitModel.id,
                 urlString = unitModel.image,
                 latitude = unitModel.latitude,
                 longitude = unitModel.longitude,
@@ -246,7 +430,7 @@ actual fun GoogleMaps(
             }
 
             val poly = GMSPolyline.polylineWithPath(path)
-            poly.strokeWidth = 10.0
+            poly.strokeWidth = 5.0
             poly.geodesic = true
             poly.strokeColor = greenColor
             poly.map = googleMapView
@@ -258,24 +442,28 @@ actual fun GoogleMaps(
     // Only used to track selected marker
 //    val mapMarkers = remember(units) { mutableStateMapOf<String,GMSMarker>() }
 //    var selectedMarker by remember(googleMapView.selectedMarker) { mutableStateOf(googleMapView.selectedMarker) }
-//    val delegate = remember { object : NSObject(), GMSMapViewDelegateProtocol {
-//
-//        // Note: this shows an error, but it compiles and runs fine(!)
-//        override fun mapView(
-//            mapView: GMSMapView,
-//            @Suppress("PARAMETER_NAME_CHANGED_ON_OVERRIDE")  // found this hacky fix was found on jetbrains site
-//            didTapInfoWindowOfMarker: GMSMarker
-//        ) {
-//            val userData = didTapInfoWindowOfMarker.userData()
-//        }
-//
-//    }}
+    val delegate = remember { object : NSObject(), GMSMapViewDelegateProtocol {
+
+        // Note: this shows an error, but it compiles and runs fine(!)
+        override fun mapView(
+            mapView: GMSMapView,
+            @Suppress("PARAMETER_NAME_CHANGED_ON_OVERRIDE")  // found this hacky fix was found on jetbrains site
+            didTapInfoWindowOfMarker: GMSMarker
+        ) {
+            val userData = didTapInfoWindowOfMarker.userData()
+            if (userData != null) {
+                onUnitClick(units.first { it.id == userData })
+            }
+        }
+
+    }}
 
     UIKitView(
         modifier = Modifier.fillMaxSize(),
         factory = {
             googleMapView.apply {
-//                setDelegate(delegate)
+
+                setDelegate(delegate)
 //                this.selectedMarker = selectedMarker
                 this.setMyLocationEnabled(true)
             }
@@ -290,4 +478,20 @@ actual fun GoogleMaps(
             isNativeAccessibilityEnabled = true
         )
     )
+}
+
+@OptIn(ExperimentalForeignApi::class)
+private fun addMarker(
+    mapView: GMSMapView,
+    position: CValue<CLLocationCoordinate2D>,
+    iconName: String,
+    description: String
+): GMSMarker {
+    val marker = GMSMarker().apply {
+        this.position = position
+        this.icon = UIImage.imageNamed(iconName)
+        this.title = description
+        this.map = mapView
+    }
+    return marker
 }
