@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.key
 import androidx.compose.ui.graphics.Color
+import com.gs.wialonlocal.state.LocalAppSettings
 import com.gs.wialonlocal.state.LocalTheme
 
 private val lightScheme = lightColorScheme(
@@ -104,8 +105,9 @@ fun AppTheme(
     darkTheme: Boolean = false,
     content: @Composable() () -> Unit
 ) {
+    val appSettings = LocalAppSettings.current
     val theme = LocalTheme.current
-    key(theme.value) {
+    key(theme.value, appSettings.value.language) {
         val colorScheme = when {
             theme.value -> darkScheme
             else -> lightScheme
